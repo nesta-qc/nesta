@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+/*
+ * NESTA — design system.
+ *
+ * Direction : Apple × architecture contemporaine × immobilier premium.
+ * « Complexe derrière. Extrêmement simple devant. »
+ *
+ * Palette :
+ *  - forest      #163D32  vert forêt — couleur de marque principale
+ *  - forest-deep #0E2A23  vert profond — fonds sombres, survols
+ *  - ivory       #F7F5EF  ivoire chaud — fond principal
+ *  - white       #FFFFFF  blanc — cartes, surfaces
+ *  - charcoal    #181A19  anthracite — texte principal
+ *  - champagne   #C3A877  doré atténué — accent SUBTIL uniquement
+ *  - border      #E7E1D3  bordures subtiles
+ *
+ * Typographie : Fraunces (titres, serif éditorial) + Inter (interface).
+ * Interdits : emojis, gradients bleu/violet, glassmorphism excessif,
+ * animations gratuites, look « dashboard IA ».
+ */
+
+@theme {
+  --color-forest: #163d32;
+  --color-forest-deep: #0e2a23;
+  --color-forest-ink: #0a1f19;
+  --color-ivory: #f7f5ef;
+  --color-cream: #f7f5ef; /* alias historique */
+  --color-charcoal: #181a19;
+  --color-champagne: #c3a877;
+  --color-gold: #c3a877; /* alias historique */
+  --color-border: #e7e1d3;
+  --color-border-strong: #d8cfba;
+  --color-sand: #efe9da;
+  --color-white: #ffffff;
+
+  --color-ink-90: rgb(24 26 25 / 0.9);
+  --color-ink-70: rgb(24 26 25 / 0.7);
+  --color-ink-60: rgb(24 26 25 / 0.6);
+  --color-ink-50: rgb(24 26 25 / 0.5);
+  --color-ink-40: rgb(24 26 25 / 0.4);
+
+  /* Fraunces et Inter sont chargées via next/font dans app/layout.tsx ;
+     les polices système ci-dessous servent de repli si le chargement échoue. */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Rayons — sobre et architectural. */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Ombres — discrètes, jamais dramatiques. */
+  --shadow-card: 0 1px 2px rgb(24 26 25 / 0.04), 0 4px 16px rgb(24 26 25 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(24 26 25 / 0.05), 0 12px 32px rgb(24 26 25 / 0.1);
+  --shadow-pop: 0 8px 32px rgb(24 26 25 / 0.16);
+
+  /* Transitions — 150 à 250 ms, toujours sobres. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ivory);
+  color: var(--color-charcoal);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-champagne);
+  color: var(--color-charcoal);
+}
+
+/* Anneau de focus accessible et cohérent avec la marque. */
+:focus-visible {
+  outline: 2px solid var(--color-forest);
+  outline-offset: 2px;
+}
+
+/* ---------- Skeleton : balayage élégant ---------- */
+@keyframes nesta-shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.nesta-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-sand) 25%,
+    #f7f2e6 50%,
+    var(--color-sand) 75%
+  );
+  background-size: 800px 100%;
+  animation: nesta-shimmer 1.6s linear infinite;
+}
+
+/* ---------- Apparition douce (contenu réel, jamais décoratif) ---------- */
+@keyframes nesta-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nesta-fade-up {
+  animation: nesta-fade-up 0.25s var(--ease-out) both;
+}
+
+/* ---------- Marqueurs de prix (carte Leaflet) ---------- */
+.nesta-price-marker {
+  background: var(--color-white);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  box-shadow: var(--shadow-card);
+  color: var(--color-charcoal);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 5px 10px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease-out), box-shadow 0.15s var(--ease-out),
+    background-color 0.15s var(--ease-out), color 0.15s var(--ease-out);
+}
+
+.nesta-price-marker:hover {
+  transform: scale(1.06);
+  box-shadow: var(--shadow-lift);
+}
+
+.nesta-price-marker--active {
+  background: var(--color-forest);
+  border-color: var(--color-forest);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--color-sand);
+}
+
+.leaflet-control-attribution {
+  font-size: 10px !important;
+  background: rgb(255 255 255 / 0.7) !important;
+}
+
+/* ---------- Hero cinématique NESTA ---------- */
+@keyframes nesta-kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.045);
+  }
+}
+@keyframes nesta-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+/* Zoom cinématique quasi imperceptible sur l'image active du hero. */
+.nesta-kenburns {
+  animation: nesta-kenburns 9s ease-out forwards;
+}
+
+/* Favori en overlay sur les photos de cards : pastille discrète. */
+.nesta-favorite-overlay button {
+  height: 2.25rem;
+  width: 2.25rem;
+  border: 0;
+  background: rgb(255 255 255 / 0.92);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.18);
+  backdrop-filter: blur(4px);
+}
+
+/* ---------- Accessibilité : réduire les animations ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .nesta-skeleton,
+  .nesta-fade-up,
+  .nesta-kenburns {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
