@@ -1,15 +1,132 @@
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/env";
 
 /*
  * Proxy racine (Next.js 16 : la convention `middleware.ts` est dépréciée
  * au profit de `proxy.ts` — voir la documentation fournie dans
  * node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/proxy.md).
  *
- * Rafraîchit la session Supabase avant chaque rendu de page.
- * La logique de session vit dans lib/supabase/middleware.ts (updateSession).
+ * Variable d'environnement SITE_MODE (même code, deux sites) :
+ *   - "admin"  : site dédié au centre de contrôle. Seul /admin/* est
+ *                servi (contrôle du rôle ADMIN avant tout rendu) ;
+ *                /admin/login est la page de connexion du dashboard ;
+ *                / redirige vers /admin ; tout le reste → 404.
+ *   - "public" : site client. /admin/* n'existe pas (404) — le
+ *                dashboard n'est accessible que via le site dédié.
+ *   - non défini (dev local) : comportement historique — /admin
+ *                protégé par le rôle, les non-admins vont vers "/".
+ *
+ * Défense en profondeur (3 barrières indépendantes) :
+ *   a) ce proxy (blocage pré-rendu) ;
+ *   b) requireAdmin() dans le layout du groupe (guarded) (vérification serveur) ;
+ *   c) assertAdmin() dans chaque Server Action + policies RLS is_admin().
  */
+
+interface AdminAccess {
+  hasSession: boolean;
+  isAdmin: boolean;
+}
+
+/**
+ * Vérifie la session et le rôle ADMIN de l'appelant.
+ * Lecture seule : le rafraîchissement des cookies reste géré
+ * par updateSession(). La policy RLS "user_roles : lecture
+ * (soi + admin)" autorise chacun à lire ses propres rôles,
+ * donc aucune clé service n'est nécessaire ici.
+ */
+async function getAdminAccess(request: NextRequest): Promise<AdminAccess> {
+  const supabase = createServerClient(
+    getSupabaseUrl(),
+    getSupabaseAnonKey(),
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll() {
+          /* Lecture seule dans ce contrôle : pas d'écriture ici. */
+        },
+      },
+    },
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { hasSession: false, isAdmin: false };
+
+  const { data } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id)
+    .eq("role", "ADMIN")
+    .maybeSingle();
+
+  return { hasSession: true, isAdmin: data !== null };
+}
+
+function redirectTo(request: NextRequest, pathname: string): NextResponse {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  url.search = "";
+  return NextResponse.redirect(url);
+}
+
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const siteMode = process.env.SITE_MODE;
+
+  const isAdminPath = pathname === "/admin" || pathname.startsWith("/admin/");
+  const isAdminLogin =
+    pathname === "/admin/login" || pathname.startsWith("/admin/login/");
+
+  /* ============ Site dédié au centre de contrôle ============ */
+  if (siteMode === "admin") {
+    /* Page de connexion du dashboard : pas de contrôle de rôle. */
+    if (isAdminLogin) {
+      return updateSession(request);
+    }
+    if (isAdminPath) {
+      const access = await getAdminAccess(request).catch(
+        (): AdminAccess => ({ hasSession: false, isAdmin: false }),
+      );
+      if (!access.isAdmin) {
+        /* Pas de session → page de connexion ; session sans rôle → 403
+           (pas de redirection vers "/" pour éviter une boucle). */
+        if (!access.hasSession) {
+          return redirectTo(request, "/admin/login");
+        }
+        return new NextResponse("Accès refusé.", { status: 403 });
+      }
+      return updateSession(request);
+    }
+    if (pathname === "/") {
+      return redirectTo(request, "/admin");
+    }
+    /* Tout le reste n'existe pas sur le site d'administration. */
+    return new NextResponse("Not Found.", { status: 404 });
+  }
+
+  /* ============ Site client : /admin n'existe pas ============ */
+  if (siteMode === "public") {
+    if (isAdminPath) {
+      return new NextResponse("Not Found.", { status: 404 });
+    }
+    return updateSession(request);
+  }
+
+  /* ============ Dev local : comportement historique ============ */
+  if (isAdminPath && !isAdminLogin) {
+    const access = await getAdminAccess(request).catch(
+      (): AdminAccess => ({ hasSession: false, isAdmin: false }),
+    );
+    if (!access.isAdmin) {
+      return redirectTo(request, "/");
+    }
+  }
+
   return updateSession(request);
 }
 

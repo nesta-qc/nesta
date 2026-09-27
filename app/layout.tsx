@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
 
 /* Serif éditorial pour les titres — repli Georgia si le chargement échoue. */
@@ -31,8 +29,11 @@ export const metadata: Metadata = {
   },
 };
 
-/* Liens de navigation principaux (produits NESTA) : voir components/SiteHeader.tsx. */
-
+/*
+ * Coquille racine minimale : les groupes de routes définissent
+ * leur propre habillage ((site) = header/footer publics,
+ * (admin) = coquille du centre de contrôle interne).
+ */
 export default function RootLayout({
   children,
 }: {
@@ -43,14 +44,7 @@ export default function RootLayout({
       lang="fr"
       className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col font-sans">
-        <SiteHeader />
-
-        {/* Espace sous la barre d'onglets mobile. */}
-        <main className="flex flex-1 flex-col pb-20 md:pb-0">{children}</main>
-
-        <SiteFooter />
-      </body>
+      <body className="min-h-full font-sans">{children}</body>
     </html>
   );
 }
