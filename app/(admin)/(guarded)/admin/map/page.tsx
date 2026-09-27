@@ -2,22 +2,23 @@ import type { Metadata } from "next";
 import { getMapPoints } from "@/actions/admin";
 import { StatCard } from "@/components/admin/StatCard";
 import { Section } from "@/components/admin/Section";
-import { GlobeMap } from "@/components/admin/GlobeMap";
-import { EmptyState } from "@/components/ui";
+import { WorldMap } from "@/components/admin/WorldMap";import { EmptyState } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Carte",
-  description: "Globe 3D des biens NESTA — positions réelles.",
+  description: "Carte du monde des biens NESTA — positions réelles.",
 };
 
 /* ============================================================
- * NESTA Admin — Carte / Globe 3D.
+ * NESTA Admin — Carte du monde.
  *
  * 100 % données réelles : seuls les biens avec coordonnées en
  * base sont placés précisément ; les autres sont regroupés par
- * ville (marqués « approximatif »). Les clients n'ont aucune
+ * ville (marqués « approximatif »). Le halo lumineux indique la
+ * position réelle de la personne qui consulte (géolocalisation
+ * du navigateur, avec permission). Les clients n'ont aucune
  * donnée de localisation en base : ce n'est pas affiché, et
  * c'est dit explicitement.
  * ============================================================ */
@@ -82,13 +83,13 @@ export default async function AdminMapPage() {
         />
       </div>
 
-      {/* Globe 3D. */}
+      {/* Carte du monde. */}
       <Section
-        title="Globe"
-        description="Glissez pour tourner, molette pour zoomer."
+        title="Carte du monde"
+        description="Votre position s'allume automatiquement si vous autorisez la géolocalisation."
       >
         <div className="h-[420px] md:h-[520px]">
-          <GlobeMap points={map.points} />
+          <WorldMap points={map.points} />
         </div>
       </Section>
 
@@ -129,7 +130,7 @@ export default async function AdminMapPage() {
         <div className="mt-6">
           <EmptyState
             title="Aucun bien"
-            description="Il n'y a encore aucune propriété en base. Les biens publiés apparaîtront automatiquement sur le globe."
+            description="Il n'y a encore aucune propriété en base. Les biens publiés apparaîtront automatiquement sur la carte."
           />
         </div>
       )}
@@ -137,7 +138,7 @@ export default async function AdminMapPage() {
       {/* Note honnête sur les clients. */}
       <p className="mt-8 rounded-xl border border-border bg-white px-4 py-3 text-xs leading-relaxed text-charcoal/60">
         Note : la localisation des clients n’est pas collectée à l’inscription —
-        le globe montre uniquement les biens. Si vous voulez voir d’où viennent
+        la carte montre uniquement les biens. Si vous voulez voir d’où viennent
         les clients, il faudra ajouter la ville au profil.
       </p>
     </div>

@@ -14,25 +14,29 @@ de la Ville de Montréal (portail https://donnees.montreal.ca, licence CC-BY 4.0
 Champ introuvable -> NULL. Aucune valeur n'est complétée à la main.
 
 Utilisation :
-    python3 import-property-profiles.py [--refresh] [--boroughs N] [--per-borough N]
+    python3 import-property-profiles.py [--boroughs N] [--per-borough N] [--resume]
 
-    --refresh      : ignore le cache local et retélécharge tout depuis l'API
     --boroughs N   : limite aux N premiers arrondissements (défaut : 8)
     --per-borough N: adresses par arrondissement (défaut : 40)
+    --resume        : reprend après une interruption (checkpoint JSONL par arrondissement)
+    --clear-checkpoint : supprime le checkpoint avant de démarrer
 
-Reproductibilité : graine aléatoire fixe (SEED = 42). Le cache (JSON bruts) vit
-dans ./.cache (ou $NESTA_IMPORT_CACHE) ; relancer sans --refresh rejoue les
-jointures et l'échantillonnage à l'identique sans toucher au réseau.
+Reproductibilité : graine aléatoire fixe (SEED = 42). Relancer rejoue
+l'échantillonnage à l'identique (mêmes offsets aléatoires).
 
 Sortie : ../supabase/seed_property_profiles_<k>.sql (< 500 Ko / fichier),
          INSERT one-shot (pas d'upsert — voir en-tête des fichiers SQL).
 
 Notes d'accès (découvertes le 2026-09-27) :
   - Les téléchargements directs de fichiers sont bloqués (RBAC) -> API datastore uniquement.
-  - Le WAF du portail bloque les User-Agent non-navigateur (403) -> on utilise un UA navigateur.
+  - Le WAF du portail bloque les User-Agent non-navigateur (403) -> UA navigateur.
   - datastore_search_sql refuse les guillemets doubles dans l'URL (WAF) -> on n'utilise
     que datastore_search (filtres exacts + pagination + q plein texte).
-  - Le réseau coupe parfois la connexion -> retries avec backoff sur chaque requête.
+  - La recherche plein texte (q) est sensible aux accents : on interroge avec le nom
+    tel quel, puis en repli avec le plus long mot du nom (ex. « Neiges »).
+  - Le client HTTP de Python (urllib) tronque systématiquement les réponses
+    de ce portail via le proxy d'egress (IncompleteRead) -> on passe par curl
+    en sous-processus, avec retries + backoff sur chaque requête.
 """
 
 import argparse
@@ -41,6 +45,7 @@ import json
 import os
 import random
 import re
+import subprocess
 import sys
 import time
 import unicodedata
@@ -54,11 +59,11 @@ import urllib.request
 
 SEED = 42
 PER_BOROUGH_DEFAULT = 40
-TAX_SAMPLE_OFFSETS = 90      # positions aléatoires par arrondissement
-TAX_SAMPLE_LIMIT = 60        # lignes lues par position
-PAGE_SIZE = 5000             # pagination des gros jeux (évaluation, adresses)
-REQUEST_PAUSE = 0.8          # secondes entre deux requêtes API
-NOMINATIM_PAUSE = 1.2        # respect du quota Nominatim (1 req/s max)
+TAX_SAMPLE_OFFSETS = 50       # positions aléatoires par arrondissement
+TAX_SAMPLE_LIMIT = 100        # lignes lues par position
+REQUEST_PAUSE = 1.2           # secondes entre deux requêtes API
+NOMINATIM_PAUSE = 1.2         # respect du quota Nominatim (1 req/s max)
+Q_PAGE = 2000                 # page pour les recherches par rue
 
 BASE = "https://donnees.montreal.ca/api/3/action"
 # Le WAF du portail bloque les UA non-navigateur : on s'identifie comme un navigateur.
@@ -86,8 +91,7 @@ BOROUGHS = [
     ("Côte-des-Neiges–Notre-Dame-de-Grâce", "8819693b-870a-4288-bb09-f7eb20a6f095"),
 ]
 
-# Code générique du jeu des taxes -> générique français (pour l'affichage et
-# la recherche de coordonnées quand l'évaluation n'a pas matché).
+# Code générique du jeu des taxes -> générique français (affichage + repli coordonnées).
 GENERIC_MAP = {
     "": "rue", "AV": "avenue", "BOUL": "boulevard", "CH": "chemin",
     "RTE": "route", "MTE": "montée", "RANG": "rang", "PL": "place",
@@ -95,6 +99,7 @@ GENERIC_MAP = {
     "CROIS": "croissant", "SENT": "sentier", "PROM": "promenade",
     "PARC": "parc", "QUAI": "quai", "COTE": "côte", "CAR": "carrefour",
     "CRT": "cercle", "ALL": "allée", "JARD": "jardin", "CRS": "cours",
+    "TSSE": "terrasse",
 }
 # Génériques candidats (ordre de probabilité) si le générique est inconnu.
 GENERIC_CANDIDATES = ["rue", "avenue", "boulevard", "chemin", "place",
@@ -104,36 +109,53 @@ ORIENT_MAP = {"O": "Ouest", "E": "Est", "N": "Nord", "S": "Sud", "": ""}
 ORIENT_LETTER = {"OUEST": "O", "EST": "E", "NORD": "N", "SUD": "S"}
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CACHE_DIR = os.environ.get("NESTA_IMPORT_CACHE", os.path.join(SCRIPT_DIR, ".cache"))
 SUPABASE_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "supabase")
+CHECKPOINT = os.path.join(SCRIPT_DIR, ".profiles_checkpoint.jsonl")
 
-STATS = {"inconsistent_tax_values": 0, "gener_vocab": set(), "skipped": 0}
+STATS = {"inconsistent_tax_values": 0, "gener_vocab": set(), "skipped": 0,
+         "q_fallback": 0, "eval_q_empty": 0, "addr_q_empty": 0}
 
 # ----------------------------------------------------------------------------
 # HTTP robuste
 # ----------------------------------------------------------------------------
 
-def fetch_json(url, tries=7, timeout=120):
-    """GET JSON avec retries (coupures réseau transitoires, 429/5xx)."""
+def fetch_json(url, tries=8, timeout=120):
+    """GET JSON via curl (le client HTTP Python tronque systématiquement les
+    réponses de ce portail via le proxy — curl est fiable à 100 %).
+
+    Retries sur échec réseau / JSON invalide. Les HTTP 4xx (hors 429) ne sont
+    pas retentés : elles signalent un problème de requête, pas un aléa réseau.
+    """
     last = None
     for i in range(tries):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": BROWSER_UA})
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return json.load(resp)
-        except (urllib.error.URLError, http.client.HTTPException,
-                http.client.IncompleteRead, ConnectionError, TimeoutError) as e:
+            p = subprocess.run(
+                ["curl", "-s", "-m", str(timeout), "-A", BROWSER_UA,
+                 "-w", "\n%{http_code}", url],
+                capture_output=True, timeout=timeout + 15)
+            if p.returncode != 0:
+                raise ConnectionError(f"curl exit {p.returncode}: "
+                                      f"{p.stderr.decode()[:200]}")
+            body, _, code = p.stdout.decode("utf-8").rpartition("\n")
+            code = code.strip()
+            if code == "429":
+                raise urllib.error.HTTPError(url, 429, "Too Many Requests", {}, None)
+            if code.startswith("4"):
+                raise RuntimeError(f"HTTP {code} (non retenté) pour {url[:140]}")
+            if not code.startswith("2"):
+                raise ConnectionError(f"HTTP {code} pour {url[:140]}")
+            return json.loads(body)
+        except (json.JSONDecodeError, ConnectionError,
+                urllib.error.HTTPError, subprocess.TimeoutExpired) as e:
             last = e
             time.sleep(2 * (i + 1))
-    raise RuntimeError(f"Échec après {tries} essais pour {url[:120]} : {last}")
+    raise RuntimeError(f"Échec après {tries} essais pour {url[:140]} : {last}")
 
 
-def ds_search(resource_id, pause=True, **params):
-    """datastore_search paginé/filtré. Retourne le bloc 'result'."""
-    if pause:
-        time.sleep(REQUEST_PAUSE)
+def ds_search(resource_id, **params):
+    """datastore_search. Retourne le bloc 'result'."""
+    time.sleep(REQUEST_PAUSE)
     params["resource_id"] = resource_id
-    # Les filtres doivent être une chaîne JSON.
     if isinstance(params.get("filters"), dict):
         params["filters"] = json.dumps(params["filters"])
     url = BASE + "/datastore_search?" + urllib.parse.urlencode(params)
@@ -143,36 +165,42 @@ def ds_search(resource_id, pause=True, **params):
     return data["result"]
 
 
-def fetch_all(resource_id, fields, label, filters=None):
-    """Télécharge l'intégralité d'un jeu (pagination), avec cache disque."""
-    cache_path = os.path.join(CACHE_DIR, f"{label}.json")
-    if os.path.exists(cache_path) and not REFRESH:
-        with open(cache_path, encoding="utf-8") as f:
-            rows = json.load(f)
-        print(f"  [cache] {label}: {len(rows)} lignes")
-        return rows
-    first = ds_search(resource_id, limit=1, fields=fields,
-                      **({"filters": filters} if filters else {}))
-    total = first["total"]
-    print(f"  [api] {label}: {total} lignes à paginer…", flush=True)
-    rows = []
-    for offset in range(0, total, PAGE_SIZE):
-        r = ds_search(resource_id, limit=PAGE_SIZE, offset=offset,
-                      fields=fields, **({"filters": filters} if filters else {}))
-        rows.extend(r["records"])
-        print(f"    {min(offset + PAGE_SIZE, total)}/{total}", end="\r", flush=True)
-    print(f"    {len(rows)}/{total} OK   ")
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    with open(cache_path, "w", encoding="utf-8") as f:
-        json.dump(rows, f, ensure_ascii=False)
-    return rows
+def q_search_all(resource_id, query, fields):
+    """Recherche plein texte paginée. Retourne tous les records."""
+    records, offset = [], 0
+    while True:
+        r = ds_search(resource_id, q=query, limit=Q_PAGE, offset=offset,
+                      fields=fields)
+        records.extend(r["records"])
+        if len(records) >= r["total"] or not r["records"]:
+            break
+        offset += Q_PAGE
+    return records
+
+
+def q_variants(rue):
+    """Variantes de requête plein texte (sensible aux accents)."""
+    base = rue.replace("-", " ").strip()
+    variants = [base]
+    tokens = [t for t in norm(base).split() if len(t) > 2]
+    if tokens:
+        longest = max(tokens, key=len)
+        if longest != norm(base).replace(" ", ""):
+            variants.append(longest)
+    # déduplique en préservant l'ordre
+    seen, out = set(), []
+    for v in variants:
+        if v.lower() not in seen:
+            seen.add(v.lower())
+            out.append(v)
+    return out
 
 # ----------------------------------------------------------------------------
 # Normalisation des noms de rue
 # ----------------------------------------------------------------------------
 
 def norm(s):
-    """Majuscules, sans accents, apostrophes/ponctuation -> espace, espaces condensés."""
+    """Majuscules, sans accents, ponctuation -> espace, espaces condensés."""
     if not s:
         return ""
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
@@ -181,9 +209,17 @@ def norm(s):
 
 
 def title_fr(s):
-    """'SAINT-DOMINIQUE' -> 'Saint-Dominique', '1RE' -> '1re'."""
-    return s.strip().lower().replace("'", "’").title().replace("’", "'") \
-        if "'" in s else s.strip().title()
+    """'SAINT-DOMINIQUE' -> 'Saint-Dominique', 'DE BORDEAUX' -> 'de Bordeaux'.
+
+    Les particules françaises restent en minuscules (usage typographique).
+    """
+    t = s.strip().title()
+    t = t.replace(" D'", " d'").replace(" L'", " l'")
+    t = re.sub(r"\bDe\b", "de", t)
+    t = re.sub(r"\bDu\b", "du", t)
+    t = re.sub(r"\bDes\b", "des", t)
+    t = t.replace("de La ", "de la ")
+    return t
 
 
 SUFFIX_RE = re.compile(r"\s*\([^)]*\)\s*$")  # " (MTL)", " (MTL+WMT)", …
@@ -199,92 +235,144 @@ def parse_nom_rue(nom_rue):
     orient = ""
     if rest and norm(rest[-1]) in ORIENT_LETTER:
         orient = rest.pop()
-    specific = " ".join(rest)
-    return generic, specific, orient
+    return generic, " ".join(rest), orient
 
 
 def street_key(specific, orient_word):
     """Clé de jointure indépendante du générique : 'SAINT-ANTOINE|OUEST'."""
     return norm(specific) + "|" + norm(orient_word)
 
+
+# Particules initiales : le jeu des taxes et celui de l'évaluation ne les
+# notent pas toujours pareil (« DE LA CÔTE-DES-NEIGES » vs « CÔTE-DES-NEIGES »).
+PARTICLES = {"DE", "LA", "LE", "LES", "L", "DES", "DU", "D", "AU", "AUX", "A"}
+
+def loose_key(specific, orient_word):
+    """Clé sans particules initiales — repli si la clé exacte ne matche pas."""
+    toks = norm(specific).split()
+    while len(toks) > 1 and toks[0] in PARTICLES:
+        toks.pop(0)
+    return " ".join(toks) + "|" + norm(orient_word)
+
 # ----------------------------------------------------------------------------
-# Index d'évaluation foncière
+# Recherche par rue : évaluation foncière + adresses ponctuelles
 # ----------------------------------------------------------------------------
 
-def build_eval_index(rows):
-    index = {}
-    for i, r in enumerate(rows):
-        parsed = parse_nom_rue(r.get("NOM_RUE"))
-        if not parsed:
-            continue
-        generic, specific, orient = parsed
-        key = street_key(specific, orient)
-        try:
-            debut = int(r["CIVIQUE_DEBUT"])
-            fin = int(r["CIVIQUE_FIN"])
-        except (TypeError, ValueError):
-            continue
-        index.setdefault(key, []).append({
-            "id": i, "debut": debut, "fin": fin, "generic": generic,
-            "annee": r.get("ANNEE_CONSTRUCTION"),
-            "terrain": r.get("SUPERFICIE_TERRAIN"),
-            "categorie": r.get("CATEGORIE_UEF"),
-            "libelle": r.get("LIBELLE_UTILISATION"),
-        })
-    return index
+EVAL_CACHE = {}   # norm(specific) -> liste d'UEV parsées
+ADDR_CACHE = {}   # norm(specific) -> liste de plages d'adresses
+
+EVAL_FIELDS = ("NOM_RUE,CIVIQUE_DEBUT,CIVIQUE_FIN,ANNEE_CONSTRUCTION,"
+               "SUPERFICIE_TERRAIN,CATEGORIE_UEF,LIBELLE_UTILISATION")
+ADDR_FIELDS = "SPECIFIQUE,GENERIQUE,ORIENTATION,ADDR_DE,ADDR_A,LONGITUDE,LATITUDE"
 
 
-def eval_lookup(index, civ, tax_rue, tax_orient, tax_generic_code):
-    """Retourne la meilleure unité d'évaluation pour (numéro, rue), ou None."""
+def eval_candidates(specific):
+    """Toutes les UEV dont la rue contient `specific` (recherche plein texte)."""
+    ns = norm(specific)
+    if ns not in EVAL_CACHE:
+        rows = []
+        for q in q_variants(specific):
+            rows = q_search_all(EVAL_RID, q, EVAL_FIELDS)
+            if rows:
+                break
+            STATS["q_fallback"] += 1
+        if not rows:
+            STATS["eval_q_empty"] += 1
+        parsed = []
+        for i, r in enumerate(rows):
+            p = parse_nom_rue(r.get("NOM_RUE"))
+            if not p:
+                continue
+            generic, spec, orient = p
+            try:
+                debut, fin = int(r["CIVIQUE_DEBUT"]), int(r["CIVIQUE_FIN"])
+            except (TypeError, ValueError):
+                continue
+            parsed.append({"id": i, "debut": debut, "fin": fin,
+                           "generic": generic,
+                           "key": street_key(spec, orient),
+                           "lkey": loose_key(spec, orient),
+                           "annee": r.get("ANNEE_CONSTRUCTION"),
+                           "terrain": r.get("SUPERFICIE_TERRAIN"),
+                           "categorie": r.get("CATEGORIE_UEF"),
+                           "libelle": r.get("LIBELLE_UTILISATION")})
+        EVAL_CACHE[ns] = parsed
+    return EVAL_CACHE[ns]
+
+
+def eval_lookup(civ, tax_rue, tax_orient, tax_generic_code):
     orient_word = ORIENT_MAP.get(tax_orient.strip(), "")
     key = street_key(tax_rue, orient_word)
-    cands = index.get(key)
-    if not cands:
-        return None
-    matches = [u for u in cands if u["debut"] <= civ <= u["fin"]]
+    cands = eval_candidates(tax_rue)
+    matches = [u for u in cands
+               if u["key"] == key and u["debut"] <= civ <= u["fin"]]
+    loose = False
+    if not matches:
+        lkey = loose_key(tax_rue, orient_word)
+        matches = [u for u in cands
+                   if u["lkey"] == lkey and u["debut"] <= civ <= u["fin"]]
+        loose = True
     if not matches:
         return None
     expected_generic = GENERIC_MAP.get(tax_generic_code.strip())
     def rank(u):
         mismatch = 0 if (expected_generic is None or u["generic"] == expected_generic) else 1
-        return (mismatch, u["fin"] - u["debut"], u["id"])
+        return (1 if loose else 0, mismatch, u["fin"] - u["debut"], u["id"])
     return sorted(matches, key=rank)[0]
 
-# ----------------------------------------------------------------------------
-# Index d'adresses ponctuelles (plages de numéros civiques)
-# ----------------------------------------------------------------------------
 
-def build_addr_index(rows):
-    index = {}
-    for r in rows:
-        g, s, o = r.get("GENERIQUE"), r.get("SPECIFIQUE"), r.get("ORIENTATION")
-        if not g or not s:
-            continue
-        key = (norm(g), norm(s), norm(o) if o else "X")
-        try:
-            de, a = int(r["ADDR_DE"]), int(r["ADDR_A"])
-            lon, lat = float(r["LONGITUDE"]), float(r["LATITUDE"])
-        except (TypeError, ValueError):
-            continue
-        index.setdefault(key, []).append((de, a, lon, lat))
-    return index
+def addr_candidates(specific):
+    """Toutes les plages d'adresses dont la rue contient `specific`."""
+    ns = norm(specific)
+    if ns not in ADDR_CACHE:
+        rows = []
+        for q in q_variants(specific):
+            rows = q_search_all(ADDR_RID, q, ADDR_FIELDS)
+            if rows:
+                break
+            STATS["q_fallback"] += 1
+        if not rows:
+            STATS["addr_q_empty"] += 1
+        parsed = []
+        for r in rows:
+            g, s, o = r.get("GENERIQUE"), r.get("SPECIFIQUE"), r.get("ORIENTATION")
+            if not g or not s:
+                continue
+            try:
+                de, a = int(r["ADDR_DE"]), int(r["ADDR_A"])
+                lon, lat = float(r["LONGITUDE"]), float(r["LATITUDE"])
+            except (TypeError, ValueError):
+                continue
+            parsed.append({"generic": norm(g), "specific": norm(s),
+                           "lspecific": loose_key(s, ""),
+                           "orient": (o or "X").strip().upper(),
+                           "de": de, "a": a, "lon": lon, "lat": lat})
+        ADDR_CACHE[ns] = parsed
+    return ADDR_CACHE[ns]
 
 
-def coords_lookup(index, civ, generic, specifique, orient_letter):
-    """Coordonnées via les plages ADDR_DE..ADDR_A. Plus petite plage d'abord."""
-    key = (norm(generic), norm(specifique), orient_letter or "X")
-    cands = index.get(key, [])
-    matches = [(de, a, lon, lat) for de, a, lon, lat in cands if de <= civ <= a]
+def coords_lookup(civ, specific, generic, orient_letter):
+    """Coordonnées via les plages ADDR_DE..ADDR_A (plus petite plage d'abord)."""
+    ng, ns = norm(generic), norm(specific)
+    ol = (orient_letter or "X").strip().upper()
+    cands = addr_candidates(specific)
+    matches = [c for c in cands
+               if c["generic"] == ng and c["specific"] == ns
+               and c["orient"] == ol and c["de"] <= civ <= c["a"]]
+    if not matches:
+        ls = loose_key(specific, "")
+        matches = [c for c in cands
+                   if c["generic"] == ng and c["lspecific"] == ls
+                   and c["orient"] == ol and c["de"] <= civ <= c["a"]]
     if not matches:
         return None
-    matches.sort(key=lambda m: (m[1] - m[0], m[0]))
-    _, _, lon, lat = matches[0]
-    return lon, lat
+    matches.sort(key=lambda c: (c["a"] - c["de"], c["de"]))
+    return matches[0]["lon"], matches[0]["lat"]
 
 
-def coords_with_generic_fallback(index, civ, specifique, orient_letter, generics):
+def coords_with_generic_fallback(civ, specific, orient_letter, generics):
     for g in generics:
-        hit = coords_lookup(index, civ, g, specifique, orient_letter)
+        hit = coords_lookup(civ, specific, g, orient_letter)
         if hit:
             return hit, g
     return None, None
@@ -302,18 +390,21 @@ def nominatim_coords(address_label):
     params = {"q": address_label, "format": "json", "limit": 1}
     url = NOMINATIM_URL + "?" + urllib.parse.urlencode(params)
     last = None
-    for i in range(4):
+    for i in range(5):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": NOMINATIM_UA})
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                data = json.load(resp)
+            p = subprocess.run(
+                ["curl", "-s", "-m", "60", "-A", NOMINATIM_UA, url],
+                capture_output=True, timeout=75)
+            if p.returncode != 0:
+                raise ConnectionError(f"curl exit {p.returncode}")
+            data = json.loads(p.stdout.decode("utf-8"))
             _last_nominatim[0] = time.time()
             if data:
                 return float(data[0]["lon"]), float(data[0]["lat"])
             return None
         except Exception as e:
             last = e
-            time.sleep(2 * (i + 1))
+            time.sleep(3 * (i + 1))
     print(f"  [nominatim] échec pour {address_label!r} : {last}")
     return None
 
@@ -321,31 +412,28 @@ def nominatim_coords(address_label):
 # Échantillonnage des adresses fiscales par arrondissement
 # ----------------------------------------------------------------------------
 
-def max_tax_year(rid):
-    """Année d'exercice max (le jeu est mono-année en pratique ; on vérifie)."""
+def tax_years_present(rid):
+    """Années d'exercice présentes (échantillonnage sur plusieurs offsets)."""
     total = ds_search(rid, limit=1)["total"]
     years = set()
-    for off in {0, total // 2, max(0, total - 2000)}:
-        r = ds_search(rid, limit=2000, offset=off, fields="ANNEE_EXERCICE")
-        years.update(x["ANNEE_EXERCICE"] for x in r["records"])
-    year = max(years)
-    print(f"  années présentes : {sorted(years)} -> retenue : {year}")
-    return year
+    for k in range(8):
+        off = (total * k) // 8
+        r = ds_search(rid, limit=1500, offset=off, fields="ANNEE_EXERCICE")
+        years.update(str(x["ANNEE_EXERCICE"]) for x in r["records"])
+    print(f"  années présentes (échantillon) : {sorted(years)}")
+    return total
 
 
 def sample_tax_addresses(name, rid, per_borough, seed_offset):
     """Échantillonne des adresses DISTINCTES (valeur au rôle) dans un arrondissement."""
-    year = max_tax_year(rid)
-    filters = {"ANNEE_EXERCICE": year}
-    total = ds_search(rid, limit=1, filters=filters)["total"]
+    total = tax_years_present(rid)
     rng = random.Random(SEED + seed_offset)
-    fields = ("AD_EMPLAC_CIV1,AD_EMPLAC_CIV2,AD_EMPLAC_GENER,AD_EMPLAC_RUE,"
-              "AD_EMPLAC_ORIENT,VAL_IMPOSABLE,DESCR_LONGUE")
+    fields = ("_id,AD_EMPLAC_CIV1,AD_EMPLAC_CIV2,AD_EMPLAC_GENER,AD_EMPLAC_RUE,"
+              "AD_EMPLAC_ORIENT,VAL_IMPOSABLE,DESCR_LONGUE,ANNEE_EXERCICE")
     groups = {}
     for _ in range(TAX_SAMPLE_OFFSETS):
         off = rng.randrange(total)
-        r = ds_search(rid, limit=TAX_SAMPLE_LIMIT, offset=off,
-                      fields=fields, filters=filters)
+        r = ds_search(rid, limit=TAX_SAMPLE_LIMIT, offset=off, fields=fields)
         for row in r["records"]:
             civ1 = (row.get("AD_EMPLAC_CIV1") or "").strip()
             rue = (row.get("AD_EMPLAC_RUE") or "").strip()
@@ -357,13 +445,14 @@ def sample_tax_addresses(name, rid, per_borough, seed_offset):
                    (row.get("AD_EMPLAC_ORIENT") or "").strip())
             STATS["gener_vocab"].add(key[1])
             groups.setdefault(key, []).append(row)
-    # Déduplique : une ligne par adresse, préférant la ligne « TAXE GÉNÉRALE ».
+    # Déduplique : une ligne par adresse -> année max, ligne « TAXE GÉNÉRALE » préférée.
     pool = []
     for key, rows in groups.items():
-        pref = [x for x in rows if norm(x.get("DESCR_LONGUE", "")).startswith("TAXE GENERALE")]
-        chosen = sorted(pref or rows, key=lambda x: x["_id"])[0]
-        vals = {x.get("VAL_IMPOSABLE") for x in rows}
-        if len(vals) > 1:
+        year = max(str(x.get("ANNEE_EXERCICE") or "") for x in rows)
+        yrows = [x for x in rows if str(x.get("ANNEE_EXERCICE") or "") == year]
+        pref = [x for x in yrows if norm(x.get("DESCR_LONGUE", "")).startswith("TAXE GENERALE")]
+        chosen = sorted(pref or yrows, key=lambda x: x["_id"])[0]
+        if len({x.get("VAL_IMPOSABLE") for x in yrows}) > 1:
             STATS["inconsistent_tax_values"] += 1
         civ1, gener, rue, orient = key
         pool.append({
@@ -382,22 +471,35 @@ def sample_tax_addresses(name, rid, per_borough, seed_offset):
 # ----------------------------------------------------------------------------
 
 def to_int(s):
-    s = (s or "").strip()
+    # ANNEE_EXERCICE arrive parfois en int, parfois en str selon le jeu.
+    if s is None:
+        return None
+    if isinstance(s, bool):
+        return None
+    if isinstance(s, int):
+        return s
+    s = str(s).strip()
     return int(s) if s.isdigit() else None
 
 
 def to_float(s):
-    try:
+    if s is None:
+        return None
+    if isinstance(s, bool):
+        return None
+    if isinstance(s, (int, float)):
         return float(s)
-    except (TypeError, ValueError):
+    try:
+        return float(str(s).strip())
+    except ValueError:
         return None
 
 
-def enrich(addr, borough, eval_index, addr_index):
+def enrich(addr, borough):
     civ, rue, orient = addr["civ"], addr["rue"], addr["orient"]
     orient_letter = orient if orient in "EONS" else ("X" if not orient else orient)
 
-    uev = eval_lookup(eval_index, civ, rue, orient, addr["gener"])
+    uev = eval_lookup(civ, rue, orient, addr["gener"])
     if uev:
         generic = uev["generic"]
         annee = to_int(uev["annee"])
@@ -416,7 +518,7 @@ def enrich(addr, borough, eval_index, addr_index):
     generics += [g for g in ([GENERIC_MAP.get(addr["gener"])] + GENERIC_CANDIDATES)
                  if g and g not in generics]
     hit, used_generic = coords_with_generic_fallback(
-        addr_index, civ, rue, orient_letter, generics)
+        civ, rue, orient_letter, generics)
     if hit:
         lon, lat = hit
         method = "plages"
@@ -435,7 +537,6 @@ def enrich(addr, borough, eval_index, addr_index):
     if orient:
         display += f" {ORIENT_MAP.get(orient, orient)}"
 
-    valeur = to_float(addr["valeur"])
     return {
         "address": display.strip(),
         "borough": borough,
@@ -446,7 +547,7 @@ def enrich(addr, borough, eval_index, addr_index):
         "construction_year": annee,
         "assessment_land": None,      # le jeu ne donne que la valeur totale
         "assessment_building": None,  # idem
-        "assessment_total": valeur,
+        "assessment_total": to_float(addr["valeur"]),
         "assessment_year": to_int(addr["annee"]),
         "property_category": category,
         "data_source": DATA_SOURCE,
@@ -515,52 +616,65 @@ def write_seeds(profiles):
 # Main
 # ----------------------------------------------------------------------------
 
-REFRESH = False
+def load_checkpoint():
+    profiles = []
+    if os.path.exists(CHECKPOINT):
+        with open(CHECKPOINT, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    profiles.append(json.loads(line))
+    return profiles
+
+
+def save_checkpoint(profiles):
+    with open(CHECKPOINT, "a", encoding="utf-8") as f:
+        for p in profiles:
+            f.write(json.dumps(p, ensure_ascii=False) + "\n")
 
 
 def main():
-    global REFRESH
     ap = argparse.ArgumentParser(description="Pipeline « vraies adresses » pour Nesta")
-    ap.add_argument("--refresh", action="store_true",
-                    help="ignore le cache et retélécharge tout")
     ap.add_argument("--boroughs", type=int, default=len(BOROUGHS))
     ap.add_argument("--per-borough", type=int, default=PER_BOROUGH_DEFAULT)
+    ap.add_argument("--resume", action="store_true",
+                    help="reprend après une interruption (checkpoint JSONL)")
+    ap.add_argument("--clear-checkpoint", action="store_true",
+                    help="supprime le checkpoint avant de démarrer")
     args = ap.parse_args()
-    REFRESH = args.refresh
     boroughs = BOROUGHS[:args.boroughs]
-    os.makedirs(CACHE_DIR, exist_ok=True)
 
-    print("== 1/4 Unités d'évaluation foncière ==")
-    eval_rows = fetch_all(EVAL_RID,
-                          "NOM_RUE,CIVIQUE_DEBUT,CIVIQUE_FIN,ANNEE_CONSTRUCTION,"
-                          "SUPERFICIE_TERRAIN,CATEGORIE_UEF,LIBELLE_UTILISATION",
-                          "eval")
-    eval_index = build_eval_index(eval_rows)
-    print(f"  index : {len(eval_index)} clés de rue")
+    if args.clear_checkpoint and os.path.exists(CHECKPOINT):
+        os.remove(CHECKPOINT)
+        print("checkpoint supprimé")
 
-    print("== 2/4 Adresse ponctuelle ==")
-    addr_rows = fetch_all(ADDR_RID,
-                          "SPECIFIQUE,GENERIQUE,ORIENTATION,ADDR_DE,ADDR_A,"
-                          "LONGITUDE,LATITUDE",
-                          "addrpoints")
-    addr_index = build_addr_index(addr_rows)
-    print(f"  index : {len(addr_index)} clés (générique, nom, orientation)")
+    done = load_checkpoint() if args.resume else []
+    done_boroughs = {p["borough"] for p in done}
+    if done:
+        print(f"reprise : {len(done)} profils déjà faits "
+              f"({', '.join(sorted(done_boroughs))})")
 
-    print("== 3/4 Échantillonnage + enrichissement ==")
-    profiles = []
+    print("== 1/2 Échantillonnage + enrichissement ==", flush=True)
+    profiles = list(done)
     for i, (name, rid) in enumerate(boroughs):
-        print(f"-- {name}")
+        if name in done_boroughs:
+            print(f"-- {name} : déjà fait, sauté", flush=True)
+            continue
+        print(f"-- {name}", flush=True)
+        new_profiles = []
         for addr in sample_tax_addresses(name, rid, args.per_borough, i * 1000):
             try:
-                profiles.append(enrich(addr, name, eval_index, addr_index))
+                new_profiles.append(enrich(addr, name))
             except Exception as e:
                 STATS["skipped"] += 1
                 print(f"  [skip] {addr} : {e}")
+        save_checkpoint(new_profiles)
+        profiles.extend(new_profiles)
+        print(f"  checkpoint : {len(profiles)} profils au total", flush=True)
 
-    print("== 4/4 Écriture SQL ==")
+    print("== 2/2 Écriture SQL ==")
     paths = write_seeds(profiles)
 
-    # Rapport
     print("\n== RAPPORT ==")
     print(f"Total : {len(profiles)} profils")
     by_borough, by_method = {}, {}
@@ -575,6 +689,9 @@ def main():
     print("Coordonnées par méthode :", by_method)
     print("Champs NULL :", {k: v for k, v in nulls.items() if v})
     print("Codes générique (taxes) observés :", sorted(STATS["gener_vocab"]))
+    print("Replis q (2e variante) :", STATS["q_fallback"])
+    print("Rues sans match évaluation :", STATS["eval_q_empty"],
+          "| sans match adresse ponctuelle :", STATS["addr_q_empty"])
     print("Valeurs fiscales incohérentes (multi-lignes) :", STATS["inconsistent_tax_values"])
     print("Adresses écartées (erreur) :", STATS["skipped"])
     print("Fichiers :", paths)

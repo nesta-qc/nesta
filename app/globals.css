@@ -161,6 +161,78 @@ body {
   background: rgb(255 255 255 / 0.7) !important;
 }
 
+/* ---------- Repère lumineux « vous êtes ici » (carte monde Admin) ---------- */
+/* Carte du monde Admin : fond satellite assombri + repère lumineux. */
+.nesta-worldmap .leaflet-container {
+  background: #060d0b; /* presque noir, sous les tuiles satellite */
+}
+.nesta-satellite-tiles {
+  filter: brightness(0.55) contrast(1.15) saturate(0.7);
+}
+.nesta-worldmap .leaflet-control-attribution {
+  background: rgb(0 0 0 / 0.45) !important;
+  color: rgb(247 245 239 / 0.55);
+}
+.nesta-worldmap .leaflet-control-attribution a {
+  color: rgb(247 245 239 / 0.7);
+}
+.nesta-worldmap .leaflet-tooltip {
+  background: rgb(24 24 22 / 0.95);
+  border: 1px solid rgb(195 168 119 / 0.4);
+  color: #f7f5ef;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+}
+.nesta-worldmap .leaflet-tooltip-top::before {
+  border-top-color: rgb(24 24 22 / 0.95);
+}
+.nesta-user-light {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+.nesta-user-light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 2px solid rgb(255 217 138 / 0.75);
+  animation: nesta-user-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.nesta-user-light__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: #ffd98a;
+  box-shadow:
+    0 0 12px 5px rgb(255 217 138 / 0.9),
+    0 0 36px 14px rgb(255 217 138 / 0.4);
+}
+.nesta-user-light__legend {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #ffd98a;
+  box-shadow: 0 0 8px 3px rgb(255 217 138 / 0.8);
+}
+@keyframes nesta-user-ping {
+  0% {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
 /* ---------- Hero cinématique NESTA ---------- */
 @keyframes nesta-kenburns {
   from {

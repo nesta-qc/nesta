@@ -42,3 +42,8 @@ next-env.d.ts
 
 # python
 __pycache__/
+
+# Données locales — ne jamais committer
+scripts/.profiles_checkpoint.jsonl
+scripts/import.log
+supabase/seed_property_profiles_1.sql
