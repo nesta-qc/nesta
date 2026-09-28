@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Badge, Card } from "@/components/ui";
 import { getDevelopments } from "@/actions/developments";
 import { DevelopmentAlertForm } from "@/components/developments/DevelopmentAlertForm";
+import { ProLeadForm } from "@/components/pro/ProLeadForm";
 import { formatPrice } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -18,9 +19,6 @@ const STATUS_LABELS: Record<string, string> = {
   under_construction: "En construction",
   completed: "Terminé",
 };
-
-/** Courriel de contact NESTA Pro — à confirmer par Gabriel. */
-const PRO_CONTACT_EMAIL = "pro@nesta.ca";
 
 /**
  * Projets neufs : uniquement des développements réels.
@@ -157,20 +155,39 @@ export default async function ProjectsPage() {
             </ul>
           </div>
           <div className="rounded-xl bg-white/5 p-6 sm:p-8">
-            <p className="font-display text-xl">Pilote gratuit de 3 mois</p>
+            <p className="font-display text-xl">Notre offre</p>
             <p className="mt-2 text-sm leading-relaxed text-ivory/70">
-              Ensuite 4 800 $/an par projet, ou 490 $/mois. Sans engagement.
+              Pilote gratuit de 3 mois, sans engagement. Ensuite, vous
+              choisissez :
             </p>
-            <Link
-              href={`mailto:${PRO_CONTACT_EMAIL}?subject=Projet%20NESTA%20Pro%20%E2%80%94%20pilote%20gratuit`}
-              className="mt-6 inline-block rounded-full bg-champagne px-6 py-3 text-sm font-semibold text-charcoal transition-opacity hover:opacity-90"
-            >
-              Proposer votre projet
-            </Link>
-            <p className="mt-3 text-xs text-ivory/50">
-              On s&apos;occupe de tout : il suffit de vos plans et de votre
-              grille de prix.
-            </p>
+            <div className="mt-5 flex flex-col gap-3">
+              <div className="relative rounded-xl border-2 border-champagne/70 bg-champagne/10 p-4">
+                <span className="absolute -top-3 left-4 rounded-full bg-champagne px-3 py-0.5 text-xs font-bold uppercase tracking-wide text-charcoal">
+                  Le plus avantageux
+                </span>
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-sm font-semibold text-ivory">Annuel</p>
+                  <p className="font-display text-xl text-ivory">
+                    4 800 $<span className="text-sm font-normal text-ivory/60">/an par projet</span>
+                  </p>
+                </div>
+                <p className="mt-1 text-xs text-ivory/60">
+                  Soit 400 $/mois — vous économisez 1 080 $ par année.
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/15 p-4">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-sm font-semibold text-ivory/85">Mensuel</p>
+                  <p className="font-display text-xl text-ivory/85">
+                    490 $<span className="text-sm font-normal text-ivory/50">/mois par projet</span>
+                  </p>
+                </div>
+                <p className="mt-1 text-xs text-ivory/50">
+                  Résiliable à tout moment.
+                </p>
+              </div>
+            </div>
+            <ProLeadForm />
           </div>
         </div>
       </section>
