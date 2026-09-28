@@ -180,7 +180,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     <td className="py-2.5 pr-3">{u.orientation ?? "—"}</td>
                     <td className="py-2.5">
                       <Badge
-                        variant={u.status === "AVAILABLE" ? "muted" : "muted"}
+                        variant={u.status === "AVAILABLE" ? "forest" : "muted"}
                       >
                         {UNIT_STATUS_LABELS[u.status] ?? u.status}
                       </Badge>
