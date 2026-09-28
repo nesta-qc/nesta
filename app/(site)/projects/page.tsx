@@ -56,6 +56,12 @@ export default async function ProjectsPage() {
           <p className="mt-4 text-xs text-charcoal/45">
             Un seul courriel par nouveau projet. Désinscription à tout moment.
           </p>
+          <p className="mt-4 border-t border-border pt-4 text-sm text-charcoal/60">
+            Vous êtes promoteur ?{" "}
+            <a href="#pro" className="font-semibold text-forest underline">
+              Soyez le premier projet publié →
+            </a>
+          </p>
         </Card>
       ) : (
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -119,7 +125,7 @@ export default async function ProjectsPage() {
         </div>
       )}
       {/* NESTA Pro — offre promoteurs */}
-      <section className="mt-16 overflow-hidden rounded-2xl bg-forest text-ivory">
+      <section id="pro" className="mt-16 scroll-mt-24 overflow-hidden rounded-2xl bg-forest text-ivory">
         <div className="grid gap-10 p-8 sm:p-12 lg:grid-cols-[1.2fr_1fr] lg:items-center">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-champagne">

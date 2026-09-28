@@ -5,6 +5,7 @@ const columns: { title: string; links: { href: string; label: string }[] }[] = [
     title: "Nesta",
     links: [
       { href: "/a-propos", label: "À propos" },
+      { href: "/tarifs", label: "Tarifs" },
       { href: "/services/demande", label: "Nous joindre" },
       { href: "/favoris", label: "Mes favoris" },
     ],

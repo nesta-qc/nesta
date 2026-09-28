@@ -35,7 +35,7 @@ export const SELLER_PLANS: SellerPlan[] = [
     tagline: "Vendez accompagné, étape par étape.",
     features: [
       "Tout le forfait List",
-      "Visite 3D intégrée",
+      "Visite 3D incluse (produite par notre équipe)",
       "Guide de mise en vente",
       "Support prioritaire",
     ],

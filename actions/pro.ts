@@ -48,7 +48,7 @@ export async function submitProLead(
   if (error) {
     return { ok: false, message: "Envoi impossible pour le moment." };
   }
-  return { ok: true, message: "Demande envoyée. On vous contacte sous 48 h." };
+  return { ok: true, message: "Demande envoyée. Gabriel vous recontacte personnellement sous 48 h." };
 }
 
 /** Demandes entrantes — réservé ADMIN. */
