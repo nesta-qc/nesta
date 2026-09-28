@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Button, EmptyState, FavoriteButton, Input, Modal, Select } from "@/components/ui";
-import { SearchMapDynamic } from "@/components/map/SearchMapDynamic";
+import { GoogleMapEmbed } from "@/components/map/GoogleMapEmbed";
 import type { InvestmentProperty, MarketComparable } from "@/actions/properties";
 import { formatPrice } from "@/lib/format";
 
@@ -191,6 +191,8 @@ export function InvestorView({
     [results],
   );
 
+  const focus = mapped.find((m) => m.id === selectedId) ?? mapped[0] ?? null;
+
   function update<K extends keyof InvestorFilters>(key: K, value: string) {
     setFilters((f) => ({ ...f, [key]: value }));
   }
@@ -256,10 +258,9 @@ export function InvestorView({
       {/* Carte + résultats. */}
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <div className="relative min-h-[320px] flex-1 lg:min-h-0">
-          <SearchMapDynamic
-            properties={mapped}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
+          <GoogleMapEmbed
+            latitude={focus?.latitude ?? 45.5017}
+            longitude={focus?.longitude ?? -73.5673}
           />
         </div>
 
