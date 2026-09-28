@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPropertyProfile } from "@/actions/property-profiles";
 import { Badge } from "@/components/ui";
+import { PropertyMap } from "@/components/properties/PropertyMap";
 import {
   MissingChips,
   PassportSectionCard,
@@ -138,7 +139,21 @@ export default async function ProfilePassportPage({ params }: PageProps) {
       </header>
 
       <div className="mt-10 space-y-6">
-        {/* ---------- 2. Caractéristiques (données ouvertes) ---------- */}
+        {/* ---------- 2. Localisation ---------- */}
+        {p.latitude != null && p.longitude != null ? (
+          <PassportSectionCard
+            title="Localisation"
+            intro="Emplacement approximatif de la propriété, issu des données ouvertes."
+          >
+            <PropertyMap
+              latitude={p.latitude}
+              longitude={p.longitude}
+              address={p.address}
+            />
+          </PassportSectionCard>
+        ) : null}
+
+        {/* ---------- 3. Caractéristiques (données ouvertes) ---------- */}
         <PassportSectionCard
           title="Caractéristiques"
           intro="Données issues des Données ouvertes de la Ville de Montréal. Chaque valeur vient du jeu de données ; un champ absent est marqué « À confirmer », jamais complété."
@@ -146,7 +161,7 @@ export default async function ProfilePassportPage({ params }: PageProps) {
           <SpecsGrid specs={specs} />
         </PassportSectionCard>
 
-        {/* ---------- 3. Données disponibles ---------- */}
+        {/* ---------- 4. Données disponibles ---------- */}
         <PassportSectionCard
           title="Données disponibles"
           intro="Chaque information ci-dessous vient d'une source nommée — rien n'est estimé ni extrapolé."
@@ -190,7 +205,7 @@ export default async function ProfilePassportPage({ params }: PageProps) {
           </div>
         </PassportSectionCard>
 
-        {/* ---------- 4. Informations à confirmer ---------- */}
+        {/* ---------- 5. Informations à confirmer ---------- */}
         <PassportSectionCard
           title="Informations à confirmer"
           intro="Ces informations ne figurent pas dans les données publiques. Avant toute décision, vérifiez-les auprès des sources officielles (ville, registre foncier, professionnel)."
@@ -198,7 +213,7 @@ export default async function ProfilePassportPage({ params }: PageProps) {
           <MissingChips fields={missingFields} />
         </PassportSectionCard>
 
-        {/* ---------- 5. Potentiel du terrain et du bâtiment ---------- */}
+        {/* ---------- 6. Potentiel du terrain et du bâtiment ---------- */}
         <PassportSectionCard
           title="Potentiel du terrain et du bâtiment"
           intro="Hypothèses : seuls les constats ci-dessus, issus des données ouvertes, sont connus. Sans visite, sans vérification au registre foncier et sans le règlement municipal applicable, aucun potentiel de transformation ne peut être affirmé."
@@ -207,7 +222,7 @@ export default async function ProfilePassportPage({ params }: PageProps) {
           <PotentialDisclaimer />
         </PassportSectionCard>
 
-        {/* ---------- 6. Budget indicatif des travaux ---------- */}
+        {/* ---------- 7. Budget indicatif des travaux ---------- */}
         <PassportSectionCard
           title="Budget indicatif des travaux"
           intro="Hypothèses : sans visite, sans plans et sans état des lieux, aucun budget de travaux ne peut être estimé sérieusement. Chaque projet dépend de l'état réel du bâtiment et des exigences municipales."
@@ -224,7 +239,7 @@ export default async function ProfilePassportPage({ params }: PageProps) {
           </p>
         </PassportSectionCard>
 
-        {/* ---------- 7. Scénarios financiers pour un plex ---------- */}
+        {/* ---------- 8. Scénarios financiers pour un plex ---------- */}
         <PassportSectionCard
           title="Scénarios financiers pour un plex"
           intro="Aucune donnée financière (loyers, charges, mise de fonds) n'est disponible pour ce profil dans les données publiques."
@@ -232,7 +247,7 @@ export default async function ProfilePassportPage({ params }: PageProps) {
           <p className="text-[15px] italic text-charcoal/45">À confirmer</p>
         </PassportSectionCard>
 
-        {/* ---------- 8. CTA ---------- */}
+        {/* ---------- 9. CTA ---------- */}
         <ProfileAnalysisCta address={p.address} />
       </div>
     </div>

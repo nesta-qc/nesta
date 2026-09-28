@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Field, Input } from "@/components/ui";
 import { AuthShell } from "./AuthShell";
+import { GoogleAuthButton } from "./GoogleAuthButton";
 import { loginSchema } from "@/lib/auth/schemas";
 import { toFrenchAuthError } from "@/lib/auth/errors";
 import { createClient } from "@/lib/supabase/client";
@@ -76,6 +77,17 @@ export function LoginForm({ linkError = false }: { linkError?: boolean }) {
       title="Connexion"
       subtitle="Ravi de te revoir sur Nesta."
     >
+      <div className="flex flex-col gap-4">
+        <GoogleAuthButton mode="login" />
+        <div
+          aria-hidden="true"
+          className="flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-charcoal/40"
+        >
+          <span className="h-px flex-1 bg-charcoal/15" />
+          <span>ou</span>
+          <span className="h-px flex-1 bg-charcoal/15" />
+        </div>
+      </div>
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <Field
           label="Courriel"

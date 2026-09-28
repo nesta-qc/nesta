@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
-import { updateProfileSchema } from "@/lib/auth/schemas";
+import { updateProfileSchema, resetPasswordSchema } from "@/lib/auth/schemas";
 
 /*
  * Actions serveur d'authentification NESTA.
@@ -80,6 +80,59 @@ export async function updateProfileAction(
       avatar_url: emptyToNull(parsed.data.avatarUrl),
     })
     .eq("id", user.id);
+
+  if (error) {
+    return {
+      ok: false,
+      error: "La mise à jour a échoué. Réessaie dans un moment.",
+    };
+  }
+
+  revalidatePath("/profil");
+  return { ok: true };
+}
+
+/**
+ * Changement de mot de passe depuis l'espace compte.
+ * Réservé à l'utilisateur connecté : Supabase Auth met à jour le
+ * mot de passe de la session active (aucun admin requis).
+ */
+export async function updatePasswordAction(
+  _prevState: ProfileState,
+  formData: FormData,
+): Promise<ProfileState> {
+  if (!hasSupabaseConfig()) {
+    return {
+      ok: false,
+      error: "Configuration Supabase manquante — voir SETUP.md.",
+    };
+  }
+
+  const parsed = resetPasswordSchema.safeParse({
+    password: formData.get("password"),
+    confirm: formData.get("confirm"),
+  });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error:
+        parsed.error.issues[0]?.message ?? "Les données fournies sont invalides.",
+    };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/connexion");
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: parsed.data.password,
+  });
 
   if (error) {
     return {

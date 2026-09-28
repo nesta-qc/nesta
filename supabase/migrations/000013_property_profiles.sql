@@ -41,6 +41,12 @@ create table public.property_profiles (
   property_category text,
   data_source text not null default 'Ville de Montréal — Données ouvertes',
   source_url text,
+  -- Photo de rue réelle (Mapillary / KartaView, CC BY-SA 4.0).
+  -- Vue de la rue à titre indicatif — jamais une photo officielle du bien.
+  street_photo_url text,
+  street_photo_taken_at timestamptz,
+  street_photo_author text,
+  street_photo_source text,
   created_at timestamptz not null default now()
 );
 

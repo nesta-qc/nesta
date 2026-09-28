@@ -6,6 +6,7 @@ import { hasSupabaseConfig } from "@/lib/env";
 import { ROLE_LABELS } from "@/lib/auth/schemas";
 import { AuthUnavailable } from "@/components/auth/AuthUnavailable";
 import { ProfileForm } from "@/components/auth/ProfileForm";
+import { PasswordChangeForm } from "@/components/auth/PasswordChangeForm";
 import { Badge, Card, Container } from "@/components/ui";
 
 export const metadata: Metadata = {
@@ -107,6 +108,19 @@ export default async function ProfilPage() {
               initialPhone={phone}
               initialAvatarUrl={avatarUrl}
             />
+          </div>
+        </Card>
+
+        {/* Changement de mot de passe. */}
+        <Card className="p-6">
+          <h2 className="font-display text-xl text-charcoal">Mot de passe</h2>
+          <p className="mt-1 text-sm text-charcoal/60">
+            Choisis un nouveau mot de passe pour ton compte. Si tu t'es inscrit
+            avec Google, définir un mot de passe te permettra aussi de te
+            connecter avec ton courriel.
+          </p>
+          <div className="mt-6">
+            <PasswordChangeForm />
           </div>
         </Card>
       </div>

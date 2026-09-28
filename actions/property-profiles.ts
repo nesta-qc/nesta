@@ -30,6 +30,10 @@ export interface PropertyProfileRow {
   property_category: string | null;
   data_source: string;
   source_url: string | null;
+  street_photo_url: string | null;
+  street_photo_taken_at: string | null;
+  street_photo_author: string | null;
+  street_photo_source: string | null;
   created_at: string;
 }
 
@@ -40,7 +44,7 @@ export interface AddressSuggestion {
 }
 
 const PROFILE_COLUMNS =
-  "id, address, borough, city, latitude, longitude, lot_area_sqm, construction_year, assessment_land, assessment_building, assessment_total, assessment_year, property_category, data_source, source_url, created_at";
+  "id, address, borough, city, latitude, longitude, lot_area_sqm, construction_year, assessment_land, assessment_building, assessment_total, assessment_year, property_category, data_source, source_url, street_photo_url, street_photo_taken_at, street_photo_author, street_photo_source, created_at";
 
 function toNumber(value: unknown): number | null {
   if (value === null || value === undefined) return null;
@@ -74,6 +78,10 @@ function toRow(raw: Record<string, unknown>): PropertyProfileRow | null {
     property_category: toText(raw.property_category),
     data_source: toText(raw.data_source) ?? "Ville de Montréal — Données ouvertes",
     source_url: toText(raw.source_url),
+    street_photo_url: toText(raw.street_photo_url),
+    street_photo_taken_at: toText(raw.street_photo_taken_at),
+    street_photo_author: toText(raw.street_photo_author),
+    street_photo_source: toText(raw.street_photo_source),
     created_at: toText(raw.created_at) ?? "",
   };
 }

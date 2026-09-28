@@ -40,8 +40,10 @@ Notes d'accès (découvertes le 2026-09-27) :
 """
 
 import argparse
+import datetime
 import http.client
 import json
+import math
 import os
 import random
 import re
@@ -208,13 +210,54 @@ def norm(s):
     return re.sub(r"\s+", " ", s)
 
 
+# (en majuscules : comparés à norm(), qui met en majuscules sans accents)
+GENERIC_WORDS = {
+    "RUE", "AVENUE", "BOULEVARD", "CHEMIN", "PLACE", "TERRASSE", "ALLEE",
+    "IMPASSE", "COTE", "RANG", "MONTEE", "ROUTE", "QUAI", "PARC", "COURS",
+    "CERCLE", "CARREFOUR", "JARDIN", "CROISSANT", "PASSAGE", "SENTIER", "VOIE",
+}
+# Génériques « majeurs » : quand ils ferment le nom et que le 1er mot n'est
+# pas une particule, le nom porte déjà son générique (« 40E AVENUE »).
+MAJOR_GENERIC = {"AVENUE", "BOULEVARD"}
+PARTICLES = {"DE", "DU", "DES", "D", "L", "LE", "LA", "LES",
+             "AU", "AUX", "EN", "SUR", "SOUS"}
+
+
+def street_label(civ, rue, generic, orient=""):
+    """'9199' + '13E AVENUE' + '' -> '9199, 13e Avenue' (pas 'rue 13E Avenue').
+
+    Le nom de rue des taxes contient parfois déjà le générique
+    (ex. GENER='' et RUE='40E AVENUE') : on ne le préfixe pas deux fois.
+    Le code GENER explicite prime en cas d'ambiguïté (« DU PARC » + 'rue'
+    -> « rue du Parc », pas « du Parc »).
+    """
+    tokens = norm(rue).split()
+    embedded = bool(tokens) and (
+        tokens[0] in GENERIC_WORDS
+        or (tokens[-1] in MAJOR_GENERIC and tokens[0] not in PARTICLES)
+    )
+    if embedded:
+        name = title_fr(rue)
+    elif generic:
+        name = f"{generic} {title_fr(rue)}"
+    else:
+        name = title_fr(rue)
+    if orient:
+        name += f" {ORIENT_MAP.get(orient, orient)}"
+    return f"{civ}, {name}"
+
+
 def title_fr(s):
     """'SAINT-DOMINIQUE' -> 'Saint-Dominique', 'DE BORDEAUX' -> 'de Bordeaux'.
 
     Les particules françaises restent en minuscules (usage typographique).
     """
     t = s.strip().title()
-    t = t.replace(" D'", " d'").replace(" L'", " l'")
+    # « 13E AVENUE ».title() donne « 13E Avenue » : le « E » ordinal
+    # après un chiffre se met en minuscule (« 13e Avenue »).
+    t = re.sub(r"(?<=\d)([A-Z])", lambda m: m.group(1).lower(), t)
+    t = re.sub(r"\bD'", "d'", t).replace(" L'", " l'")
+    t = re.sub(r"\bL'", "l'", t)
     t = re.sub(r"\bDe\b", "de", t)
     t = re.sub(r"\bDu\b", "du", t)
     t = re.sub(r"\bDes\b", "des", t)
@@ -390,11 +433,11 @@ def nominatim_coords(address_label):
     params = {"q": address_label, "format": "json", "limit": 1}
     url = NOMINATIM_URL + "?" + urllib.parse.urlencode(params)
     last = None
-    for i in range(5):
+    for i in range(3):
         try:
             p = subprocess.run(
-                ["curl", "-s", "-m", "60", "-A", NOMINATIM_UA, url],
-                capture_output=True, timeout=75)
+                ["curl", "-s", "-m", "25", "-A", NOMINATIM_UA, url],
+                capture_output=True, timeout=40)
             if p.returncode != 0:
                 raise ConnectionError(f"curl exit {p.returncode}")
             data = json.loads(p.stdout.decode("utf-8"))
@@ -407,6 +450,93 @@ def nominatim_coords(address_label):
             time.sleep(3 * (i + 1))
     print(f"  [nominatim] échec pour {address_label!r} : {last}")
     return None
+
+# ----------------------------------------------------------------------------
+# Photos de rue (Mapillary — images réelles CC BY-SA 4.0)
+# ----------------------------------------------------------------------------
+# Présentées comme « vue de la rue » à titre indicatif, jamais comme
+# photo officielle du bien. Token via env MAPILLARY_TOKEN (serveur
+# uniquement, jamais exposé au navigateur). Sans token ou sans image
+# dans un rayon de 50 m -> champs NULL (état vide honnête).
+
+MAPILLARY_TOKEN = os.environ.get("MAPILLARY_TOKEN") or ""
+MAPILLARY_URL = "https://graph.mapillary.com/images"
+PHOTO_PAUSE = 0.6
+_last_photo = [0.0]
+UA_PHOTO = "nesta-import/1.0"
+
+
+def _photo_get(url):
+    wait = PHOTO_PAUSE - (time.time() - _last_photo[0])
+    if wait > 0:
+        time.sleep(wait)
+    last = None
+    for i in range(3):
+        try:
+            p = subprocess.run(
+                ["curl", "-s", "-m", "25", "-A", UA_PHOTO, url],
+                capture_output=True, timeout=40)
+            if p.returncode != 0:
+                raise ConnectionError(f"curl exit {p.returncode}")
+            data = json.loads(p.stdout.decode("utf-8"))
+            _last_photo[0] = time.time()
+            return data
+        except Exception as e:
+            last = e
+            time.sleep(2 * (i + 1))
+    print(f"  [photo] échec : {url[:60]}… : {last}")
+    return None
+
+
+def _bearing(lat1, lon1, lat2, lon2):
+    """Cap initial (degrés) du point 1 vers le point 2."""
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dp = math.radians(lon2 - lon1)
+    x = math.sin(dp) * math.cos(p2)
+    y = (math.cos(p1) * math.sin(p2)
+         - math.sin(p1) * math.cos(p2) * math.cos(dp))
+    return (math.degrees(math.atan2(x, y)) + 360) % 360
+
+
+def resolve_street_photo(lat, lon):
+    """Meilleure image Mapillary ≤ 50 m : récente et face à l'adresse.
+    Retourne dict(url, taken_at, author, source) ou None."""
+    if lat is None or lon is None or not MAPILLARY_TOKEN:
+        return None
+    params = {
+        "access_token": MAPILLARY_TOKEN,
+        "fields": "id,geometry,captured_at,compass_angle,thumb_1024_url,creator",
+        "lat": lat, "lng": lon, "radius": 50, "limit": 10,
+    }
+    data = _photo_get(MAPILLARY_URL + "?" + urllib.parse.urlencode(params))
+    items = (data or {}).get("data") or []
+    cands = []
+    for img in items:
+        try:
+            coords = (img.get("geometry") or {}).get("coordinates") or []
+            ilon, ilat = float(coords[0]), float(coords[1])
+            cap = float(img.get("compass_angle") or 0)
+            want = _bearing(ilat, ilon, lat, lon)
+            diff = abs((cap - want + 180) % 360 - 180)
+            taken_ms = int(img.get("captured_at") or 0)
+            creator = img.get("creator")
+            author = (creator.get("username") if isinstance(creator, dict)
+                      else creator)
+            url = img.get("thumb_1024_url")
+            if not url:
+                continue
+            taken_iso = (datetime.datetime.fromtimestamp(
+                taken_ms / 1000, tz=datetime.timezone.utc
+            ).strftime("%Y-%m-%dT%H:%M:%SZ") if taken_ms else None)
+            cands.append((diff, -taken_ms, url, taken_iso, author))
+        except (TypeError, ValueError, IndexError):
+            continue
+    if not cands:
+        return None
+    cands.sort(key=lambda c: (c[0], c[1]))
+    _, _, url, taken_iso, author = cands[0]
+    return {"url": url, "taken_at": taken_iso, "author": author,
+            "source": "mapillary"}
 
 # ----------------------------------------------------------------------------
 # Échantillonnage des adresses fiscales par arrondissement
@@ -435,14 +565,14 @@ def sample_tax_addresses(name, rid, per_borough, seed_offset):
         off = rng.randrange(total)
         r = ds_search(rid, limit=TAX_SAMPLE_LIMIT, offset=off, fields=fields)
         for row in r["records"]:
-            civ1 = (row.get("AD_EMPLAC_CIV1") or "").strip()
-            rue = (row.get("AD_EMPLAC_RUE") or "").strip()
+            civ1 = txt(row.get("AD_EMPLAC_CIV1"))
+            rue = txt(row.get("AD_EMPLAC_RUE"))
             if not civ1.isdigit() or not rue:
                 continue
             key = (civ1,
-                   (row.get("AD_EMPLAC_GENER") or "").strip(),
+                   txt(row.get("AD_EMPLAC_GENER")),
                    rue,
-                   (row.get("AD_EMPLAC_ORIENT") or "").strip())
+                   txt(row.get("AD_EMPLAC_ORIENT")))
             STATS["gener_vocab"].add(key[1])
             groups.setdefault(key, []).append(row)
     # Déduplique : une ligne par adresse -> année max, ligne « TAXE GÉNÉRALE » préférée.
@@ -456,7 +586,7 @@ def sample_tax_addresses(name, rid, per_borough, seed_offset):
             STATS["inconsistent_tax_values"] += 1
         civ1, gener, rue, orient = key
         pool.append({
-            "civ": int(civ1), "civ2": (rows[0].get("AD_EMPLAC_CIV2") or "").strip(),
+            "civ": int(civ1), "civ2": txt(rows[0].get("AD_EMPLAC_CIV2")),
             "gener": gener, "rue": rue, "orient": orient,
             "valeur": chosen.get("VAL_IMPOSABLE"), "annee": year,
         })
@@ -469,6 +599,13 @@ def sample_tax_addresses(name, rid, per_borough, seed_offset):
 # ----------------------------------------------------------------------------
 # Enrichissement
 # ----------------------------------------------------------------------------
+
+def txt(v):
+    # Les champs numériques (n° civique) arrivent parfois en int depuis CKAN.
+    if v is None or isinstance(v, bool):
+        return ""
+    return str(v).strip()
+
 
 def to_int(s):
     # ANNEE_EXERCICE arrive parfois en int, parfois en str selon le jeu.
@@ -497,6 +634,10 @@ def to_float(s):
 
 def enrich(addr, borough):
     civ, rue, orient = addr["civ"], addr["rue"], addr["orient"]
+    # Le rôle foncier ajoute parfois une annotation entre parenthèses au nom
+    # de rue (« CHARLEVOIX (0880) ») : ce n'est pas l'adresse civique,
+    # on la retire (normalisation, pas d'invention).
+    rue = re.sub(r"\s*\([^)]*\)", "", rue).strip()
     orient_letter = orient if orient in "EONS" else ("X" if not orient else orient)
 
     uev = eval_lookup(civ, rue, orient, addr["gener"])
@@ -525,17 +666,19 @@ def enrich(addr, borough):
         generic = generic or used_generic
     else:
         generic = generic or GENERIC_MAP.get(addr["gener"])
-        label = f"{civ}, {generic + ' ' if generic else ''}{title_fr(rue)}" \
-                f"{' ' + ORIENT_MAP.get(orient, '') if orient else ''}, Montréal, QC, Canada"
+        label = (street_label(civ, rue, generic or "",
+                              orient if orient else "")
+                 + ", Montréal, QC, Canada")
         hit = nominatim_coords(label)
         if hit:
             lon, lat = hit
             method = "nominatim"
 
     generic = generic or GENERIC_MAP.get(addr["gener"], "")
-    display = f"{civ}, {generic + ' ' if generic else ''}{title_fr(rue)}"
-    if orient:
-        display += f" {ORIENT_MAP.get(orient, orient)}"
+    display = street_label(civ, rue, generic, orient if orient else "")
+
+    # Photo de rue réelle (Mapillary) — NULL si indisponible, jamais inventée.
+    photo = resolve_street_photo(lat, lon) if lat is not None else None
 
     return {
         "address": display.strip(),
@@ -552,6 +695,10 @@ def enrich(addr, borough):
         "property_category": category,
         "data_source": DATA_SOURCE,
         "source_url": SOURCE_URL,
+        "street_photo_url": photo["url"] if photo else None,
+        "street_photo_taken_at": photo["taken_at"] if photo else None,
+        "street_photo_author": photo["author"] if photo else None,
+        "street_photo_source": photo["source"] if photo else None,
         "_coord_method": method,
     }
 
@@ -562,7 +709,9 @@ def enrich(addr, borough):
 COLUMNS = ["address", "borough", "city", "latitude", "longitude",
            "lot_area_sqm", "construction_year", "assessment_land",
            "assessment_building", "assessment_total", "assessment_year",
-           "property_category", "data_source", "source_url"]
+           "property_category", "data_source", "source_url",
+           "street_photo_url", "street_photo_taken_at", "street_photo_author",
+           "street_photo_source"]
 
 
 def sql_lit(v):
@@ -590,7 +739,7 @@ def write_seeds(profiles):
     )
     chunks, current, size = [], [], 0
     for p in profiles:
-        vals = ", ".join(sql_lit(p[c]) for c in COLUMNS)
+        vals = ", ".join(sql_lit(p.get(c)) for c in COLUMNS)
         line = (f"INSERT INTO public.property_profiles ({', '.join(COLUMNS)})\n"
                 f"VALUES ({vals});\n")
         if size + len(line.encode("utf-8")) > 480_000 and current:
@@ -654,6 +803,23 @@ def main():
         print(f"reprise : {len(done)} profils déjà faits "
               f"({', '.join(sorted(done_boroughs))})")
 
+    # Rattrapage photos : les profils du checkpoint antérieurs à la
+    # fonction photo n'ont pas les clés street_photo_* — on les remplit.
+    need_photo = [p for p in done if "street_photo_url" not in p]
+    if need_photo:
+        print(f"rattrapage photos : {len(need_photo)} profils", flush=True)
+        for p in need_photo:
+            photo = resolve_street_photo(p.get("latitude"),
+                                         p.get("longitude"))
+            p["street_photo_url"] = photo["url"] if photo else None
+            p["street_photo_taken_at"] = (photo["taken_at"]
+                                          if photo else None)
+            p["street_photo_author"] = photo["author"] if photo else None
+            p["street_photo_source"] = photo["source"] if photo else None
+        os.remove(CHECKPOINT)
+        save_checkpoint(done)
+        print(f"  checkpoint réécrit : {len(done)} profils", flush=True)
+
     print("== 1/2 Échantillonnage + enrichissement ==", flush=True)
     profiles = list(done)
     for i, (name, rid) in enumerate(boroughs):
@@ -687,6 +853,8 @@ def main():
                 nulls[c] += 1
     print("Par arrondissement :", by_borough)
     print("Coordonnées par méthode :", by_method)
+    print("Photos de rue trouvées :",
+          sum(1 for p in profiles if p.get("street_photo_url")))
     print("Champs NULL :", {k: v for k, v in nulls.items() if v})
     print("Codes générique (taxes) observés :", sorted(STATS["gener_vocab"]))
     print("Replis q (2e variante) :", STATS["q_fallback"])

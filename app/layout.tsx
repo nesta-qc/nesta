@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { Splash } from "@/components/Splash";
 import "./globals.css";
 
 /* Serif éditorial pour les titres — repli Georgia si le chargement échoue. */
@@ -44,7 +45,10 @@ export default function RootLayout({
       lang="fr"
       className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full font-sans">{children}</body>
+      <body className="min-h-full font-sans">
+        <Splash />
+        {children}
+      </body>
     </html>
   );
 }
