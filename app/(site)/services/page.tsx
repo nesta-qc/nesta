@@ -6,7 +6,7 @@ import { NESTA_SERVICES } from "@/lib/services";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Estimation de construction, dessin Revit/BIM et modélisation 3D. Demandez un devis.",
+    "Estimation de construction, dessin Revit et modélisation 3D. Demandez un devis.",
 };
 
 /** Services professionnels : catalogue, devis, suivi. */
@@ -70,7 +70,9 @@ export default function ServicesPage() {
               <div className="mt-auto pt-8">
                 <p className="font-display text-xl text-forest">
                   {s.startingPrice !== null
-                    ? `À partir de ${s.startingPrice} $`
+                    ? s.priceUnit === "h"
+                      ? `${s.startingPrice} $/h`
+                      : `À partir de ${s.startingPrice} $`
                     : "Sur devis"}
                 </p>
                 <Link

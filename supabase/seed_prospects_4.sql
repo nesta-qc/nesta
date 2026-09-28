@@ -1,0 +1,35 @@
+-- NESTA — alimentation prospection, vague 4 : Île de Montréal, 2e série (2026-09-28).
+-- 20 promoteurs vérifiés par recherche web (sites officiels des projets/promoteurs).
+-- Île de Montréal uniquement. Contacts PUBLICS uniquement. Aucun promoteur contacté à ce stade.
+-- ATTENTION : la table n'a pas de contrainte d'unicité — vérifier le compte
+-- avant exécution (select count(*) from public.prospects) pour éviter les doublons.
+-- RÉSERVES : Devauban/Le Lomboi (site officiel injoignable à la vérification),
+-- Axxys/Charlotte (promoteur corroboré par sources tierces, non visible sur site officiel).
+
+insert into public.prospects
+  (company_name, contact_name, email, phone, website, project_name, project_location, project_type, status, source, notes)
+values
+  -- Plateau / Rosemont / Hochelaga / Sud-Ouest
+  ('Groupe Calex', null, 'INFO@GROUPECALEX.COM', '450 326-5505', 'https://groupecalex.com/', 'Phoenix Beaubien', 'Rosemont–La Petite-Patrie', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Prévente, studio dès 337 500 $, garantie GCR. Vérifié sur groupecalex.com.'),
+  ('Groupe ECG', null, 'info@groupeecg.com', '450-712-9908', 'https://groupeecg.com', 'Le Rosemont', 'Rosemont–La Petite-Patrie, 2651 rue Beaubien Est', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Onglet À VENDRE sur le site officiel, 6 condos dès 453 750 $. Vérifié sur groupeecg.com.'),
+  ('Développement Vivenda L''Assomption inc.', 'Bureau des ventes', null, '514-475-2228', 'https://lesloges.ca/', 'Les Loges', 'Hochelaga-Maisonneuve, métro L''Assomption', 'Condos', 'a_contacter', 'Recherche web sept. 2026', '308 unités en 3 phases, phase 2 livrée été 2026, dès 255 000 $ + taxes. Téléphone du profil public du projet — à reconfirmer. Vérifié sur lesloges.ca.'),
+  ('Société de développement Angus', null, 'info@sda-angus.com', '514-528-5230', 'https://sda-angus.com', 'Cité Angus II', 'Technopôle Angus, Rosemont–La Petite-Patrie', 'Condos', 'a_contacter', 'Recherche web sept. 2026', '88 unités, quelques-unes encore disponibles, dès ~267 421 $. Vérifié sur technopoleangus.com.'),
+  ('Devauban', null, null, '514-992-7822', 'https://lomboi.ca/', 'Le Lomboi', 'Rosemont–La Petite-Patrie, 2335 rue Saint-Zotique Est', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'RÉSERVE : site officiel injoignable à la vérification — reconfirmer avant usage. 17 condos, dès 447 000 $ (Guide Immo).'),
+  -- Saint-Laurent / Ahuntsic / Est de l'île
+  ('Développement Signature', null, null, '514-419-9933', 'https://signatureboisfranc.com/condos-a-vendre-saint-laurent/', 'Signature Bois-Franc', 'Saint-Laurent, Bois-Franc', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Inventaire neuf affiché. Vérifié sur signatureboisfranc.com.'),
+  ('Groupe Vistacorp', null, 'Info@axestlaurent.com', '514-612-0663', 'https://www.groupevistacorp.com/', 'Axe St-Laurent 3', 'Ahuntsic, boul. Saint-Laurent', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Phase 3 en vente, dès 398 000 $, livraison mars 2027. Vérifié sur axestlaurent.com.'),
+  ('Groupe Montclair', 'David', 'david@groupemontclair.com', '514-908-8603', 'https://aura.boisfranc.com/', 'Aura sur le Square', 'Saint-Laurent, Bois-Franc', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Phase 2 à l''achat, dès 400 900 $, bureau des ventes 5350 boul. Henri-Bourassa O. Vérifié sur aura.boisfranc.com.'),
+  ('DOMO Group', 'Giovanni Frenda ; Joe Magri', 'giovanni.frenda@remax-quebec.com', '514-467-7369', 'https://www.groupedomo.com/', 'Lajeunesse sur le Parc', 'Ahuntsic-Cartierville, 10490 rue Lajeunesse', 'Condos', 'a_contacter', 'Recherche web sept. 2026', '25 condos, 7 unités disponibles. Entité distincte d''Omnia. Vérifié sur groupedomo.com.'),
+  ('Groupe Magri', null, 'info@groupe-magri.com', '514.303.0841', 'http://citecentrale.ca', 'Cité Centrale – Phase 4', 'Saint-Léonard, rue Jarry', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Prêts à habiter, dès 319 275 $, bureau des ventes ouvert. Vérifié sur citecentrale.ca.'),
+  -- CDN-NDG / Westmount / Verdun / LaSalle / Outremont / Mont-Royal
+  ('Demonfort', 'Sabine Karsenti, directrice des ventes', 'sabine.karsenti@outlook.com', '514-823-9286', 'https://perspectives-bates.com', 'Perspectives Bates', 'Jonction Ville de Mont-Royal–Outremont', 'Copropriétés', 'a_contacter', 'Recherche web sept. 2026', 'Prise de rendez-vous active. Vérifié sur perspectives-bates.com.'),
+  ('Solna Développement', null, 'info@lelesage.com', '514-348-1331', 'https://lelesage.com', 'Le Lesage', 'Verdun, 3912–3914 rue Lesage', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Dernières unités disponibles, 309 000 $ à 579 000 $ + taxes. Vérifié sur lelesage.com.'),
+  ('Axeo Immobilier', null, null, null, 'https://flemingcondos.com', 'Fleming sur le Parc', 'LaSalle, quartier Angrignon', 'Condos + penthouses', 'a_contacter', 'Recherche web sept. 2026', 'Prix affichés, occupation immédiate. Promoteur confirmé (répertoire + Agora). Vérifié sur flemingcondos.com.'),
+  ('Développements Symphonia', null, 'reception@symphoniaviu.com', '514-767-4555', 'https://symphoniaviu.com', 'Symphonia VIU', 'Île-des-Sœurs, Verdun', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Pavillon de présentation actif. Vérifié sur symphoniaviu.com.'),
+  ('Groupe Melatti', null, 'info@gmelatti.ca', '(514) 364-1114', 'https://fr.gmelatti.ca', 'Les Condos Satori', 'LaSalle, 7777 boul. Newman', 'Condos', 'a_contacter', 'Recherche web sept. 2026', '250 unités, statut En Cours. Vérifié sur fr.gmelatti.ca.'),
+  -- Ville-Marie (centre-ville, Vieux-Montréal, Griffintown)
+  ('Broccolini', null, null, '438-802-8650', 'http://www.lesherbrooke.com/fr', 'Le Sherbrooke', 'Mille carré doré, Ville-Marie', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Neufs commercialisés en plein Mille carré doré. Vérifié sur lesherbrooke.com.'),
+  ('Groupe EMD-Batimo', null, null, '438-858-4050', 'https://www.1111atwater.com/fr/le-projet', '1111 Atwater', '1111 avenue Atwater, Ville-Marie', 'Penthouses (condos)', 'a_contacter', 'Recherche web sept. 2026', 'Penthouses de luxe à vendre, 30e au 38e étage. Vérifié sur 1111atwater.com.'),
+  ('Groupe Brivia', null, 'info@yulcentreville.com', '514-903-8989', 'https://yulcentreville.com/', 'YUL Centre-ville', 'Centre-ville, Ville-Marie', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'Occupation immédiate, prix et disponibilités affichés. Vérifié sur yulcentreville.com.'),
+  ('Solano', 'Anais Veilleux', 'info@lesolano.com', '514-840-9222', 'https://www.lesolano.com/accueil', 'Le Solano – Phase 8', 'Vieux-Montréal', 'Condos, lofts, penthouses', 'a_contacter', 'Recherche web sept. 2026', 'Quelques condos en occupation immédiate. Vérifié sur lesolano.com.'),
+  ('Axxys', 'Eric Azoulay', null, '514-931-8886', 'http://www.charlottegriffintown.com/', 'Charlotte Condos', 'Griffintown', 'Condos', 'a_contacter', 'Recherche web sept. 2026', 'RÉSERVE : attribution du promoteur corroborée par sources tierces, non visible sur site officiel. Occupation immédiate. Vérifié sur charlottegriffintown.com.');

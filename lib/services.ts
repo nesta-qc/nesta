@@ -12,6 +12,8 @@ export interface NestaService {
   deliverable: string;
   /** Prix de départ en $ CA, ou null = sur devis. */
   startingPrice: number | null;
+  /** "h" = tarif horaire (affiche « 35 $/h »), sinon « À partir de X $ ». */
+  priceUnit?: "h";
   cta: string;
 }
 
@@ -32,7 +34,7 @@ export const NESTA_SERVICES: NestaService[] = [
   },
   {
     id: "dessin-revit",
-    name: "Dessin Revit / BIM",
+    name: "Dessin Revit",
     tagline: "Des plans propres, prêts pour l'exécution.",
     scope: [
       "Modélisation 3D à partir de plans ou de relevés",
@@ -41,7 +43,8 @@ export const NESTA_SERVICES: NestaService[] = [
       "Fichiers sources fournis",
     ],
     deliverable: "Maquette Revit + plans en PDF",
-    startingPrice: null,
+    startingPrice: 35,
+    priceUnit: "h",
     cta: "Demander un dessin",
   },
   {
@@ -55,7 +58,7 @@ export const NESTA_SERVICES: NestaService[] = [
       "Ajustements de matériaux et de finis",
     ],
     deliverable: "Rendus HD + lien de visite virtuelle",
-    startingPrice: null,
+    startingPrice: 299,
     cta: "Demander une modélisation",
   },
 ];
