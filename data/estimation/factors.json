@@ -1,0 +1,279 @@
+{
+  "version": "2026-09-27",
+  "fourchette_pct": 12,
+  "seuil_condo_m2": 150,
+  "regle": "estimation = valeur_au_role * facteur(arrondissement|ville, categorie); fourchette ±12 %; condo < 150 m2 -> facteur condo sinon maison; valeur indicative, jamais une evaluation agreee.",
+  "villes": {
+    "montreal": {
+      "nom": "Montréal",
+      "millesime_role": "2026-2027-2028",
+      "date_reference_marche_role": "2024-07-01",
+      "granularite_facteurs": "arrondissement",
+      "facteurs_par_arrondissement": {
+        "Ahuntsic-Cartierville": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Anjou": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Côte-des-Neiges-Notre-Dame-de-Grâce": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.09,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "L'Île-Bizard-Sainte-Geneviève": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "LaSalle": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Lachine": {
+          "commercial": 1.05,
+          "condo": 1.03,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Le Plateau-Mont-Royal": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Le Sud-Ouest": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.25,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Mercier-Hochelaga-Maisonneuve": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Montréal-Nord": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.06,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Outremont": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.05,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Pierrefonds-Roxboro": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Rivière-des-Prairies-Pointe-aux-Trembles": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Rosemont-La Petite-Patrie": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Saint-Laurent": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.21,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Saint-Léonard": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Verdun": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Ville-Marie": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        },
+        "Villeray-Saint-Michel-Parc-Extension": {
+          "commercial": 1.05,
+          "condo": 1.06,
+          "maison": 1.22,
+          "multi": 1.1,
+          "plex": 1.1,
+          "terrain": 1.05
+        }
+      },
+      "boroughs_bidx": [
+        "LaSalle",
+        "Villeray-Saint-Michel-Parc-Extension",
+        "Rosemont-La Petite-Patrie",
+        "Le Plateau-Mont-Royal",
+        "Côte-des-Neiges-Notre-Dame-de-Grâce",
+        "L'Île-Bizard-Sainte-Geneviève",
+        "Anjou",
+        "Verdun",
+        "Le Sud-Ouest",
+        "Mercier-Hochelaga-Maisonneuve",
+        "Lachine",
+        "Saint-Léonard",
+        "Montréal-Nord",
+        "Outremont",
+        "Pierrefonds-Roxboro",
+        "Rivière-des-Prairies-Pointe-aux-Trembles",
+        "Ahuntsic-Cartierville",
+        "Saint-Laurent",
+        "Ville-Marie"
+      ]
+    },
+    "quebec": {
+      "nom": "Québec",
+      "code_geo": "23027",
+      "millesime_role": "2025",
+      "date_reference_marche_role": "2023-07-01",
+      "granularite_facteurs": "ville",
+      "facteurs": {
+        "maison": 1.35,
+        "condo": 1.36,
+        "plex": 1.27,
+        "multi": 1.1,
+        "terrain": 1.05,
+        "commercial": 1.05
+      }
+    },
+    "levis": {
+      "nom": "Lévis",
+      "code_geo": "25213",
+      "millesime_role": "2026",
+      "date_reference_marche_role": "2024-07-01",
+      "granularite_facteurs": "ville",
+      "facteurs": {
+        "maison": 1.2,
+        "condo": 1.31,
+        "plex": 1.1,
+        "multi": 1.1,
+        "terrain": 1.05,
+        "commercial": 1.05
+      }
+    },
+    "gatineau": {
+      "nom": "Gatineau",
+      "code_geo": "81017",
+      "millesime_role": "2024",
+      "date_reference_marche_role": "2022-07-01",
+      "granularite_facteurs": "ville",
+      "facteurs": {
+        "maison": 1.13,
+        "condo": 1.01,
+        "plex": 1.16,
+        "multi": 1.1,
+        "terrain": 1.05,
+        "commercial": 1.05
+      }
+    },
+    "laval": {
+      "nom": "Laval",
+      "code_geo": "65005",
+      "millesime_role": "2025",
+      "date_reference_marche_role": "2023-07-01",
+      "granularite_facteurs": "ville",
+      "facteurs": {
+        "maison": 1.13,
+        "condo": 1.11,
+        "plex": 1.15,
+        "multi": 1.1,
+        "terrain": 1.05,
+        "commercial": 1.05
+      }
+    },
+    "longueuil": {
+      "nom": "Longueuil",
+      "code_geo": "58227",
+      "millesime_role": "2025",
+      "date_reference_marche_role": "2023-07-01",
+      "granularite_facteurs": "ville",
+      "facteurs": {
+        "maison": 1.25,
+        "condo": 1.18,
+        "plex": 1.16,
+        "multi": 1.1,
+        "terrain": 1.05,
+        "commercial": 1.05
+      }
+    },
+    "brossard": {
+      "nom": "Brossard",
+      "code_geo": "58007",
+      "millesime_role": "2025",
+      "date_reference_marche_role": "2023-07-01",
+      "granularite_facteurs": "ville",
+      "facteurs": {
+        "maison": 1.28,
+        "condo": 1.05,
+        "plex": 1.07,
+        "multi": 1.1,
+        "terrain": 1.05,
+        "commercial": 1.05
+      }
+    }
+  }
+}

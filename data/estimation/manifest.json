@@ -1,0 +1,56 @@
+{
+  "source": "MAMH — Rôle d'évaluation foncière du Québec (Données Québec), licence CC-BY 4.0",
+  "derniere_verification": "2026-09-27",
+  "verification": "mensuelle (pipeline externe)",
+  "villes": {
+    "montreal": {
+      "nom": "Montréal",
+      "nb_cles": 731172,
+      "nb_enregistrements": 424440,
+      "millesime_role": "2026-2027-2028",
+      "fichier": "index-montreal.json.gz"
+    },
+    "quebec": {
+      "nom": "Québec",
+      "nb_cles": 222379,
+      "nb_enregistrements": 166912,
+      "millesime_role": "2025",
+      "fichier": "index-quebec.json.gz"
+    },
+    "levis": {
+      "nom": "Lévis",
+      "nb_cles": 63888,
+      "nb_enregistrements": 54371,
+      "millesime_role": "2026",
+      "fichier": "index-levis.json.gz"
+    },
+    "gatineau": {
+      "nom": "Gatineau",
+      "nb_cles": 104045,
+      "nb_enregistrements": 99368,
+      "millesime_role": "2024",
+      "fichier": "index-gatineau.json.gz"
+    },
+    "laval": {
+      "nom": "Laval",
+      "nb_cles": 159380,
+      "nb_enregistrements": 134419,
+      "millesime_role": "2025",
+      "fichier": "index-laval.json.gz"
+    },
+    "longueuil": {
+      "nom": "Longueuil",
+      "nb_cles": 99246,
+      "nb_enregistrements": 73325,
+      "millesime_role": "2025",
+      "fichier": "index-longueuil.json.gz"
+    },
+    "brossard": {
+      "nom": "Brossard",
+      "nb_cles": 35768,
+      "nb_enregistrements": 32669,
+      "millesime_role": "2025",
+      "fichier": "index-brossard.json.gz"
+    }
+  }
+}
