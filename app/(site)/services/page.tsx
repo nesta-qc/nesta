@@ -74,6 +74,11 @@ export default function ServicesPage() {
                     ? `À partir de ${s.startingPrice} $`
                     : "Sur devis"}
                 </p>
+                {s.startingPrice === null ? (
+                  <p className="mt-1 text-xs text-charcoal/50">
+                    Devis détaillé sous 48 h, sans engagement.
+                  </p>
+                ) : null}
                 {s.addon ? (
                   <p className="mt-2 text-sm text-charcoal/60">
                     <span className="font-semibold text-charcoal">

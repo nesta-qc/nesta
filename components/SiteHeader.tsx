@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/investir", label: "Investir" },
   { href: "/projects", label: "Projets" },
   { href: "/services", label: "Services" },
+  { href: "/tarifs", label: "Tarifs" },
 ];
 
 /* Icônes sobres (SVG inline, aucun emoji). */

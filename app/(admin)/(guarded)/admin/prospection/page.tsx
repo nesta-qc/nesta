@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getProspects } from "@/actions/prospects";
 import { getProLeads } from "@/actions/pro";
+import { getProWaitlist } from "@/actions/pro-waitlist";
 import { ProspectsTable } from "@/components/admin/ProspectsTable";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 export default async function AdminProspectionPage() {
   const prospects = await getProspects();
   const proLeads = await getProLeads();
+  const waitlist = await getProWaitlist();
 
   return (
     <div>
@@ -82,6 +84,46 @@ export default async function AdminProspectionPage() {
       <div className="mt-6">
         <ProspectsTable initialProspects={prospects} />
       </div>
+
+      {waitlist.length > 0 ? (
+        <section className="mt-8">
+          <h2 className="font-display text-xl text-charcoal">
+            Liste d&apos;attente pros ({waitlist.length})
+          </h2>
+          <p className="mt-1 text-sm text-charcoal/60">
+            Professionnels inscrits depuis /pro — à inviter à l&apos;ouverture
+            de l&apos;espace partenaires.
+          </p>
+          <ul className="mt-4 flex flex-col gap-3">
+            {waitlist.map((entry) => (
+              <li
+                key={entry.id}
+                className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl border border-border bg-white p-4 text-sm"
+              >
+                <p>
+                  <a
+                    href={`mailto:${entry.email}`}
+                    className="font-semibold text-forest hover:underline"
+                  >
+                    {entry.email}
+                  </a>
+                  <span className="text-charcoal/55">
+                    {" "}
+                    — {entry.profession}
+                  </span>
+                </p>
+                <p className="text-xs text-charcoal/45">
+                  {new Date(entry.created_at).toLocaleDateString("fr-CA", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </div>
   );
 }

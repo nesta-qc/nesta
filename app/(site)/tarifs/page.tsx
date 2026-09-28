@@ -190,7 +190,14 @@ export default function TarifsPage() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="font-display text-xl text-forest">Sur devis</p>
+                    <>
+                      <p className="font-display text-xl text-forest">
+                        Sur devis
+                      </p>
+                      <p className="mt-1 text-xs text-charcoal/50">
+                        Devis détaillé sous 48 h, sans engagement.
+                      </p>
+                    </>
                   )}
                   {s.addon ? (
                     <p className="mt-2 text-xs text-charcoal/55">

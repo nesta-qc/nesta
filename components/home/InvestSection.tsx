@@ -60,12 +60,12 @@ export function InvestSection() {
             Comprenez l&apos;actif, pas juste la photo.
           </h2>
           <p className="mt-4 max-w-lg text-base leading-relaxed text-charcoal/60 sm:text-lg">
-            Nesta calcule les indicateurs qui comptent — revenus, taux de
-            capitalisation, cash-flow — à partir des données réelles de
-            l&apos;annonce. Quand une information manque, c&apos;est indiqué.
+            Saisissez les chiffres d&apos;un immeuble : Nesta calcule le taux
+            de capitalisation, le cash-flow et le rendement sur mise de fonds.
+            Vos hypothèses, affichées clairement.
           </p>
           <Link
-            href="/investir"
+            href="/investir/calculateur"
             className="mt-8 inline-flex items-center rounded-full bg-forest px-8 py-3.5 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-forest-deep"
           >
             Analyser un immeuble
