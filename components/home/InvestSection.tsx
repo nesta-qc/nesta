@@ -4,8 +4,8 @@ import { EditorialImage } from "./EditorialImage";
 
 /**
  * Section Investir : photographie de multilogement + mini-interface
- * d'analyse. Les chiffres affichés sont un EXEMPLE VISUEL — ils ne
- * représentent aucune propriété réelle.
+ * d'analyse. Les chiffres affichés sont des DONNÉES RÉELLES : un
+ * comparable DuProprio vérifié (aucun chiffre inventé).
  */
 export function InvestSection() {
   return (
@@ -20,30 +20,34 @@ export function InvestSection() {
               sizes="(max-width: 1024px) 100vw, 48vw"
             />
           </div>
-          {/* Mini-interface d'analyse — exemple visuel uniquement. */}
+          {/* Mini-interface d'analyse — données réelles (comparable vérifié). */}
           <figure className="absolute -bottom-8 left-4 right-4 rounded-[var(--radius-lg)] border border-border bg-white/95 p-5 shadow-[var(--shadow-lift)] backdrop-blur-sm sm:left-8 sm:right-auto sm:w-[340px]">
             <figcaption className="text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal/45">
-              Exemple visuel — pas une annonce réelle
+              Comparable réel — DuProprio
             </figcaption>
-            <p className="mt-2 font-display text-3xl text-forest">749 000 $</p>
+            <p className="mt-2 font-display text-3xl text-forest">828 000 $</p>
+            <p className="mt-1 text-sm text-charcoal/60">48, rue Charlevoix, Kirkland</p>
             <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
               <div>
-                <dt className="text-charcoal/45">Revenus</dt>
-                <dd className="font-semibold text-charcoal">43 200 $ / an</dd>
+                <dt className="text-charcoal/45">Superficie</dt>
+                <dd className="font-semibold text-charcoal">1 096 pi²</dd>
               </div>
               <div>
-                <dt className="text-charcoal/45">MRB</dt>
-                <dd className="font-semibold text-charcoal">17,3×</dd>
+                <dt className="text-charcoal/45">$/pi²</dt>
+                <dd className="font-semibold text-charcoal">755 $</dd>
               </div>
               <div>
-                <dt className="text-charcoal/45">Cap rate</dt>
-                <dd className="font-semibold text-charcoal">4,1 %</dd>
+                <dt className="text-charcoal/45">Chambres</dt>
+                <dd className="font-semibold text-charcoal">3</dd>
               </div>
               <div>
-                <dt className="text-charcoal/45">Cash-flow</dt>
-                <dd className="font-semibold text-forest">+312 $ / mois</dd>
+                <dt className="text-charcoal/45">Année</dt>
+                <dd className="font-semibold text-charcoal">1979</dd>
               </div>
             </dl>
+            <p className="mt-3 text-[11px] text-charcoal/40">
+              Données vérifiées le 28 sept. 2026
+            </p>
           </figure>
         </div>
 
