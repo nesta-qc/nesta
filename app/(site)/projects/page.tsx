@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Badge, Card } from "@/components/ui";
 import { getDevelopments } from "@/actions/developments";
 import { DevelopmentAlertForm } from "@/components/developments/DevelopmentAlertForm";
@@ -58,7 +59,13 @@ export default async function ProjectsPage() {
       ) : (
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {developments.map((d) => (
-            <Card key={d.id} className="flex flex-col p-7">
+            <Link
+              key={d.id}
+              href={`/projects/${d.id}`}
+              className="group flex"
+              aria-label={`Voir le projet ${d.name}`}
+            >
+            <Card className="flex w-full flex-col p-7 transition-shadow group-hover:shadow-md">
               <div className="flex items-center justify-between gap-2">
                 <Badge variant="muted">
                   {STATUS_LABELS[d.status] ?? d.status}
@@ -73,7 +80,7 @@ export default async function ProjectsPage() {
                   </span>
                 ) : null}
               </div>
-              <h2 className="mt-4 font-display text-2xl text-charcoal">{d.name}</h2>
+              <h2 className="mt-4 font-display text-2xl text-charcoal group-hover:text-forest">{d.name}</h2>
               {d.city ? (
                 <p className="mt-1 text-sm text-charcoal/55">
                   {d.address ? `${d.address}, ` : ""}
@@ -106,6 +113,7 @@ export default async function ProjectsPage() {
                 </div>
               </dl>
             </Card>
+            </Link>
           ))}
         </div>
       )}

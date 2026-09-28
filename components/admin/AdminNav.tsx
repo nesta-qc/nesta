@@ -58,6 +58,10 @@ export function AdminNav({
       title: "Développement",
       items: [{ href: "/admin/prospection", label: "Prospection" }],
     },
+    {
+      title: "Développement",
+      items: [{ href: "/admin/projets/nouveau", label: "Nouveau projet" }],
+    },
   ];
 
   const isActive = (item: NavItem) =>

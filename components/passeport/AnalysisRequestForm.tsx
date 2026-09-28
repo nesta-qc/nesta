@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button, Field, Input, Textarea } from "@/components/ui";
 import { AddressAutocomplete } from "@/components/passeport/AddressAutocomplete";
 import { createAnalysisRequest } from "@/actions/service-requests";
@@ -140,6 +141,18 @@ export function AnalysisRequestForm({ initialAddress }: { initialAddress: string
         <p className="mt-3 text-xs text-charcoal/45">
           Sans compte et sans engagement : la réponse vous parvient par
           courriel. Le suivi en ligne est réservé aux comptes Nesta.
+        </p>
+        <p className="mt-2 text-xs text-charcoal/45">
+          En envoyant ce formulaire, vous consentez à ce que Nesta utilise
+          votre courriel uniquement pour vous transmettre l&apos;analyse
+          demandée. Voir notre{" "}
+          <Link
+            href="/confidentialite"
+            className="underline underline-offset-2 hover:text-forest"
+          >
+            politique de confidentialité
+          </Link>
+          .
         </p>
       </div>
     </form>
