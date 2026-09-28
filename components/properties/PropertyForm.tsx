@@ -13,6 +13,10 @@ import { Button, Card, Field, Input, Select, Textarea } from "@/components/ui";
 import type { PropertyMediaRow, PropertyRow } from "@/lib/validation";
 import { PhotoUploader } from "./PhotoUploader";
 import { VirtualTourField } from "./VirtualTourField";
+import {
+  NestaCapture,
+  type UploadedCapturePhoto,
+} from "../capture/NestaCapture";
 
 /* ============================================================
  * NESTA — formulaire d'annonce (création + modification).
@@ -57,6 +61,8 @@ export function PropertyForm(props: Props) {
   );
   const [isPublishing, startPublishing] = useTransition();
   const [publishError, setPublishError] = useState<string | null>(null);
+  const [captureOpen, setCaptureOpen] = useState(false);
+  const [captureMedia, setCaptureMedia] = useState<PropertyMediaRow[]>([]);
   const router = useRouter();
 
   /* Étape 2 (création) : l'annonce existe en brouillon, on ajoute
@@ -76,6 +82,21 @@ export function PropertyForm(props: Props) {
     });
   }
 
+  function handleCaptureUploaded(photos: UploadedCapturePhoto[]) {
+    setCaptureMedia((prev) => [
+      ...prev,
+      ...photos.map((p, i) => ({
+        id: p.id,
+        property_id: createdId ?? "",
+        kind: "photo",
+        storage_path: p.storagePath,
+        caption: null,
+        position: prev.length + i,
+        created_at: new Date().toISOString(),
+      })),
+    ]);
+  }
+
   if (createdId) {
     return (
       <div className="flex flex-col gap-8">
@@ -88,8 +109,28 @@ export function PropertyForm(props: Props) {
             publiez-le quand vous êtes prêt. Votre annonce ne sera visible
             dans la recherche qu’une fois publiée.
           </p>
-          <div className="mt-6">
-            <PhotoUploader propertyId={createdId} media={[]} />
+          <div className="mt-6 flex flex-col gap-6">
+            <div>
+              <Button
+                type="button"
+                variant="secondary"
+                size="lg"
+                onClick={() => setCaptureOpen(true)}
+              >
+                Prendre mes photos avec NESTA
+              </Button>
+              <p className="mt-2 text-sm text-charcoal/55">
+                Photos guidées depuis votre téléphone : netteté, luminosité
+                et cadrage vérifiés automatiquement.
+              </p>
+            </div>
+            <PhotoUploader
+              propertyId={createdId}
+              media={captureMedia}
+              onDeleteMedia={(id) =>
+                setCaptureMedia((prev) => prev.filter((m) => m.id !== id))
+              }
+            />
           </div>
         </Card>
 
@@ -114,6 +155,14 @@ export function PropertyForm(props: Props) {
             </Button>
           </Link>
         </div>
+
+        {captureOpen ? (
+          <NestaCapture
+            propertyId={createdId}
+            onClose={() => setCaptureOpen(false)}
+            onUploaded={handleCaptureUploaded}
+          />
+        ) : null}
       </div>
     );
   }

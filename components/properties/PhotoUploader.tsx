@@ -26,9 +26,11 @@ interface AddedPhoto {
 interface Props {
   propertyId: string;
   media: PropertyMediaRow[];
+  /** Appelé après suppression serveur d'une photo « existante ». */
+  onDeleteMedia?: (mediaId: string) => void;
 }
 
-export function PhotoUploader({ propertyId, media }: Props) {
+export function PhotoUploader({ propertyId, media, onDeleteMedia }: Props) {
   const [state, formAction, isPending] = useActionState(
     uploadPropertyMedia,
     initialPropertyActionState,
@@ -70,6 +72,8 @@ export function PhotoUploader({ propertyId, media }: Props) {
       if (result.ok) {
         if (isLocal) {
           setAdded((prev) => prev.filter((p) => p.id !== mediaId));
+        } else {
+          onDeleteMedia?.(mediaId);
         }
       } else {
         setDeleteError(result.message ?? "La suppression a échoué.");
