@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { Splash } from "@/components/Splash";
 import "./globals.css";
 
@@ -48,6 +49,7 @@ export default function RootLayout({
       <body className="min-h-full font-sans">
         <Splash />
         {children}
+        <Analytics />
       </body>
     </html>
   );

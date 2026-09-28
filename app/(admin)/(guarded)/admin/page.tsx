@@ -6,6 +6,7 @@ import {
   getRecentActivity,
 } from "@/actions/admin";
 import { getRevenueStats } from "@/actions/revenue";
+import { getVercelTraffic } from "@/lib/vercel-analytics";
 import { activityKindLabel } from "@/components/admin/format";
 import { ADMIN_PERIODS, isAdminPeriod } from "@/lib/admin";
 import { StatCard } from "@/components/admin/StatCard";
@@ -42,6 +43,17 @@ export default async function AdminOverviewPage({
     getRecentActivity(20),
     getRevenueStats(),
   ]);
+
+  /* Trafic Vercel Analytics : fenêtre plafonnée à 30 jours (plan Hobby). */
+  const trafficDays =
+    period === "today" ? 1 : period === "7d" ? 7 : 30;
+  const traffic = await getVercelTraffic(trafficDays);
+  const trafficLabel =
+    period === "today"
+      ? "aujourd’hui"
+      : period === "7d"
+        ? "7 derniers jours"
+        : "30 derniers jours";
 
   const periodLabel =
     ADMIN_PERIODS.find((p) => p.id === period)?.label ?? "30 jours";
@@ -123,6 +135,73 @@ export default async function AdminOverviewPage({
           />
         </Link>
       </div>
+
+      {/* Trafic web — Vercel Analytics. */}
+      <Section
+        title="Trafic web"
+        description={`Données Vercel Analytics du site public — ${trafficLabel}.`}
+      >
+        {!traffic ? (
+          <div className="rounded-2xl border border-border bg-white p-6">
+            <EmptyState
+              title="Données non disponibles"
+              description="Le suivi Vercel Analytics n'est pas encore configuré ou aucune visite n'a été enregistrée."
+            />
+          </div>
+        ) : (
+          <div className="grid gap-3 lg:grid-cols-2">
+            <div className="rounded-2xl border border-border bg-white p-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
+                    Visiteurs
+                  </p>
+                  <p className="mt-1 font-display text-3xl text-charcoal">
+                    {formatNumber(traffic.visitors)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
+                    Pages vues
+                  </p>
+                  <p className="mt-1 font-display text-3xl text-charcoal">
+                    {formatNumber(traffic.pageviews)}
+                  </p>
+                </div>
+              </div>
+              <p className="mt-4 text-xs text-charcoal/55">
+                Source : Vercel Analytics (sans cookies, conforme Loi 25).
+              </p>
+            </div>
+            <div className="rounded-2xl border border-border bg-white p-6">
+              <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
+                Pages les plus visitées
+              </p>
+              {traffic.topPages.length === 0 ? (
+                <p className="mt-3 text-sm text-charcoal/55">
+                  Aucune page enregistrée pour l’instant.
+                </p>
+              ) : (
+                <ul className="mt-3 divide-y divide-border/60">
+                  {traffic.topPages.map((p) => (
+                    <li
+                      key={p.path}
+                      className="flex items-center justify-between gap-4 py-2"
+                    >
+                      <span className="truncate font-mono text-sm text-charcoal">
+                        {p.path}
+                      </span>
+                      <span className="shrink-0 text-xs text-charcoal/55">
+                        {formatNumber(p.pageviews)} vues
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+      </Section>
 
       {/* Command Center. */}
       <Section
