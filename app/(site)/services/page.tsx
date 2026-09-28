@@ -70,9 +70,7 @@ export default function ServicesPage() {
               <div className="mt-auto pt-8">
                 <p className="font-display text-xl text-forest">
                   {s.startingPrice !== null
-                    ? s.priceUnit === "h"
-                      ? `${s.startingPrice} $/h`
-                      : `À partir de ${s.startingPrice} $`
+                    ? `À partir de ${s.startingPrice} $`
                     : "Sur devis"}
                 </p>
                 {s.addon ? (
