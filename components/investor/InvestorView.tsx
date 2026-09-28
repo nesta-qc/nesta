@@ -4,15 +4,17 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Button, EmptyState, FavoriteButton, Input, Modal, Select } from "@/components/ui";
 import { SearchMapDynamic } from "@/components/map/SearchMapDynamic";
-import type { InvestmentProperty } from "@/actions/properties";
-import { propertyMediaPublicUrl } from "@/lib/media";
+import type { InvestmentProperty, MarketComparable } from "@/actions/properties";
 import { formatPrice } from "@/lib/format";
 
 /* ============================================================
  * NESTA — espace investisseurs.
- * Uniquement des données réelles d'annonces publiées : prix,
- * taxes, superficies, année. Aucune donnée municipale inventée
- * (zonage, évaluation) : la connexion est indiquée « en préparation ».
+ * Deux sources de données réelles, toujours distinguées :
+ *  - annonces publiées sur Nesta ;
+ *  - comparables du marché (faits publics vérifiés, source et
+ *    date indiquées — jamais présentés comme des annonces Nesta).
+ * Aucune donnée municipale inventée (zonage, évaluation) :
+ * la connexion est indiquée « en préparation ».
  * ============================================================ */
 
 interface InvestorFilters {
@@ -29,20 +31,36 @@ const initialFilters: InvestorFilters = {
   minYear: "",
 };
 
-function pricePerSqft(p: InvestmentProperty): number | null {
+type InvestorItem =
+  | { kind: "listing"; listing: InvestmentProperty }
+  | { kind: "comparable"; comparable: MarketComparable };
+
+interface LetterData {
+  address: string;
+  city: string;
+  asking_price: number;
+  property_type: string | null;
+  living_area: number | null;
+  lot_area: number | null;
+  year_built: number | null;
+  municipal_tax: number | null;
+  school_tax: number | null;
+}
+
+function pricePerSqft(p: LetterData): number | null {
   if (!p.living_area || p.living_area <= 0) return null;
   return Math.round(p.asking_price / p.living_area);
 }
 
-function annualTaxes(p: InvestmentProperty): number | null {
+function annualTaxes(p: LetterData): number | null {
   const m = p.municipal_tax ?? 0;
   const s = p.school_tax ?? 0;
   if (!m && !s) return null;
   return m + s;
 }
 
-/** Lettre d'intention générée à partir des données réelles de l'annonce. */
-function buildLetter(p: InvestmentProperty): string {
+/** Lettre d'intention générée à partir des données réelles de l'immeuble. */
+function buildLetter(p: LetterData): string {
   const lines = [
     "LETTRE D'INTENTION — PROJET D'ACQUISITION",
     "",
@@ -70,47 +88,106 @@ function buildLetter(p: InvestmentProperty): string {
   return lines.filter((l) => l !== null).join("\n");
 }
 
+function letterDataOf(item: InvestorItem): LetterData {
+  if (item.kind === "listing") {
+    const l = item.listing;
+    return {
+      address: l.address,
+      city: l.city,
+      asking_price: l.asking_price,
+      property_type: l.property_type,
+      living_area: l.living_area,
+      lot_area: l.lot_area,
+      year_built: l.year_built,
+      municipal_tax: l.municipal_tax,
+      school_tax: l.school_tax,
+    };
+  }
+  const c = item.comparable;
+  return {
+    address: c.address,
+    city: c.city,
+    asking_price: c.asking_price,
+    property_type: c.property_type,
+    living_area: c.living_area,
+    lot_area: c.lot_area,
+    year_built: c.year_built,
+    municipal_tax: null,
+    school_tax: null,
+  };
+}
+
+function itemId(item: InvestorItem): string {
+  return item.kind === "listing" ? item.listing.id : item.comparable.id;
+}
+
+function formatVerifiedDate(iso: string): string {
+  const d = new Date(iso + (iso.includes("T") ? "" : "T00:00:00"));
+  return d.toLocaleDateString("fr-CA", { day: "numeric", month: "short", year: "numeric" });
+}
+
 export function InvestorView({
   initial,
+  comparables,
 }: {
   initial: InvestmentProperty[];
+  comparables: MarketComparable[];
 }) {
   const [filters, setFilters] = useState<InvestorFilters>(initialFilters);
   const [applied, setApplied] = useState<InvestorFilters>(initialFilters);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [letterFor, setLetterFor] = useState<InvestmentProperty | null>(null);
+  const [letterFor, setLetterFor] = useState<LetterData | null>(null);
   const [copied, setCopied] = useState(false);
 
+  const items: InvestorItem[] = useMemo(
+    () => [
+      ...initial.map((listing): InvestorItem => ({ kind: "listing", listing })),
+      ...comparables.map((comparable): InvestorItem => ({ kind: "comparable", comparable })),
+    ],
+    [initial, comparables],
+  );
+
   const results = useMemo(() => {
-    return initial.filter((p) => {
+    return items.filter((item) => {
+      const d = letterDataOf(item);
+      const cityHaystack =
+        item.kind === "comparable" && item.comparable.borough
+          ? `${d.city} ${item.comparable.borough}`
+          : d.city;
       if (
         applied.city &&
-        !p.city.toLowerCase().includes(applied.city.toLowerCase())
+        !cityHaystack.toLowerCase().includes(applied.city.toLowerCase())
       )
         return false;
-      if (applied.propertyType && p.property_type !== applied.propertyType)
+      if (applied.propertyType && d.property_type !== applied.propertyType)
         return false;
-      if (applied.maxPrice && p.asking_price > Number(applied.maxPrice))
+      if (applied.maxPrice && d.asking_price > Number(applied.maxPrice))
         return false;
-      if (applied.minYear && (p.year_built ?? 0) < Number(applied.minYear))
+      if (applied.minYear && (d.year_built ?? 0) < Number(applied.minYear))
         return false;
       return true;
     });
-  }, [initial, applied]);
+  }, [items, applied]);
 
-  const selected = results.find((p) => p.id === selectedId) ?? null;
+  const selected = results.find((it) => itemId(it) === selectedId) ?? null;
   const mapped = useMemo(
     () =>
       results
-        .filter((p) => p.latitude != null && p.longitude != null)
-        .map((p) => ({
-          id: p.id,
-          latitude: p.latitude as number,
-          longitude: p.longitude as number,
-          asking_price: p.asking_price,
-          address: p.address,
-          city: p.city,
-        })),
+        .map((item) => {
+          const d = letterDataOf(item);
+          const lat = item.kind === "listing" ? item.listing.latitude : item.comparable.latitude;
+          const lon = item.kind === "listing" ? item.listing.longitude : item.comparable.longitude;
+          if (lat == null || lon == null) return null;
+          return {
+            id: itemId(item),
+            latitude: lat,
+            longitude: lon,
+            asking_price: d.asking_price,
+            address: d.address,
+            city: d.city,
+          };
+        })
+        .filter((m): m is NonNullable<typeof m> => m !== null),
     [results],
   );
 
@@ -172,7 +249,7 @@ export function InvestorView({
         </form>
         <p className="mx-auto w-full max-w-7xl px-5 pb-3 text-xs text-charcoal/45 sm:px-8">
           Données municipales (zonage, évaluation, usage) : connexion en préparation.
-          Seules les données des annonces publiées sont affichées.
+          Annonces publiées sur Nesta et comparables du marché vérifiés (source indiquée).
         </p>
       </div>
 
@@ -192,20 +269,23 @@ export function InvestorView({
               <div className="py-10">
                 <EmptyState
                   title="Aucun immeuble"
-                  description="Aucune annonce publiée ne correspond à ces critères pour le moment."
+                  description="Aucune annonce ni comparable ne correspond à ces critères pour le moment."
                 />
               </div>
             ) : (
               <ul className="flex flex-col gap-3">
-                {results.map((p) => {
-                  const ppsf = pricePerSqft(p);
-                  const taxes = annualTaxes(p);
-                  const active = p.id === selectedId;
+                {results.map((item) => {
+                  const d = letterDataOf(item);
+                  const id = itemId(item);
+                  const ppsf = pricePerSqft(d);
+                  const taxes = annualTaxes(d);
+                  const active = id === selectedId;
+                  const isComparable = item.kind === "comparable";
                   return (
-                    <li key={p.id}>
+                    <li key={`${item.kind}-${id}`}>
                       <button
                         type="button"
-                        onClick={() => setSelectedId(active ? null : p.id)}
+                        onClick={() => setSelectedId(active ? null : id)}
                         aria-pressed={active}
                         className={`w-full rounded-[var(--radius-md)] border bg-white p-4 text-left transition-all duration-150 ${
                           active
@@ -215,15 +295,22 @@ export function InvestorView({
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <p className="font-display text-lg text-forest">
-                              {formatPrice(p.asking_price)}
-                            </p>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="font-display text-lg text-forest">
+                                {formatPrice(d.asking_price)}
+                              </p>
+                              {isComparable ? (
+                                <span className="rounded-full bg-champagne/25 px-2 py-0.5 text-[11px] font-semibold text-charcoal/70">
+                                  Comparable marché
+                                </span>
+                              ) : null}
+                            </div>
                             <p className="mt-0.5 text-sm font-medium text-charcoal">
-                              {p.address}
+                              {d.address}
                             </p>
-                            <p className="text-xs text-charcoal/50">{p.city}</p>
+                            <p className="text-xs text-charcoal/50">{d.city}</p>
                           </div>
-                          <FavoriteButton propertyId={p.id} />
+                          {!isComparable ? <FavoriteButton propertyId={id} /> : null}
                         </div>
                         <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
                           <div>
@@ -241,7 +328,7 @@ export function InvestorView({
                           <div>
                             <dt className="text-charcoal/45">Année</dt>
                             <dd className="mt-0.5 font-semibold text-charcoal">
-                              {p.year_built ?? "—"}
+                              {d.year_built ?? "—"}
                             </dd>
                           </div>
                         </dl>
@@ -255,66 +342,14 @@ export function InvestorView({
 
           {/* Panneau de sélection. */}
           {selected ? (
-            <div className="border-t border-border bg-white p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-display text-xl text-forest">
-                    {formatPrice(selected.asking_price)}
-                  </p>
-                  <p className="mt-0.5 text-sm font-medium text-charcoal">
-                    {selected.address}, {selected.city}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedId(null)}
-                  className="text-sm text-charcoal/50 hover:text-charcoal"
-                  aria-label="Fermer le panneau"
-                >
-                  ✕
-                </button>
-              </div>
-              <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                <div className="flex justify-between border-b border-border/60 py-1.5">
-                  <dt className="text-charcoal/50">Superficie</dt>
-                  <dd className="font-medium">{selected.living_area ? `${selected.living_area} pi²` : "—"}</dd>
-                </div>
-                <div className="flex justify-between border-b border-border/60 py-1.5">
-                  <dt className="text-charcoal/50">Terrain</dt>
-                  <dd className="font-medium">{selected.lot_area ? `${selected.lot_area} pi²` : "—"}</dd>
-                </div>
-                <div className="flex justify-between border-b border-border/60 py-1.5">
-                  <dt className="text-charcoal/50">Chambres</dt>
-                  <dd className="font-medium">{selected.bedrooms ?? "—"}</dd>
-                </div>
-                <div className="flex justify-between border-b border-border/60 py-1.5">
-                  <dt className="text-charcoal/50">Salles de bain</dt>
-                  <dd className="font-medium">{selected.bathrooms ?? "—"}</dd>
-                </div>
-              </dl>
-              <p className="mt-3 text-xs text-charcoal/45">
-                Source : annonces publiées sur Nesta
-                {selected.updated_at
-                  ? ` · Mis à jour le ${new Date(selected.updated_at).toLocaleDateString("fr-CA")}`
-                  : ""}
-              </p>
-              <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-                <Link href={`/properties/${selected.id}`} className="flex-1">
-                  <Button variant="secondary" className="w-full">
-                    Voir l&apos;annonce
-                  </Button>
-                </Link>
-                <Button
-                  className="flex-1"
-                  onClick={() => {
-                    setLetterFor(selected);
-                    setCopied(false);
-                  }}
-                >
-                  Lettre d&apos;intention
-                </Button>
-              </div>
-            </div>
+            <SelectedPanel
+              item={selected}
+              onClose={() => setSelectedId(null)}
+              onLetter={() => {
+                setLetterFor(letterDataOf(selected));
+                setCopied(false);
+              }}
+            />
           ) : null}
         </div>
       </div>
@@ -328,7 +363,7 @@ export function InvestorView({
         {letterFor ? (
           <div>
             <p className="text-sm text-charcoal/60">
-              Modèle pré-rempli avec les données réelles de l&apos;annonce.
+              Modèle pré-rempli avec les données réelles de l&apos;immeuble.
               Relisez et adaptez avant envoi.
             </p>
             <pre className="mt-4 max-h-[40vh] overflow-y-auto whitespace-pre-wrap rounded-[var(--radius-md)] bg-ivory p-4 text-sm leading-relaxed text-charcoal">
@@ -345,6 +380,163 @@ export function InvestorView({
           </div>
         ) : null}
       </Modal>
+    </div>
+  );
+}
+
+function SelectedPanel({
+  item,
+  onClose,
+  onLetter,
+}: {
+  item: InvestorItem;
+  onClose: () => void;
+  onLetter: () => void;
+}) {
+  const d = letterDataOf(item);
+  const id = itemId(item);
+
+  if (item.kind === "comparable") {
+    const c = item.comparable;
+    return (
+      <div className="border-t border-border bg-white p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="font-display text-xl text-forest">
+                {formatPrice(d.asking_price)}
+              </p>
+              <span className="rounded-full bg-champagne/25 px-2 py-0.5 text-[11px] font-semibold text-charcoal/70">
+                Comparable marché
+              </span>
+            </div>
+            <p className="mt-0.5 text-sm font-medium text-charcoal">
+              {d.address}, {d.city}
+              {c.borough ? ` — ${c.borough}` : ""}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-sm text-charcoal/50 hover:text-charcoal"
+            aria-label="Fermer le panneau"
+          >
+            ✕
+          </button>
+        </div>
+        <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <div className="flex justify-between border-b border-border/60 py-1.5">
+            <dt className="text-charcoal/50">Superficie</dt>
+            <dd className="font-medium">{d.living_area ? `${d.living_area} pi²` : "—"}</dd>
+          </div>
+          <div className="flex justify-between border-b border-border/60 py-1.5">
+            <dt className="text-charcoal/50">Terrain</dt>
+            <dd className="font-medium">{d.lot_area ? `${d.lot_area} pi²` : "—"}</dd>
+          </div>
+          <div className="flex justify-between border-b border-border/60 py-1.5">
+            <dt className="text-charcoal/50">Chambres</dt>
+            <dd className="font-medium">{c.bedrooms ?? "—"}</dd>
+          </div>
+          <div className="flex justify-between border-b border-border/60 py-1.5">
+            <dt className="text-charcoal/50">Salles de bain</dt>
+            <dd className="font-medium">{c.bathrooms ?? "—"}</dd>
+          </div>
+          {c.condo_fees_monthly != null ? (
+            <div className="flex justify-between border-b border-border/60 py-1.5">
+              <dt className="text-charcoal/50">Frais copro/mois</dt>
+              <dd className="font-medium">{formatPrice(c.condo_fees_monthly)}</dd>
+            </div>
+          ) : null}
+          {c.gross_revenue_annual != null ? (
+            <div className="flex justify-between border-b border-border/60 py-1.5">
+              <dt className="text-charcoal/50">Revenus/an</dt>
+              <dd className="font-medium">{formatPrice(c.gross_revenue_annual)}</dd>
+            </div>
+          ) : null}
+        </dl>
+        {c.notes ? (
+          <p className="mt-3 text-xs text-charcoal/60">{c.notes}</p>
+        ) : null}
+        <p className="mt-3 text-xs text-charcoal/45">
+          Source : {c.source_name} · vérifié le {formatVerifiedDate(c.verified_at)} ·
+          ce n&apos;est pas une annonce Nesta.
+        </p>
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          {c.source_url ? (
+            <a
+              href={c.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1"
+            >
+              <Button variant="secondary" className="w-full">
+                Voir sur {c.source_name} ↗
+              </Button>
+            </a>
+          ) : null}
+          <Button className="flex-1" onClick={onLetter}>
+            Lettre d&apos;intention
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const l = item.listing;
+  return (
+    <div className="border-t border-border bg-white p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="font-display text-xl text-forest">
+            {formatPrice(d.asking_price)}
+          </p>
+          <p className="mt-0.5 text-sm font-medium text-charcoal">
+            {d.address}, {d.city}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-sm text-charcoal/50 hover:text-charcoal"
+          aria-label="Fermer le panneau"
+        >
+          ✕
+        </button>
+      </div>
+      <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+        <div className="flex justify-between border-b border-border/60 py-1.5">
+          <dt className="text-charcoal/50">Superficie</dt>
+          <dd className="font-medium">{d.living_area ? `${d.living_area} pi²` : "—"}</dd>
+        </div>
+        <div className="flex justify-between border-b border-border/60 py-1.5">
+          <dt className="text-charcoal/50">Terrain</dt>
+          <dd className="font-medium">{d.lot_area ? `${d.lot_area} pi²` : "—"}</dd>
+        </div>
+        <div className="flex justify-between border-b border-border/60 py-1.5">
+          <dt className="text-charcoal/50">Chambres</dt>
+          <dd className="font-medium">{l.bedrooms ?? "—"}</dd>
+        </div>
+        <div className="flex justify-between border-b border-border/60 py-1.5">
+          <dt className="text-charcoal/50">Salles de bain</dt>
+          <dd className="font-medium">{l.bathrooms ?? "—"}</dd>
+        </div>
+      </dl>
+      <p className="mt-3 text-xs text-charcoal/45">
+        Source : annonces publiées sur Nesta
+        {l.updated_at
+          ? ` · Mis à jour le ${new Date(l.updated_at).toLocaleDateString("fr-CA")}`
+          : ""}
+      </p>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <Link href={`/properties/${id}`} className="flex-1">
+          <Button variant="secondary" className="w-full">
+            Voir l&apos;annonce
+          </Button>
+        </Link>
+        <Button className="flex-1" onClick={onLetter}>
+          Lettre d&apos;intention
+        </Button>
+      </div>
     </div>
   );
 }

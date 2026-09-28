@@ -957,6 +957,60 @@ export async function getInvestmentProperties(
   }));
 }
 
+/* ---------- Comparables du marché ---------- */
+
+export interface MarketComparable {
+  id: string;
+  address: string;
+  city: string;
+  borough: string | null;
+  property_type: string;
+  asking_price: number;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  living_area: number | null;
+  lot_area: number | null;
+  year_built: number | null;
+  condo_fees_monthly: number | null;
+  gross_revenue_annual: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  source_name: string;
+  source_url: string | null;
+  verified_at: string;
+  notes: string | null;
+}
+
+/**
+ * Comparables du marché : faits publics vérifiés (adresse, prix demandé,
+ * caractéristiques) relevés sur des annonces DuProprio actives, avec URL
+ * source et date de vérification. Ce NE SONT PAS des annonces Nesta.
+ */
+export async function getMarketComparables(
+  filters: { city?: string; propertyType?: string; maxPrice?: number; minYear?: number } = {},
+): Promise<MarketComparable[]> {
+  if (!hasSupabaseConfig()) return [];
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("market_comparables")
+    .select(
+      "id, address, city, borough, property_type, asking_price, bedrooms, bathrooms, living_area, lot_area, year_built, condo_fees_monthly, gross_revenue_annual, latitude, longitude, source_name, source_url, verified_at, notes",
+    );
+
+  if (filters.city) query = query.ilike("city", `%${filters.city}%`);
+  if (filters.propertyType) query = query.eq("property_type", filters.propertyType);
+  if (filters.maxPrice !== undefined) query = query.lte("asking_price", filters.maxPrice);
+  if (filters.minYear !== undefined) query = query.gte("year_built", filters.minYear);
+
+  const { data, error } = await query
+    .order("asking_price", { ascending: true })
+    .limit(200);
+  if (error) return [];
+
+  return asRows<MarketComparable>(data);
+}
+
 /* ---------- Admin ---------- */
 
 export interface AdminPropertyRow extends PropertyRow {
