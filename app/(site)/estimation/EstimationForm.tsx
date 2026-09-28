@@ -79,6 +79,9 @@ export function EstimationForm() {
   const [result, setResult] = useState<EstimateResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [optionsAmbigues, setOptionsAmbigues] = useState<string[] | null>(null);
+  const [villesSuggerees, setVillesSuggerees] = useState<
+    { slug: VilleSlug; nom: string }[]
+  >([]);
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -121,6 +124,7 @@ export function EstimationForm() {
     setError(null);
     setResult(null);
     setOptionsAmbigues(null);
+    setVillesSuggerees([]);
     try {
       const res = await fetch("/api/estimation", {
         method: "POST",
@@ -143,8 +147,12 @@ export function EstimationForm() {
           "Plusieurs adresses correspondent (orientation Est/Ouest/Nord/Sud). Précisez :",
         );
       } else if (data.reason === "adresse_introuvable") {
+        const suggerees = data.villesSuggerees ?? [];
+        setVillesSuggerees(suggerees);
         setError(
-          "Adresse introuvable au rôle d'évaluation. Vérifiez l'orthographe ou essayez une adresse voisine.",
+          suggerees.length > 0
+            ? `Adresse introuvable à ${VILLES.find((v) => v.slug === ville)?.nom ?? "cette ville"}, mais elle existe ailleurs :`
+            : "Adresse introuvable au rôle d'évaluation. Vérifiez l'orthographe ou essayez une adresse voisine.",
         );
       } else {
         setError("Veuillez saisir une adresse valide (numéro civique + rue).");
@@ -165,6 +173,15 @@ export function EstimationForm() {
     setTimeout(() => formRef.current?.requestSubmit(), 0);
   }
 
+  /** Bascule vers la ville suggérée et relance l'estimation. */
+  function choisirVilleSuggeree(slug: VilleSlug) {
+    setVille(slug);
+    setVillesSuggerees([]);
+    setError(null);
+    // Laisse la ville se mettre à jour avant de soumettre.
+    setTimeout(() => formRef.current?.requestSubmit(), 0);
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <Card className="p-6 sm:p-8">
@@ -179,6 +196,8 @@ export function EstimationForm() {
                 setSuggestions([]);
                 setResult(null);
                 setOptionsAmbigues(null);
+                setVillesSuggerees([]);
+                setError(null);
               }}
             >
               {VILLES.map((v) => (
@@ -352,6 +371,21 @@ export function EstimationForm() {
                   className="rounded-full border border-forest/40 bg-white px-4 py-2 text-sm font-semibold text-forest transition-colors duration-200 hover:bg-forest hover:text-white"
                 >
                   {prettyKey(o)}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {villesSuggerees.length > 0 && (
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Essayer dans une autre ville">
+              {villesSuggerees.map((v) => (
+                <button
+                  key={v.slug}
+                  type="button"
+                  onClick={() => choisirVilleSuggeree(v.slug)}
+                  className="rounded-full border border-forest/40 bg-white px-4 py-2 text-sm font-semibold text-forest transition-colors duration-200 hover:bg-forest hover:text-white"
+                >
+                  Estimer à {v.nom} →
                 </button>
               ))}
             </div>

@@ -27,11 +27,14 @@ import { gunzipSync } from "node:zlib";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  estTypeVoie,
   normalizeAddress,
   normalizeSuite,
   stripParticules,
+  TYPES_VOIE_INSERTION,
+  varianteOrdreType,
 } from "./normalize";
-import { getVille, type VilleSlug } from "./villes";
+import { getVille, VILLES, type VilleSlug } from "./villes";
 
 /* ---------- Types ---------- */
 
@@ -158,6 +161,12 @@ export interface EstimateNotFound {
    * proposer à l'utilisateur pour lever l'ambiguïté.
    */
   options?: string[];
+  /**
+   * Autres villes couvertes où l'adresse a été trouvée (repli
+   * inter-villes : l'utilisateur a peut-être sélectionné la mauvaise
+   * ville). Renseigné par l'API, pas par estimate() directement.
+   */
+  villesSuggerees?: { slug: VilleSlug; nom: string }[];
 }
 
 export type EstimateResult = EstimateSuccess | EstimateNotFound;
@@ -260,13 +269,19 @@ export function estimate(input: EstimateInput): EstimateResult {
 
   // Bases de recherche : clé exacte, variante sans particules
   // ("285 BOUL DE LA CITE" → "285 BOUL CITE"), variante sans
-  // orientation finale ("1000 AV DU MONT-ROYAL E" → sans le " E").
+  // orientation finale ("1000 AV DU MONT-ROYAL E" → sans le " E"),
+  // variante d'ordre du type de voie ("7620 47E AV" → "7620 AV 47E" :
+  // les rôles n'ordonnent pas le type de voie pareil partout).
   const bases: string[] = [baseKey];
   const stripped = stripParticules(baseKey);
   if (stripped && stripped !== baseKey) bases.push(stripped);
   for (const b of [...bases]) {
     const sansOrient = b.replace(/ ([EONS])$/, "");
     if (sansOrient !== b && !bases.includes(sansOrient)) bases.push(sansOrient);
+  }
+  for (const b of [...bases]) {
+    const variante = varianteOrdreType(b);
+    if (variante && !bases.includes(variante)) bases.push(variante);
   }
 
   const suiteN =
@@ -319,6 +334,35 @@ export function estimate(input: EstimateInput): EstimateResult {
       fiches = map[hitsOrient[0]];
     } else if (hitsOrient.length > 1) {
       optionsAmbigues = hitsOrient;
+    }
+  }
+  // Dernier recours : le type de voie a été omis ("2219 Duvernay",
+  // "7620 47e"). On l'insère (AV, R, BOUL, …). Si plusieurs types
+  // correspondent, l'adresse est ambiguë et les options sont
+  // proposées plutôt que de choisir au hasard.
+  if (!cleAppariee && !optionsAmbigues) {
+    const hitsInsertion: string[] = [];
+    for (const b of bases) {
+      const parts = b.split(" ");
+      if (parts.length < 2 || estTypeVoie(parts[1])) continue;
+      const [civique, ...rue] = parts;
+      for (const t of TYPES_VOIE_INSERTION) {
+        const cle = suiteN
+          ? `${civique} ${t} ${rue.join(" ")}|APT ${suiteN}`
+          : `${civique} ${t} ${rue.join(" ")}`;
+        if (vus.has(cle)) continue;
+        vus.add(cle);
+        const hit = map[cle];
+        if (hit && hit.length > 0 && !hitsInsertion.includes(cle)) {
+          hitsInsertion.push(cle);
+        }
+      }
+    }
+    if (hitsInsertion.length === 1) {
+      cleAppariee = hitsInsertion[0];
+      fiches = map[hitsInsertion[0]];
+    } else if (hitsInsertion.length > 1) {
+      optionsAmbigues = hitsInsertion;
     }
   }
   if (optionsAmbigues) {
@@ -479,6 +523,41 @@ export function estimate(input: EstimateInput): EstimateResult {
 }
 
 /**
+ * Cherche une adresse introuvable dans les autres villes couvertes.
+ *
+ * Repli côté API quand la ville sélectionnée ne contient pas l'adresse
+ * (ex. une adresse de Laval cherchée avec « Montréal » sélectionné).
+ * Ne sert qu'à suggérer la bonne ville — l'estimation elle-même reste
+ * calculée ville par ville. Une adresse ambiguë (orientation E/O/N/S
+ * à préciser) compte comme trouvée : l'adresse existe bien dans
+ * cette ville.
+ */
+export function suggererAutresVilles(
+  input: Pick<EstimateInput, "ville" | "adresse" | "suite">,
+): { slug: VilleSlug; nom: string }[] {
+  const out: { slug: VilleSlug; nom: string }[] = [];
+  for (const v of VILLES) {
+    if (v.slug === input.ville) continue;
+    let r: EstimateResult;
+    try {
+      r = estimate({
+        ville: v.slug as VilleSlug,
+        adresse: input.adresse,
+        suite: input.suite,
+      });
+    } catch {
+      continue; // index indisponible : ville ignorée
+    }
+    if (r.found) {
+      out.push({ slug: v.slug as VilleSlug, nom: v.nom });
+    } else if (r.reason === "adresse_ambigue") {
+      out.push({ slug: v.slug as VilleSlug, nom: v.nom });
+    }
+  }
+  return out;
+}
+
+/**
  * Suggestions d'autocomplétion pour un champ d'adresse
  * (recherche par préfixe sur les clés normalisées, via dichotomie).
  */
@@ -487,9 +566,45 @@ export function suggestAddresses(
   query: string,
   limit = 8,
 ): string[] {
-  const prefix = normalizeAddress(query);
-  if (!prefix || prefix.length < 2) return [];
+  const firstPrefix = normalizeAddress(query);
+  if (!firstPrefix || firstPrefix.length < 2) return [];
+  // La convention d'ordre du type de voie varie selon les rôles
+  // ("47e Avenue" à Montréal, "Avenue 47e" à Laval) : on essaie les
+  // deux ordres pour l'autocomplétion aussi.
+  const prefixes = [firstPrefix];
+  const variante = varianteOrdreType(firstPrefix);
+  if (variante) prefixes.push(variante);
   const { sortedKeys } = loadIndex(ville);
+  for (const prefix of prefixes) {
+    const out = searchPrefix(sortedKeys, prefix);
+    if (out.length > 0) return rankSuggestions(prefix, out).slice(0, limit);
+  }
+  // Dernier recours : le type de voie a été omis dans la frappe
+  // ("7620 47e", "2219 Duvernay"). On essaie chaque type de voie et
+  // on fusionne les suggestions trouvées.
+  const parts = firstPrefix.split(" ");
+  if (parts.length >= 2 && !estTypeVoie(parts[1])) {
+    const [civique, ...rue] = parts;
+    const merged: string[] = [];
+    const seen = new Set<string>();
+    for (const t of TYPES_VOIE_INSERTION) {
+      const prefix = `${civique} ${t} ${rue.join(" ")}`;
+      const out = rankSuggestions(prefix, searchPrefix(sortedKeys, prefix));
+      for (const k of out) {
+        if (seen.has(k)) continue;
+        seen.add(k);
+        merged.push(k);
+        if (merged.length >= 60) break;
+      }
+      if (merged.length >= 60) break;
+    }
+    if (merged.length > 0) return merged.slice(0, limit);
+  }
+  return [];
+}
+
+/** Recherche par préfixe sur les clés triées (dichotomie). */
+function searchPrefix(sortedKeys: string[], prefix: string): string[] {
   let lo = 0;
   let hi = sortedKeys.length;
   while (lo < hi) {
@@ -503,10 +618,16 @@ export function suggestAddresses(
     if (!k.startsWith(prefix)) break;
     out.push(k);
   }
-  // Quand le dernier mot tapé est alphabétique ("9 av", "285 boul"),
-  // on fait remonter les rues nommées devant les voies numérotées
-  // ("9 AV SAURIOL" avant "9 AV 1RE") : l'utilisateur qui cherche une
-  // voie numérotée tape un chiffre, qui garde l'ordre naturel.
+  return out;
+}
+
+/**
+ * Quand le dernier mot tapé est alphabétique ("9 av", "285 boul"),
+ * on fait remonter les rues nommées devant les voies numérotées
+ * ("9 AV SAURIOL" avant "9 AV 1RE") : l'utilisateur qui cherche une
+ * voie numérotée tape un chiffre, qui garde l'ordre naturel.
+ */
+function rankSuggestions(prefix: string, out: string[]): string[] {
   const dernierMot = prefix.split(" ").pop() ?? "";
   if (/^[A-Z]{2,}$/.test(dernierMot)) {
     const commenceParChiffre = (k: string): number => {
@@ -515,5 +636,5 @@ export function suggestAddresses(
     };
     out.sort((a, b) => commenceParChiffre(a) - commenceParChiffre(b));
   }
-  return out.slice(0, limit);
+  return out;
 }

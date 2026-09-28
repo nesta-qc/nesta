@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   estimate,
   isVilleSlug,
+  suggererAutresVilles,
   type CategorieBien,
   type PorteePlex,
 } from "@/lib/estimation";
@@ -20,7 +21,10 @@ import {
  *                 projectionAnnees?: 3 }
  *   → EstimateResult (found: true) ou { found: false, reason }.
  *     reason peut être "adresse_ambigue" avec options[] quand
- *     l'orientation (E/O/N/S) doit être précisée.
+ *     l'orientation (E/O/N/S) doit être précisée, ou
+ *     "adresse_introuvable" avec villesSuggerees[] quand l'adresse
+ *     existe dans une autre ville couverte (mauvaise ville
+ *     sélectionnée).
  *
  * Utilisée par la page /estimation et par tout parcours vendeur /
  * acheteur ayant besoin d'une évaluation indicative.
@@ -92,6 +96,18 @@ export async function POST(request: Request) {
           : undefined,
       projectionAnnees: horizon >= 1 && horizon <= 10 ? horizon : undefined,
     });
+    if (!result.found && result.reason === "adresse_introuvable") {
+      // L'adresse existe peut-être dans une autre ville couverte
+      // (ex. adresse de Laval cherchée avec « Montréal » sélectionné).
+      const villesSuggerees = suggererAutresVilles({
+        ville,
+        adresse,
+        suite: typeof suite === "string" && suite.trim() ? suite : undefined,
+      });
+      if (villesSuggerees.length > 0) {
+        return NextResponse.json({ ...result, villesSuggerees });
+      }
+    }
     return NextResponse.json(result);
   } catch (error) {
     console.error("POST /api/estimation :", error);

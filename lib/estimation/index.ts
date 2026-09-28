@@ -31,7 +31,7 @@
  * CC-BY 4.0). Estimations INDICATIVES — jamais des évaluations agréées.
  * ============================================================ */
 
-export { estimate, suggestAddresses } from "./engine";
+export { estimate, suggestAddresses, suggererAutresVilles } from "./engine";
 export type {
   CategorieBien,
   PorteePlex,

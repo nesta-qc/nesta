@@ -134,6 +134,55 @@ export function normalizeSuite(s: string): string {
 }
 
 /**
+ * Variante avec le type de voie déplacé à l'autre bout
+ * ("7620 47E AV" → "7620 AV 47E", et inversement).
+ *
+ * Les rôles fonciers n'ordonnent pas le type de voie de la même façon
+ * partout : Montréal écrit "47e Avenue" ("47E AV"), Laval écrit
+ * "Avenue 47e" ("AV 47E"). La normalisation est déterministe par
+ * ville, donc la clé exacte dépend de la convention source.
+ *
+ * Utilisée UNIQUEMENT comme repli au moment de la recherche : la
+ * normalisation (et donc les clés d'index) est inchangée, les scripts
+ * de construction des index n'ont pas besoin d'être modifiés.
+ * On ne déplace jamais une orientation finale (E/O/N/S) : le repli
+ * sur les orientations cardinales s'en charge séparément.
+ */
+const ABREV_TYPES = new Set(Object.values(TYPE_TABLE));
+const ORIENTATIONS = new Set(["E", "O", "N", "S"]);
+
+/** Vrai si le token est une abréviation de type de voie ("AV", "R", …). */
+export function estTypeVoie(token: string): boolean {
+  return ABREV_TYPES.has(token);
+}
+
+/**
+ * Abréviations de types de voie, pour le repli « type omis »
+ * ("2219 Duvernay" → "2219 R DUVERNAY"). Ordre = probabilité.
+ */
+export const TYPES_VOIE_INSERTION: string[] = [
+  ...new Set(Object.values(TYPE_TABLE)),
+];
+
+export function varianteOrdreType(cleNormalisee: string): string | null {
+  const parts = cleNormalisee.split(" ");
+  if (parts.length < 3) return null; // civique + au moins 2 mots de rue
+  const [civique, ...rue] = parts;
+  const premier = rue[0];
+  const dernier = rue[rue.length - 1];
+  if (ORIENTATIONS.has(dernier)) return null;
+  const premierEstType = ABREV_TYPES.has(premier);
+  const dernierEstType = ABREV_TYPES.has(dernier);
+  if (dernierEstType && !premierEstType) {
+    return [civique, dernier, ...rue.slice(0, -1)].join(" ");
+  }
+  if (premierEstType && !dernierEstType) {
+    return [civique, ...rue.slice(1), premier].join(" ");
+  }
+  return null;
+}
+
+/**
  * Variante sans particules ("285 BOUL DE LA CITE" → "285 BOUL CITE"),
  * utilisée en second essai quand la recherche exacte ne trouve rien.
  */
