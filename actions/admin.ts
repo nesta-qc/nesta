@@ -1051,6 +1051,29 @@ export async function getAdminServiceRequests(options: {
   };
 }
 
+/** Toutes les demandes de service (sans pagination) pour le pipeline kanban. */
+export async function getPipelineServiceRequests(): Promise<
+  ServiceRequestListItem[]
+> {
+  if (!hasSupabaseConfig()) return [];
+  const admin = await assertAdmin();
+  if (!admin) return [];
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("service_requests")
+    .select(
+      "id, service_id, project_name, contact_name, contact_email, contact_phone, status, created_at",
+    )
+    .order("created_at", { ascending: false })
+    .limit(500);
+  if (error) {
+    console.warn("[admin] pipeline service_requests:", error.message);
+    return [];
+  }
+  return asRows<ServiceRequestListItem>(data);
+}
+
 export interface ServiceRequestDetail extends ServiceRequestListItem {
   user_id: string | null;
   description: string;
@@ -1123,6 +1146,7 @@ export async function setServiceRequestStatus(
 
   revalidatePath("/admin");
   revalidatePath("/admin/requests");
+  revalidatePath("/admin/pipeline");
   revalidatePath(`/admin/requests/${id}`);
   return { ok: true };
 }

@@ -45,7 +45,14 @@ export function AdminNav({
     },
     {
       title: "Services",
-      items: [{ href: "/admin/requests", label: "Demandes", badge: requestCount }],
+      items: [
+        { href: "/admin/pipeline", label: "Pipeline" },
+        { href: "/admin/requests", label: "Demandes", badge: requestCount },
+      ],
+    },
+    {
+      title: "Finances",
+      items: [{ href: "/admin/revenus", label: "Revenus" }],
     },
     {
       title: "Développement",

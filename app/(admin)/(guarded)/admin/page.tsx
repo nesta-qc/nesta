@@ -5,6 +5,7 @@ import {
   getCommandCenter,
   getRecentActivity,
 } from "@/actions/admin";
+import { getRevenueStats } from "@/actions/revenue";
 import { activityKindLabel } from "@/components/admin/format";
 import { ADMIN_PERIODS, isAdminPeriod } from "@/lib/admin";
 import { StatCard } from "@/components/admin/StatCard";
@@ -35,10 +36,11 @@ export default async function AdminOverviewPage({
   const rawPeriod = Array.isArray(sp.period) ? sp.period[0] : sp.period;
   const period = isAdminPeriod(rawPeriod) ? rawPeriod : "30d";
 
-  const [stats, command, activity] = await Promise.all([
+  const [stats, command, activity, revenue] = await Promise.all([
     getOverviewStats(period),
     getCommandCenter(),
     getRecentActivity(20),
+    getRevenueStats(),
   ]);
 
   const periodLabel =
@@ -104,11 +106,22 @@ export default async function AdminOverviewPage({
           }
           subTone={stats && stats.leadsPending > 0 ? "warn" : "default"}
         />
-        <StatCard
-          label="Revenus"
-          value="0 $"
-          sub="Aucun paiement enregistré — section à brancher en Phase 2"
-        />
+        <Link href="/admin/revenus" className="block rounded-2xl transition-transform hover:-translate-y-0.5">
+          <StatCard
+            label="Revenus"
+            value={`${(revenue.totalCents / 100).toLocaleString("fr-CA", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })} $`}
+            sub={
+              !revenue.hasTable
+                ? "Registre à initialiser (migration 000015)"
+                : revenue.count === 0
+                  ? "Aucun encaissement — voir l'onglet Revenus"
+                  : `${revenue.count} encaissement${revenue.count > 1 ? "s" : ""} — voir le détail`
+            }
+          />
+        </Link>
       </div>
 
       {/* Command Center. */}
