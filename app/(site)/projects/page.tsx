@@ -19,6 +19,9 @@ const STATUS_LABELS: Record<string, string> = {
   completed: "Terminé",
 };
 
+/** Courriel de contact NESTA Pro — à confirmer par Gabriel. */
+const PRO_CONTACT_EMAIL = "pro@nesta.ca";
+
 /**
  * Projets neufs : uniquement des développements réels.
  * Si vide : page institutionnelle + alerte email réelle.
@@ -117,6 +120,60 @@ export default async function ProjectsPage() {
           ))}
         </div>
       )}
+      {/* NESTA Pro — offre promoteurs */}
+      <section className="mt-16 overflow-hidden rounded-2xl bg-forest text-ivory">
+        <div className="grid gap-10 p-8 sm:p-12 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-champagne">
+              NESTA Pro
+            </p>
+            <h2 className="mt-2 font-display text-3xl sm:text-4xl">
+              Vous êtes promoteur ?
+            </h2>
+            <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ivory/70">
+              Publiez vos projets neufs sur Nesta et présentez-les à des
+              acheteurs qui comprennent déjà le potentiel avant de visiter.
+            </p>
+            <ul className="mt-6 flex flex-col gap-2.5 text-sm text-ivory/85">
+              {[
+                "Page projet dédiée avec vos visuels",
+                "Unités, prix et disponibilités à jour",
+                "Contact direct vers votre équipe des ventes",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2.5">
+                  <svg
+                    aria-hidden
+                    viewBox="0 0 16 16"
+                    className="mt-0.5 h-4 w-4 shrink-0 text-champagne"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                  >
+                    <path d="M3 8.5l3.5 3.5L13 4.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-xl bg-white/5 p-6 sm:p-8">
+            <p className="font-display text-xl">Pilote gratuit de 3 mois</p>
+            <p className="mt-2 text-sm leading-relaxed text-ivory/70">
+              Ensuite 4 800 $/an par projet, ou 490 $/mois. Sans engagement.
+            </p>
+            <Link
+              href={`mailto:${PRO_CONTACT_EMAIL}?subject=Projet%20NESTA%20Pro%20%E2%80%94%20pilote%20gratuit`}
+              className="mt-6 inline-block rounded-full bg-champagne px-6 py-3 text-sm font-semibold text-charcoal transition-opacity hover:opacity-90"
+            >
+              Proposer votre projet
+            </Link>
+            <p className="mt-3 text-xs text-ivory/50">
+              On s&apos;occupe de tout : il suffit de vos plans et de votre
+              grille de prix.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
