@@ -34,6 +34,7 @@
 export { estimate, suggestAddresses } from "./engine";
 export type {
   CategorieBien,
+  PorteePlex,
   EstimateInput,
   EstimateNotFound,
   EstimateResult,

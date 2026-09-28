@@ -66,6 +66,9 @@ export type CategorieBien =
   | "multi"
   | "commercial";
 
+/** Portée d'une estimation de plex : tout l'immeuble ou un seul logement. */
+export type PorteePlex = "immeuble" | "logement";
+
 export interface EstimateInput {
   ville: VilleSlug;
   /** Adresse en saisie libre, ex. "2219 rue Duvernay" */
@@ -83,6 +86,20 @@ export interface EstimateInput {
    * fiche « maison » de < 150 m² → facteur condo, sinon son type.
    */
   typeBien?: CategorieBien;
+  /**
+   * Portée pour un plex : "immeuble" (défaut, valeur de tout
+   * l'immeuble) ou "logement" (valeur indicative d'un seul logement
+   * = valeur de l'immeuble ÷ nombre de logements). Ignoré si la
+   * catégorie calculée n'est pas "plex".
+   */
+  porteePlex?: PorteePlex;
+  /**
+   * Horizon de projection en années (1 à 10). Quand il est fourni,
+   * le résultat inclut une projection indicative de la valeur à cet
+   * horizon (scénario de poursuite de la tendance implicite de la
+   * calibration). Sans horizon, seule la valeur actuelle est calculée.
+   */
+  projectionAnnees?: number;
 }
 
 export interface EstimateSuccess {
@@ -107,6 +124,22 @@ export interface EstimateSuccess {
   nbLogements: number;
   /** Nombre de fiches à cette adresse (sans n° de suite) */
   nbFichesAdresse: number;
+  /** Portée retenue pour un plex ("logement" = un seul logement). */
+  porteePlex?: PorteePlex;
+  /** Référence de marché de la calibration, ex. "T2 2026". */
+  referenceMarche: string;
+  /**
+   * Projection indicative à l'horizon demandé (scénario tendanciel).
+   * La valeur centrale et la fourchette restent la VALEUR ACTUELLE.
+   */
+  projection?: {
+    annees: number;
+    /** Taux annuel implicite de la calibration (%). */
+    tauxAnnuelPct: number;
+    estimation: number;
+    fourchetteBasse: number;
+    fourchetteHaute: number;
+  };
   /** Précision sur un repli de règle (ex. grand condo classé maison) */
   note?: string;
   arrondissement?: string;
@@ -117,8 +150,14 @@ export interface EstimateSuccess {
 
 export interface EstimateNotFound {
   found: false;
-  reason: "adresse_invalide" | "adresse_introuvable";
+  reason: "adresse_invalide" | "adresse_introuvable" | "adresse_ambigue";
   cleNormalisee?: string;
+  /**
+   * Clés d'index candidates quand l'adresse est ambiguë
+   * (ex. orientation Est/Ouest non précisée). L'appelant peut les
+   * proposer à l'utilisateur pour lever l'ambiguïté.
+   */
+  options?: string[];
 }
 
 export type EstimateResult = EstimateSuccess | EstimateNotFound;
@@ -129,6 +168,8 @@ const DATA_DIR = join(process.cwd(), "data", "estimation");
 
 interface FactorsFile {
   version: string;
+  /** Référence de marché de la calibration, ex. "T2 2026" (APCIQ). */
+  reference_marche: string;
   fourchette_pct: number;
   seuil_condo_m2: number;
   villes: Record<
@@ -217,29 +258,76 @@ export function estimate(input: EstimateInput): EstimateResult {
   const baseKey = normalizeAddress(input.adresse);
   if (!baseKey) return { found: false, reason: "adresse_invalide" };
 
-  // 1) avec la suite d'abord, 2) sans la suite, 3) variantes sans particules
-  const candidates: string[] = [];
-  if (input.suite && normalizeSuite(input.suite)) {
-    candidates.push(`${baseKey}|APT ${normalizeSuite(input.suite)}`);
-  }
-  candidates.push(baseKey);
+  // Bases de recherche : clé exacte, variante sans particules
+  // ("285 BOUL DE LA CITE" → "285 BOUL CITE"), variante sans
+  // orientation finale ("1000 AV DU MONT-ROYAL E" → sans le " E").
+  const bases: string[] = [baseKey];
   const stripped = stripParticules(baseKey);
-  if (stripped && stripped !== baseKey) {
-    if (input.suite && normalizeSuite(input.suite)) {
-      candidates.push(`${stripped}|APT ${normalizeSuite(input.suite)}`);
-    }
-    candidates.push(stripped);
+  if (stripped && stripped !== baseKey) bases.push(stripped);
+  for (const b of [...bases]) {
+    const sansOrient = b.replace(/ ([EONS])$/, "");
+    if (sansOrient !== b && !bases.includes(sansOrient)) bases.push(sansOrient);
   }
 
+  const suiteN =
+    input.suite && normalizeSuite(input.suite)
+      ? normalizeSuite(input.suite)
+      : null;
+
+  // 1) Recherche directe (avec suite d'abord, puis sans).
+  // 2) Repli sur les orientations cardinales : beaucoup d'avenues et
+  //    de boulevards portent un suffixe E/O/N/S que l'utilisateur omet
+  //    ("1000 avenue du Mont-Royal" → "1000 AV DU MONT-ROYAL E").
+  //    Si plusieurs orientations correspondent, l'adresse est ambiguë
+  //    et les options sont renvoyées pour lever l'ambiguïté côté UI.
+  const ORIENTATIONS = ["E", "O", "N", "S"];
   let cleAppariee: string | null = null;
   let fiches: IndexRecord[] | undefined;
-  for (const c of candidates) {
-    const hit = map[c];
+  const vus = new Set<string>();
+  const testCle = (cle: string): boolean => {
+    if (vus.has(cle)) return false;
+    vus.add(cle);
+    const hit = map[cle];
     if (hit && hit.length > 0) {
-      cleAppariee = c;
+      cleAppariee = cle;
       fiches = hit;
-      break;
+      return true;
     }
+    return false;
+  };
+
+  for (const b of bases) {
+    if (suiteN && testCle(`${b}|APT ${suiteN}`)) break;
+    if (testCle(b)) break;
+  }
+  let optionsAmbigues: string[] | undefined;
+  if (!cleAppariee) {
+    const hitsOrient: string[] = [];
+    for (const b of bases) {
+      for (const o of ORIENTATIONS) {
+        const cle = suiteN ? `${b} ${o}|APT ${suiteN}` : `${b} ${o}`;
+        if (vus.has(cle)) continue;
+        vus.add(cle);
+        const hit = map[cle];
+        if (hit && hit.length > 0 && !hitsOrient.includes(cle)) {
+          hitsOrient.push(cle);
+        }
+      }
+    }
+    if (hitsOrient.length === 1) {
+      cleAppariee = hitsOrient[0];
+      fiches = map[hitsOrient[0]];
+    } else if (hitsOrient.length > 1) {
+      optionsAmbigues = hitsOrient;
+    }
+  }
+  if (optionsAmbigues) {
+    return {
+      found: false,
+      reason: "adresse_ambigue",
+      cleNormalisee: baseKey,
+      options: optionsAmbigues,
+    };
   }
   if (!cleAppariee || !fiches) {
     return {
@@ -310,8 +398,51 @@ export function estimate(input: EstimateInput): EstimateResult {
   }
 
   const facteur = getFacteur(factors, input.ville, bIdx, categorie);
-  const estimation = Math.round(val * facteur);
   const pct = factors.fourchette_pct / 100;
+
+  // Portée plex : "logement" = valeur indicative d'un seul logement
+  // (valeur de l'immeuble ÷ nombre de logements). Sinon, l'immeuble
+  // complet est estimé (comportement par défaut).
+  let porteePlex: PorteePlex | undefined;
+  let valCalculee = val;
+  if (categorie === "plex" && input.porteePlex === "logement" && nblog > 1) {
+    porteePlex = "logement";
+    valCalculee = val / nblog;
+  }
+
+  const estimation = Math.round(valCalculee * facteur);
+
+  // Projection indicative à l'horizon demandé (optionnelle).
+  // Scénario de poursuite de la tendance : le taux annuel est le taux
+  // de croissance annuel composé implicite de la calibration
+  // (facteur ^ (1/années écoulées) − 1 entre la date de référence du
+  // marché du rôle et aujourd'hui). La valeur centrale reste la
+  // VALEUR ACTUELLE ; la projection est un complément clairement
+  // identifié, jamais un substitut.
+  let projection: EstimateSuccess["projection"];
+  const horizon =
+    typeof input.projectionAnnees === "number" &&
+    Number.isFinite(input.projectionAnnees)
+      ? Math.round(input.projectionAnnees)
+      : 0;
+  if (horizon >= 1 && horizon <= 10) {
+    const MS_PAR_AN = 365.25 * 24 * 3600 * 1000;
+    const refMarche = new Date(`${ville.dateReferenceMarche}T00:00:00`);
+    const anneesEcoulees = Math.max(
+      0.5,
+      (Date.now() - refMarche.getTime()) / MS_PAR_AN,
+    );
+    const taux = Math.pow(facteur, 1 / anneesEcoulees) - 1;
+    const mult = Math.pow(1 + taux, horizon);
+    const estProj = Math.round(estimation * mult);
+    projection = {
+      annees: horizon,
+      tauxAnnuelPct: Math.round(taux * 1000) / 10,
+      estimation: estProj,
+      fourchetteBasse: Math.round(estProj * (1 - pct)),
+      fourchetteHaute: Math.round(estProj * (1 + pct)),
+    };
+  }
 
   return {
     found: true,
@@ -321,11 +452,13 @@ export function estimate(input: EstimateInput): EstimateResult {
     adresseNormalisee: baseKey,
     ...(typeBien ? { typeBienDemande: typeBien } : {}),
     categorie,
+    ...(porteePlex ? { porteePlex } : {}),
     facteur,
-    valeurAuRole: val,
+    valeurAuRole: Math.round(valCalculee),
     estimation,
     fourchetteBasse: Math.round(estimation * (1 - pct)),
     fourchetteHaute: Math.round(estimation * (1 + pct)),
+    ...(projection ? { projection } : {}),
     superficieTerrainM2: supT,
     superficieBatimentM2: supB,
     anneeConstruction: annee,
@@ -340,6 +473,7 @@ export function estimate(input: EstimateInput): EstimateResult {
       : {}),
     millesimeRole: ville.millesimeRole,
     dateReferenceMarche: ville.dateReferenceMarche,
+    referenceMarche: factors.reference_marche,
     avertissement: AVERTISSEMENT,
   };
 }
@@ -364,10 +498,22 @@ export function suggestAddresses(
     else hi = mid;
   }
   const out: string[] = [];
-  for (let i = lo; i < sortedKeys.length && out.length < limit; i++) {
+  for (let i = lo; i < sortedKeys.length && out.length < 60; i++) {
     const k = sortedKeys[i];
     if (!k.startsWith(prefix)) break;
     out.push(k);
   }
-  return out;
+  // Quand le dernier mot tapé est alphabétique ("9 av", "285 boul"),
+  // on fait remonter les rues nommées devant les voies numérotées
+  // ("9 AV SAURIOL" avant "9 AV 1RE") : l'utilisateur qui cherche une
+  // voie numérotée tape un chiffre, qui garde l'ordre naturel.
+  const dernierMot = prefix.split(" ").pop() ?? "";
+  if (/^[A-Z]{2,}$/.test(dernierMot)) {
+    const commenceParChiffre = (k: string): number => {
+      const c = k.slice(prefix.length).trim().charAt(0);
+      return c >= "0" && c <= "9" ? 1 : 0;
+    };
+    out.sort((a, b) => commenceParChiffre(a) - commenceParChiffre(b));
+  }
+  return out.slice(0, limit);
 }
