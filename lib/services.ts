@@ -17,6 +17,12 @@ export interface NestaService {
     label: string;
     detail: string;
   };
+  /** Forfaits affichés sous le prix (ex. 3D : Essentiel / Immersif). */
+  tiers?: {
+    name: string;
+    price: string;
+    detail: string;
+  }[];
   cta: string;
 }
 
@@ -65,6 +71,23 @@ export const NESTA_SERVICES: NestaService[] = [
     ],
     deliverable: "Rendus HD + lien de visite virtuelle",
     startingPrice: 299,
+    tiers: [
+      {
+        name: "Essentiel",
+        price: "299 $",
+        detail: "modèle 3D + 2-3 rendus HD",
+      },
+      {
+        name: "Immersif",
+        price: "599 $",
+        detail: "+ visite virtuelle navigable",
+      },
+      {
+        name: "Sur mesure",
+        price: "sur devis",
+        detail: "projets complexes",
+      },
+    ],
     cta: "Demander une modélisation",
   },
 ];

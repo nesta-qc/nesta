@@ -82,6 +82,26 @@ export default function ServicesPage() {
                     — {s.addon.detail}
                   </p>
                 ) : null}
+                {s.tiers ? (
+                  <ul className="mt-3 flex flex-col gap-1.5 border-t border-border pt-3">
+                    {s.tiers.map((t) => (
+                      <li
+                        key={t.name}
+                        className="flex items-baseline justify-between gap-3 text-sm"
+                      >
+                        <span className="text-charcoal/70">
+                          <span className="font-semibold text-charcoal">
+                            {t.name}
+                          </span>{" "}
+                          — {t.detail}
+                        </span>
+                        <span className="shrink-0 font-display text-forest">
+                          {t.price}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
                 <Link
                   href={`/services/demande?service=${s.id}`}
                   className="mt-4 block"
