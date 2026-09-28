@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Button, Card } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { GlowCard } from "@/components/services/GlowCard";
 import { NESTA_SERVICES } from "@/lib/services";
 
 export const metadata: Metadata = {
@@ -45,7 +46,7 @@ export default function ServicesPage() {
         <div className="grid gap-4 md:grid-cols-3">
           {NESTA_SERVICES.map((s, i) => (
             <div key={s.id} id={s.id} className="scroll-mt-24">
-            <Card className="flex h-full flex-col p-8">
+            <GlowCard>
               <span className="font-display text-sm text-champagne">{`0${i + 1}`}</span>
               <h2 className="mt-3 font-display text-2xl text-charcoal">{s.name}</h2>
               <p className="mt-2 text-sm text-charcoal/55">{s.tagline}</p>
@@ -90,7 +91,7 @@ export default function ServicesPage() {
                   </Button>
                 </Link>
               </div>
-            </Card>
+            </GlowCard>
             </div>
           ))}
         </div>
