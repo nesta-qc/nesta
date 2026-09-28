@@ -47,6 +47,10 @@ export function AdminNav({
       title: "Services",
       items: [{ href: "/admin/requests", label: "Demandes", badge: requestCount }],
     },
+    {
+      title: "Développement",
+      items: [{ href: "/admin/prospection", label: "Prospection" }],
+    },
   ];
 
   const isActive = (item: NavItem) =>
