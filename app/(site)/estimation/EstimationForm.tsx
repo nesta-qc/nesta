@@ -465,6 +465,14 @@ export function EstimationForm() {
                 {result.millesimeRole}
               </dd>
             </div>
+            {result.superficieTerrainM2 > 0 && (
+              <div>
+                <dt className="text-charcoal/50">Superficie du terrain</dt>
+                <dd className="font-medium text-charcoal">
+                  {result.superficieTerrainM2} m²
+                </dd>
+              </div>
+            )}
             {result.superficieBatimentM2 > 0 && (
               <div>
                 <dt className="text-charcoal/50">Superficie du bâtiment</dt>
@@ -490,6 +498,16 @@ export function EstimationForm() {
             <p className="mt-4 text-sm text-charcoal/60">
               Estimation pour un seul logement : valeur de l&apos;immeuble
               divisée par le nombre de logements ({result.nbLogements}).
+            </p>
+          )}
+          {result.ajustementTerrain && (
+            <p className="mt-4 text-sm text-charcoal/60">
+              Terrain pris en compte : {result.ajustementTerrain.superficieM2}{" "}
+              m²
+              {result.ajustementTerrain.ajustementPct > 0
+                ? `, au-dessus de la normale du secteur (médiane ${result.ajustementTerrain.medianeSecteurM2} m²) : +${result.ajustementTerrain.ajustementPct} %`
+                : `, en dessous de la normale du secteur (médiane ${result.ajustementTerrain.medianeSecteurM2} m²) : ${result.ajustementTerrain.ajustementPct} %`}
+              .
             </p>
           )}
 

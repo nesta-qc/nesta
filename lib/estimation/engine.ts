@@ -129,6 +129,16 @@ export interface EstimateSuccess {
   nbFichesAdresse: number;
   /** Portée retenue pour un plex ("logement" = un seul logement). */
   porteePlex?: PorteePlex;
+  /**
+   * Détail de l'ajustement lié au terrain (jardin, stationnement,
+   * cour…) quand le terrain s'écarte nettement de la normale locale.
+   */
+  ajustementTerrain?: {
+    superficieM2: number;
+    medianeSecteurM2: number;
+    /** Pourcentage appliqué, ex. 4.2 ou -3.1. */
+    ajustementPct: number;
+  };
   /** Référence de marché de la calibration, ex. "T2 2026". */
   referenceMarche: string;
   /**
@@ -181,6 +191,21 @@ interface FactorsFile {
   reference_marche: string;
   fourchette_pct: number;
   seuil_condo_m2: number;
+  /**
+   * Ajustement lié au terrain (jardin, stationnement, cour…) :
+   * la valeur est multipliée par 1 + élasticité × ln(supT / médiane),
+   * borné entre ajustement_terrain_min et _max. La médiane est celle
+   * des terrains de la même catégorie dans le secteur (ville ou
+   * arrondissement), calculée sur le rôle : un terrain nettement plus
+   * grand que la normale locale vaut une prime, un terrain nettement
+   * plus petit une décote. Heuristique documentée et bornée, appliquée
+   * uniquement à maison/plex/multi (pas aux condos : terrain partagé
+   * déjà reflété dans le facteur condo ; pas aux terrains vacants :
+   * leur valeur au rôle est déjà 100 % foncière).
+   */
+  elasticite_terrain: number;
+  ajustement_terrain_min: number;
+  ajustement_terrain_max: number;
   villes: Record<
     string,
     {
@@ -190,6 +215,12 @@ interface FactorsFile {
       granularite_facteurs: "arrondissement" | "ville";
       facteurs?: Record<CategorieBien, number>;
       facteurs_par_arrondissement?: Record<string, Record<CategorieBien, number>>;
+      /** Superficie médiane des terrains (m²) par catégorie. */
+      lots_medians_m2?: Partial<Record<CategorieBien, number>>;
+      lots_medians_m2_par_arrondissement?: Record<
+        string,
+        Partial<Record<CategorieBien, number>>
+      >;
       boroughs_bidx?: string[];
     }
   >;
@@ -252,6 +283,28 @@ function getFacteur(
   if (typeof f !== "number")
     throw new Error(`Facteur manquant : ${ville} / ${categorie}`);
   return f;
+}
+
+/** Superficie médiane des terrains (m²) pour la catégorie, dans le
+ *  secteur (ville ou arrondissement). 0 si non disponible. */
+function getLotMedian(
+  factors: FactorsFile,
+  ville: VilleSlug,
+  bIdx: number,
+  categorie: CategorieBien,
+): number {
+  const v = factors.villes[ville];
+  if (!v) return 0;
+  let m: number | undefined;
+  if (v.granularite_facteurs === "arrondissement") {
+    const borough = v.boroughs_bidx?.[bIdx];
+    m = borough
+      ? v.lots_medians_m2_par_arrondissement?.[borough]?.[categorie]
+      : undefined;
+  } else {
+    m = v.lots_medians_m2?.[categorie];
+  }
+  return typeof m === "number" && m > 0 ? m : 0;
 }
 
 /**
@@ -454,7 +507,41 @@ export function estimate(input: EstimateInput): EstimateResult {
     valCalculee = val / nblog;
   }
 
-  const estimation = Math.round(valCalculee * facteur);
+  const estimationBase = Math.round(valCalculee * facteur);
+
+  // Ajustement terrain : un terrain nettement plus grand que la
+  // normale locale (place pour jardin, stationnement, cour…) vaut
+  // une prime ; nettement plus petit, une décote. L'échelle
+  // logarithmique amortit les extrêmes, le tout est borné.
+  // Appliqué uniquement à maison/plex/multi : pour un condo le
+  // terrain est partagé (déjà dans le facteur condo) et pour un
+  // terrain vacant la valeur au rôle est déjà 100 % foncière.
+  let ajustementTerrain: EstimateSuccess["ajustementTerrain"];
+  let estimation = estimationBase;
+  if (
+    supT > 0 &&
+    (categorie === "maison" ||
+      categorie === "plex" ||
+      categorie === "multi")
+  ) {
+    const med = getLotMedian(factors, input.ville, bIdx, categorie);
+    if (med > 0) {
+      const brut =
+        1 + factors.elasticite_terrain * Math.log(supT / med);
+      const borne = Math.min(
+        factors.ajustement_terrain_max,
+        Math.max(factors.ajustement_terrain_min, brut),
+      );
+      if (Math.abs(borne - 1) >= 0.005) {
+        ajustementTerrain = {
+          superficieM2: supT,
+          medianeSecteurM2: med,
+          ajustementPct: Math.round((borne - 1) * 1000) / 10,
+        };
+        estimation = Math.round(estimationBase * borne);
+      }
+    }
+  }
 
   // Projection indicative à l'horizon demandé (optionnelle).
   // Scénario de poursuite de la tendance : le taux annuel est le taux
@@ -497,6 +584,7 @@ export function estimate(input: EstimateInput): EstimateResult {
     ...(typeBien ? { typeBienDemande: typeBien } : {}),
     categorie,
     ...(porteePlex ? { porteePlex } : {}),
+    ...(ajustementTerrain ? { ajustementTerrain } : {}),
     facteur,
     valeurAuRole: Math.round(valCalculee),
     estimation,
