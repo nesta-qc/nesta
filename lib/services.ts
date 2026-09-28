@@ -14,6 +14,11 @@ export interface NestaService {
   startingPrice: number | null;
   /** "h" = tarif horaire (affiche « 35 $/h »), sinon « À partir de X $ ». */
   priceUnit?: "h";
+  /** Option payante proposée sur ce service (ex. vérification ingénieur). */
+  addon?: {
+    label: string;
+    detail: string;
+  };
   cta: string;
 }
 
@@ -45,6 +50,10 @@ export const NESTA_SERVICES: NestaService[] = [
     deliverable: "Maquette Revit + plans en PDF",
     startingPrice: 35,
     priceUnit: "h",
+    addon: {
+      label: "Vérification par ingénieur en structure",
+      detail: "sur devis",
+    },
     cta: "Demander un dessin",
   },
   {

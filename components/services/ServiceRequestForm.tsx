@@ -29,10 +29,22 @@ export function ServiceRequestForm({
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [serviceId, setServiceId] = useState(preselected);
 
   async function handleSubmit(formData: FormData) {
     setError(null);
     setPending(true);
+    /* Option ingénieur : signalée en tête de description (visible côté admin). */
+    if (
+      String(formData.get("service_id") ?? "") === "dessin-revit" &&
+      formData.get("addon_ingenieur") === "oui"
+    ) {
+      const desc = String(formData.get("description") ?? "");
+      formData.set(
+        "description",
+        `[Option demandée : vérification par ingénieur en structure] ${desc}`,
+      );
+    }
     if (anonymous) {
       const result = await createAnonymousServiceRequest(formData);
       if (result.ok) {
@@ -64,6 +76,7 @@ export function ServiceRequestForm({
           id="service_id"
           name="service_id"
           defaultValue={preselected}
+          onChange={(e) => setServiceId(e.target.value)}
           required
         >
           {NESTA_SERVICES.map((s) => (
@@ -73,6 +86,25 @@ export function ServiceRequestForm({
           ))}
         </Select>
       </Field>
+
+      {serviceId === "dessin-revit" ? (
+        <label className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border border-border bg-white p-4 text-sm">
+          <input
+            type="checkbox"
+            name="addon_ingenieur"
+            value="oui"
+            className="mt-0.5 h-4 w-4"
+          />
+          <span>
+            <span className="font-semibold text-charcoal">
+              Ajouter la vérification par un ingénieur en structure
+            </span>
+            <span className="block text-charcoal/55">
+              Tarif sur devis, en supplément du dessin à 35 $/h.
+            </span>
+          </span>
+        </label>
+      ) : null}
 
       <Field label="Nom du projet" htmlFor="project_name">
         <Input

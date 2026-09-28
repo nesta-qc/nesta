@@ -75,6 +75,14 @@ export default function ServicesPage() {
                       : `À partir de ${s.startingPrice} $`
                     : "Sur devis"}
                 </p>
+                {s.addon ? (
+                  <p className="mt-2 text-sm text-charcoal/60">
+                    <span className="font-semibold text-charcoal">
+                      + {s.addon.label}
+                    </span>{" "}
+                    — {s.addon.detail}
+                  </p>
+                ) : null}
                 <Link
                   href={`/services/demande?service=${s.id}`}
                   className="mt-4 block"
