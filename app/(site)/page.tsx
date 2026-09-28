@@ -4,6 +4,7 @@ import { HeroBackgroundSlider } from "@/components/home/HeroBackgroundSlider";
 import { HeroAddressAnalyzer } from "@/components/home/HeroAddressAnalyzer";
 import { HeroSearch } from "@/components/home/HeroSearch";
 import { ExploreSection } from "@/components/home/ExploreSection";
+import { PropertyValueSection } from "@/components/home/PropertyValueSection";
 import { SellSection } from "@/components/home/SellSection";
 import { InvestSection } from "@/components/home/InvestSection";
 import { EstimateSection } from "@/components/home/EstimateSection";
@@ -56,6 +57,9 @@ export default function Home() {
 
       {/* ---------- Parcours éditoriaux ---------- */}
       <ExploreSection />
+
+      {/* ---------- Valeur de propriété (estimation) ---------- */}
+      <PropertyValueSection />
 
       {/* ---------- Vendre ---------- */}
       <SellSection />
