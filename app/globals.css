@@ -176,15 +176,15 @@ body {
 @keyframes nesta-marker-pop {
   0% {
     opacity: 0;
-    transform: translateX(-50%) scale(0.4);
+    transform: translate(-50%, -50%) scale(0.4);
   }
   60% {
     opacity: 1;
-    transform: translateX(-50%) scale(1.12);
+    transform: translate(-50%, -50%) scale(1.12);
   }
   100% {
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
