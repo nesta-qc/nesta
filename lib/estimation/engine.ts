@@ -29,6 +29,7 @@ import { join } from "node:path";
 import {
   estTypeVoie,
   normalizeAddress,
+  normalizeStreet,
   normalizeSuite,
   stripParticules,
   TYPES_VOIE_INSERTION,
@@ -219,6 +220,10 @@ function loadFactors(): FactorsFile {
 interface CityIndex {
   map: Record<string, IndexRecord[]>;
   sortedKeys: string[];
+  /** Noms de rues normalisés triés ("R SAINT-DENIS"), pour la recherche sans numéro civique. */
+  streets: string[];
+  /** rue normalisée → indices dans sortedKeys (toutes les adresses de la rue). */
+  streetKeys: Map<string, number[]>;
 }
 
 const indexCache = new Map<VilleSlug, CityIndex>();
@@ -232,7 +237,26 @@ function loadIndex(ville: VilleSlug): CityIndex {
     IndexRecord[]
   >;
   const sortedKeys = Object.keys(map).sort();
-  const idx: CityIndex = { map, sortedKeys };
+  // Index des rues : nom normalisé → adresses. Dérivé des clés, sans
+  // toucher aux fichiers d'index. Sert la recherche par nom de rue
+  // ("saint-denis") quand l'utilisateur tape sans numéro civique.
+  const streetKeys = new Map<string, number[]>();
+  for (let i = 0; i < sortedKeys.length; i++) {
+    const key = sortedKeys[i];
+    const base = key.includes("|") ? key.slice(0, key.indexOf("|")) : key;
+    const sp = base.indexOf(" ");
+    if (sp < 0) continue;
+    const street = base.slice(sp + 1);
+    const arr = streetKeys.get(street);
+    if (arr) arr.push(i);
+    else streetKeys.set(street, [i]);
+  }
+  const idx: CityIndex = {
+    map,
+    sortedKeys,
+    streets: [...streetKeys.keys()].sort(),
+    streetKeys,
+  };
   indexCache.set(ville, idx);
   return idx;
 }
@@ -591,8 +615,12 @@ export function suggererAutresVilles(
 }
 
 /**
- * Suggestions d'autocomplétion pour un champ d'adresse
- * (recherche par préfixe sur les clés normalisées, via dichotomie).
+ * Suggestions d'autocomplétion pour un champ d'adresse.
+ *
+ * - Frappe avec numéro civique ("550 rue saint-denis") : recherche
+ *   par préfixe sur les clés normalisées, via dichotomie.
+ * - Frappe sans numéro ("saint-denis", "rue saint-denis 550") :
+ *   recherche par nom de rue sur l'index des rues, pour toutes les villes.
  */
 export function suggestAddresses(
   ville: VilleSlug,
@@ -600,7 +628,10 @@ export function suggestAddresses(
   limit = 8,
 ): string[] {
   const firstPrefix = normalizeAddress(query);
-  if (!firstPrefix || firstPrefix.length < 2) return [];
+  if (!firstPrefix) {
+    return suggestStreetQuery(ville, query, limit);
+  }
+  if (firstPrefix.length < 2) return [];
   // Tolérances cumulées sur le préfixe :
   // - ordinaux ("280 5EME" → "280 5 IEME" : "5e"/"5ème"/"5eme" tapés,
   //   "5 IEME" au rôle) ;
@@ -650,7 +681,116 @@ export function suggestAddresses(
     if (merged.length >= 60) break;
   }
   if (merged.length > 0) return merged.slice(0, limit);
-  return [];
+  // Dernier repli : la frappe est peut-être un nom de rue dont le
+  // début ressemble à un numéro civique ("5e avenue" → normalizeAddress
+  // lit "5" + lettre "E" comme civique). On la relit comme une rue.
+  return suggestStreetQuery(ville, query, limit);
+}
+
+/**
+ * Interprète la frappe comme un nom de rue (sans numéro civique en
+ * tête). Les chiffres finaux éventuels filtrent les numéros
+ * ("saint-denis 550" → adresses en 550… de la rue Saint-Denis).
+ */
+function suggestStreetQuery(
+  ville: VilleSlug,
+  query: string,
+  limit: number,
+): string[] {
+  const m = query.match(/^(.*?)\s*(\d+)\s*$/);
+  const streetPart = (m ? m[1] : query).trim();
+  const civicDigits = m ? m[2] : null;
+  const streetNorm = normalizeStreet(streetPart);
+  if (!streetNorm || streetNorm.length < 2) return [];
+  return suggestByStreet(ville, streetNorm, civicDigits, limit);
+}
+
+/** "BOUL 5 IEME" ↔ "5 IEME BOUL" (nom de rue seul, sans civique). */
+function swapStreetTypeOrder(street: string): string | null {
+  const parts = street.split(" ");
+  if (parts.length < 2) return null;
+  const premier = parts[0];
+  const dernier = parts[parts.length - 1];
+  if (dernier === "E" || dernier === "O" || dernier === "N" || dernier === "S")
+    return null;
+  if (estTypeVoie(premier) && !estTypeVoie(dernier)) {
+    return [...parts.slice(1), premier].join(" ");
+  }
+  if (estTypeVoie(dernier) && !estTypeVoie(premier)) {
+    return [dernier, ...parts.slice(0, -1)].join(" ");
+  }
+  return null;
+}
+
+/**
+ * Suggestions par nom de rue, quand la frappe ne commence pas par un
+ * numéro civique ("saint-denis", "rue saint-denis", "saint-denis 550").
+ *
+ * streetNorm : nom de rue normalisé (normalizeStreet) ; civicDigits :
+ * chiffres finaux éventuels pour filtrer les numéros ("550").
+ * Dérivé des index d'adresses existants : fonctionne pour les 8 villes
+ * sans reconstruire les index.
+ */
+function suggestByStreet(
+  ville: VilleSlug,
+  streetNorm: string,
+  civicDigits: string | null,
+  limit: number,
+): string[] {
+  const { streets, streetKeys, sortedKeys } = loadIndex(ville);
+  // Tolérances : ordinaux ("5E BOUL" → "5 IEME BOUL") et ordre du
+  // type de voie ("BOUL 5 IEME" ↔ "5 IEME BOUL").
+  const streetPrefixes = [streetNorm];
+  for (const v of variantesOrdinaux(streetNorm)) {
+    if (!streetPrefixes.includes(v)) streetPrefixes.push(v);
+  }
+  // Sans type de voie en tête ("saint-denis") : on essaie chaque type
+  // ("R ST-DENIS", "AV ST-DENIS", …) car les rues de l'index
+  // commencent toujours par leur type.
+  for (const p of [...streetPrefixes]) {
+    if (!estTypeVoie(p.split(" ")[0])) {
+      for (const t of TYPES_VOIE_INSERTION) {
+        const tp = `${t} ${p}`;
+        if (!streetPrefixes.includes(tp)) streetPrefixes.push(tp);
+      }
+    }
+  }
+  for (const p of [...streetPrefixes]) {
+    const swapped = swapStreetTypeOrder(p);
+    if (swapped && !streetPrefixes.includes(swapped))
+      streetPrefixes.push(swapped);
+  }
+  const out: string[] = [];
+  const seenStreets = new Set<string>();
+  for (const prefix of streetPrefixes) {
+    let lo = 0;
+    let hi = streets.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (streets[mid] < prefix) lo = mid + 1;
+      else hi = mid;
+    }
+    for (let i = lo; i < streets.length && out.length < 60; i++) {
+      const st = streets[i];
+      if (!st.startsWith(prefix)) break;
+      if (seenStreets.has(st)) continue;
+      seenStreets.add(st);
+      const indices = streetKeys.get(st);
+      if (!indices) continue;
+      let pris = 0;
+      for (const ki of indices) {
+        const key = sortedKeys[ki];
+        if (civicDigits) {
+          const base = key.includes("|") ? key.slice(0, key.indexOf("|")) : key;
+          const num = base.slice(0, base.indexOf(" "));
+          if (!num.startsWith(civicDigits)) continue;
+        }
+        out.push(key);
+        if (++pris >= 2 || out.length >= 60) break;
+      }
+    }
+  }
+  return out.slice(0, limit);
 }
 
 /** Recherche par préfixe sur les clés triées (dichotomie). */
