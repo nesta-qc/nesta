@@ -121,6 +121,91 @@ body {
   animation: nesta-fade-up 0.25s var(--ease-out) both;
 }
 
+/* ---------- Apparition en cascade (révélation du résultat) ----------
+   Même langage que nesta-fade-up, avec une amplitude légèrement plus
+   généreuse et un délai piloté par --nesta-delay pour l'effet cascade. */
+@keyframes nesta-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.nesta-rise {
+  animation: nesta-rise 0.45s var(--ease-out) both;
+  animation-delay: var(--nesta-delay, 0ms);
+}
+
+/* ---------- Fondu simple (menus déroulants, info-bulles) ---------- */
+@keyframes nesta-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nesta-fade-in {
+  animation: nesta-fade-in 0.18s var(--ease-out) both;
+}
+
+/* ---------- Jauge de fourchette (balayage de gauche à droite) ---------- */
+@keyframes nesta-gauge-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.nesta-gauge-fill {
+  transform-origin: left center;
+  animation: nesta-gauge-fill 0.7s var(--ease-out) both;
+  animation-delay: var(--nesta-delay, 0ms);
+}
+
+/* ---------- Marqueur curseur de la jauge ---------- */
+@keyframes nesta-marker-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.4);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.12);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.nesta-marker-pop {
+  animation: nesta-marker-pop 0.5s var(--ease-out) both;
+  animation-delay: var(--nesta-delay, 0ms);
+}
+
+/* ---------- Mouvement réduit : tout devient instantané ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .nesta-rise,
+  .nesta-fade-in,
+  .nesta-gauge-fill,
+  .nesta-marker-pop,
+  .nesta-fade-up,
+  .nesta-kenburns {
+    animation-duration: 0.01ms;
+    animation-delay: 0ms;
+  }
+}
+
 /* ---------- Marqueurs de prix (carte Leaflet) ---------- */
 .nesta-price-marker {
   background: var(--color-white);

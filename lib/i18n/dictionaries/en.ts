@@ -231,6 +231,8 @@ export const en = {
     badgeLogement: "1 unit (of {n})",
     valeurEstimee: "Estimated current value",
     fourchetteProbable: "Likely range:",
+    fourchetteMin: "Low",
+    fourchetteMax: "High",
     marcheReference: "Market reference:",
     projectionTitre: "Indicative projection — in {n} years",
     projectionFourchette: "Range:",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   Badge,
   Button,
@@ -8,8 +8,10 @@ import {
   Field,
   Input,
   Select,
+  Skeleton,
 } from "@/components/ui";
 import { formatPrice } from "@/lib/format";
+import { useCountUp } from "@/lib/hooks/useCountUp";
 import { VILLES, type VilleSlug } from "@/lib/estimation/villes";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { dictionaries, type Lang } from "@/lib/i18n/dictionaries";
@@ -55,6 +57,84 @@ function fill(
   return Object.entries(vars).reduce(
     (s, [k, v]) => s.replace(`{${k}}`, String(v)),
     template,
+  );
+}
+
+/**
+ * Jauge visuelle de la fourchette : barre dégradée balayée à l'apparition,
+ * curseur « pop » positionné sur l'estimation centrale.
+ */
+function FourchetteGauge({
+  basse,
+  haute,
+  estimation,
+  labelBas,
+  labelHaut,
+  texteBas,
+  texteHaut,
+}: {
+  basse: number;
+  haute: number;
+  estimation: number;
+  labelBas: string;
+  labelHaut: string;
+  texteBas: string;
+  texteHaut: string;
+}) {
+  const pct =
+    haute > basse
+      ? Math.min(100, Math.max(0, ((estimation - basse) / (haute - basse)) * 100))
+      : 50;
+  return (
+    <div className="mt-4">
+      <div
+        className="relative h-2.5 rounded-full bg-sand"
+        role="img"
+        aria-label={`${labelBas} : ${texteBas} — ${labelHaut} : ${texteHaut}`}
+      >
+        <div
+          className="nesta-gauge-fill absolute inset-0 rounded-full bg-gradient-to-r from-forest/30 via-forest/70 to-forest"
+          style={{ "--nesta-delay": "250ms" } as CSSProperties}
+        />
+        <div
+          className="nesta-marker-pop absolute top-1/2 h-4 w-4 rounded-full border-2 border-white bg-forest shadow-md"
+          style={{ left: `${pct}%`, "--nesta-delay": "650ms" } as CSSProperties}
+        />
+      </div>
+      <div className="mt-2 flex items-baseline justify-between text-xs">
+        <span className="text-charcoal/50">
+          {labelBas} · <span className="font-semibold text-charcoal">{texteBas}</span>
+        </span>
+        <span className="text-charcoal/50">
+          <span className="font-semibold text-charcoal">{texteHaut}</span> · {labelHaut}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Carte squelette affichée pendant le calcul : même gabarit que le
+ * résultat, balayage élégant (jamais de spinner agressif).
+ */
+function ResultatSkeleton() {
+  return (
+    <Card className="p-6 sm:p-8" aria-busy="true">
+      <div className="flex gap-2">
+        <Skeleton className="h-6 w-20 rounded-full" />
+        <Skeleton className="h-6 w-24 rounded-full" />
+      </div>
+      <Skeleton shape="line" className="mt-5 w-36" />
+      <Skeleton className="mt-3 h-14 w-64" />
+      <Skeleton shape="line" className="mt-3 w-full max-w-sm" />
+      <Skeleton className="mt-6 h-16 w-full" />
+      <div className="mt-6 grid grid-cols-2 gap-3 border-t border-border pt-6">
+        <Skeleton shape="line" className="w-2/3" />
+        <Skeleton shape="line" className="w-1/2" />
+        <Skeleton shape="line" className="w-3/5" />
+        <Skeleton shape="line" className="w-2/5" />
+      </div>
+    </Card>
   );
 }
 
@@ -202,6 +282,9 @@ export function EstimationForm() {
       ? e.noteCondoRepli
       : (foundResult?.note ?? "");
 
+  // Prix animé : défile vers la nouvelle estimation à chaque résultat.
+  const estimationAffichee = useCountUp(foundResult ? foundResult.estimation : 0);
+
   return (
     <div className="flex flex-col gap-6">
       <Card className="p-6 sm:p-8">
@@ -343,7 +426,7 @@ export function EstimationForm() {
               />
             </Field>
             {showSuggestions && suggestions.length > 0 && (
-              <ul className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-border bg-white shadow-lg">
+              <ul className="nesta-fade-in absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-border bg-white shadow-lg">
                 {suggestions.map((s) => (
                   <li key={s}>
                     <button
@@ -409,14 +492,41 @@ export function EstimationForm() {
           )}
 
           <Button type="submit" size="lg" disabled={loading} className="w-full">
+            {loading && (
+              <svg
+                className="h-5 w-5 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-90"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                />
+              </svg>
+            )}
             {loading ? e.boutonCalcul : e.boutonEstimer}
           </Button>
         </form>
       </Card>
 
+      {loading && !result && <ResultatSkeleton />}
+
       {result && result.found && (
         <Card className="p-6 sm:p-8">
-          <div className="flex flex-wrap items-center gap-2">
+          <div
+            className="nesta-rise flex flex-wrap items-center gap-2"
+            style={{ "--nesta-delay": "0ms" } as CSSProperties}
+          >
             <Badge>{e.categorieLabels[result.categorie]}</Badge>
             <Badge>{result.villeNom}</Badge>
             {result.arrondissement && (
@@ -427,29 +537,46 @@ export function EstimationForm() {
             )}
           </div>
 
-          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-charcoal/50">
-            {e.valeurEstimee}
-          </p>
-          <p className="mt-2 font-display text-5xl text-forest">
-            {formatPrice(result.estimation, lang)}
-          </p>
-          <p className="mt-2 text-sm text-charcoal/60">
-            {e.fourchetteProbable}{" "}
-            <span className="font-semibold text-charcoal">
-              {formatPrice(result.fourchetteBasse, lang)} –{" "}
-              {formatPrice(result.fourchetteHaute, lang)}
-            </span>
-          </p>
-          <p className="mt-1 text-xs text-charcoal/40">
-            {e.marcheReference} {result.referenceMarche}
-          </p>
+          <div
+            className="nesta-rise"
+            style={{ "--nesta-delay": "90ms" } as CSSProperties}
+          >
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-charcoal/50">
+              {e.valeurEstimee}
+            </p>
+            <p className="mt-2 font-display text-5xl tabular-nums text-forest">
+              {formatPrice(estimationAffichee, lang)}
+            </p>
+            <p className="mt-2 text-sm text-charcoal/60">
+              {e.fourchetteProbable}{" "}
+              <span className="font-semibold text-charcoal">
+                {formatPrice(result.fourchetteBasse, lang)} –{" "}
+                {formatPrice(result.fourchetteHaute, lang)}
+              </span>
+            </p>
+            <FourchetteGauge
+              basse={result.fourchetteBasse}
+              haute={result.fourchetteHaute}
+              estimation={result.estimation}
+              labelBas={e.fourchetteMin}
+              labelHaut={e.fourchetteMax}
+              texteBas={formatPrice(result.fourchetteBasse, lang)}
+              texteHaut={formatPrice(result.fourchetteHaute, lang)}
+            />
+            <p className="mt-3 text-xs text-charcoal/40">
+              {e.marcheReference} {result.referenceMarche}
+            </p>
+          </div>
 
           {result.projection && (
-            <div className="mt-6 rounded-2xl border border-border bg-cream/60 p-5">
+            <div
+              className="nesta-rise mt-6 rounded-2xl border border-border bg-cream/60 p-5"
+              style={{ "--nesta-delay": "220ms" } as CSSProperties}
+            >
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-charcoal/50">
                 {fill(e.projectionTitre, { n: result.projection.annees })}
               </p>
-              <p className="mt-2 font-display text-3xl text-charcoal">
+              <p className="mt-2 font-display text-3xl tabular-nums text-charcoal">
                 {formatPrice(result.projection.estimation, lang)}
               </p>
               <p className="mt-1 text-sm text-charcoal/60">
@@ -467,7 +594,10 @@ export function EstimationForm() {
             </div>
           )}
 
-          <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border pt-6 text-sm">
+          <dl
+            className="nesta-rise mt-6 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border pt-6 text-sm"
+            style={{ "--nesta-delay": "320ms" } as CSSProperties}
+          >
             <div>
               <dt className="text-charcoal/50">{e.detailValeurRole}</dt>
               <dd className="font-medium text-charcoal">
@@ -506,19 +636,24 @@ export function EstimationForm() {
             )}
           </dl>
 
-          {noteAffichee && (
-            <p className="mt-4 text-sm text-charcoal/60">{noteAffichee}</p>
-          )}
-          {result.porteePlex === "logement" && (
-            <p className="mt-4 text-sm text-charcoal/60">
-              {fill(e.notePlexLogement, { n: result.nbLogements })}
-            </p>
-          )}
+          <div
+            className="nesta-rise"
+            style={{ "--nesta-delay": "400ms" } as CSSProperties}
+          >
+            {noteAffichee && (
+              <p className="mt-4 text-sm text-charcoal/60">{noteAffichee}</p>
+            )}
+            {result.porteePlex === "logement" && (
+              <p className="mt-4 text-sm text-charcoal/60">
+                {fill(e.notePlexLogement, { n: result.nbLogements })}
+              </p>
+            )}
 
-          <p className="mt-6 text-xs leading-relaxed text-charcoal/50">
-            {avertissementAffiche}
-          </p>
-          <p className="mt-2 text-xs text-charcoal/40">{e.sources}</p>
+            <p className="mt-6 text-xs leading-relaxed text-charcoal/50">
+              {avertissementAffiche}
+            </p>
+            <p className="mt-2 text-xs text-charcoal/40">{e.sources}</p>
+          </div>
         </Card>
       )}
     </div>
