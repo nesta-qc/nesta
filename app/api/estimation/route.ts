@@ -4,8 +4,37 @@ import {
   isVilleSlug,
   suggererAutresVilles,
   type CategorieBien,
+  type EstimateResult,
   type PorteePlex,
 } from "@/lib/estimation";
+import { createClient } from "@/lib/supabase/server";
+
+/* ============================================================
+ * Journalise l'estimation en base (table estimation_requests).
+ * En cas d'échec (table absente, réseau, …) : silencieux, le
+ * résultat d'estimation n'est jamais affecté.
+ * ============================================================ */
+async function journaliserEstimation(
+  ville: string,
+  adresse: string,
+  typeBien: string | undefined,
+  result: EstimateResult,
+): Promise<void> {
+  try {
+    const supabase = await createClient();
+    await supabase.from("estimation_requests").insert({
+      ville,
+      adresse: adresse.trim().slice(0, 200),
+      type_bien:
+        typeBien ??
+        (result.found ? result.categorie : "inconnu"),
+      valeur_estimee: result.found ? Math.round(result.estimation) : null,
+      trouve: result.found,
+    });
+  } catch {
+    /* journalisation facultative : ne jamais faire échouer l'estimation */
+  }
+}
 
 /* ============================================================
  * NESTA — API d'estimation indicative (moteur centralisé).
@@ -106,9 +135,22 @@ export async function POST(request: Request) {
         suite: typeof suite === "string" && suite.trim() ? suite : undefined,
       });
       if (villesSuggerees.length > 0) {
-        return NextResponse.json({ ...result, villesSuggerees });
+        const withSuggestions = { ...result, villesSuggerees };
+        await journaliserEstimation(
+          ville,
+          adresse,
+          typeof typeBien === "string" ? typeBien : undefined,
+          result,
+        );
+        return NextResponse.json(withSuggestions);
       }
     }
+    await journaliserEstimation(
+      ville,
+      adresse,
+      typeof typeBien === "string" ? typeBien : undefined,
+      result,
+    );
     return NextResponse.json(result);
   } catch (error) {
     console.error("POST /api/estimation :", error);
