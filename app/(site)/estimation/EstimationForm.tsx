@@ -445,9 +445,9 @@ export function EstimationForm() {
                 </span>
               </p>
               <p className="mt-2 text-xs leading-relaxed text-charcoal/50">
-                Scénario de poursuite de la tendance observée
-                (≈ {result.projection.tauxAnnuelPct} %/an). Hypothèse
-                indicative, pas une prévision garantie.
+                Scénario tendanciel amorti (≈ {result.projection.tauxAnnuelPct}{" "}
+                %/an, plafonné à 5 %). Hypothèse indicative, pas une
+                prévision garantie.
               </p>
             </div>
           )}
@@ -498,16 +498,6 @@ export function EstimationForm() {
             <p className="mt-4 text-sm text-charcoal/60">
               Estimation pour un seul logement : valeur de l&apos;immeuble
               divisée par le nombre de logements ({result.nbLogements}).
-            </p>
-          )}
-          {result.ajustementTerrain && (
-            <p className="mt-4 text-sm text-charcoal/60">
-              Terrain pris en compte : {result.ajustementTerrain.superficieM2}{" "}
-              m²
-              {result.ajustementTerrain.ajustementPct > 0
-                ? `, au-dessus de la normale du secteur (médiane ${result.ajustementTerrain.medianeSecteurM2} m²) : +${result.ajustementTerrain.ajustementPct} %`
-                : `, en dessous de la normale du secteur (médiane ${result.ajustementTerrain.medianeSecteurM2} m²) : ${result.ajustementTerrain.ajustementPct} %`}
-              .
             </p>
           )}
 

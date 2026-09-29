@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-27",
+  "version": "2026-09-29-plex-1.04-sans-ajustement-terrain",
   "fourchette_pct": 12,
   "seuil_condo_m2": 150,
   "regle": "estimation = valeur_au_role * facteur(arrondissement|ville, categorie); fourchette ±12 %; condo < 150 m2 -> facteur condo sinon maison; valeur indicative, jamais une evaluation agreee.",
@@ -15,7 +15,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Anjou": {
@@ -23,7 +23,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Côte-des-Neiges-Notre-Dame-de-Grâce": {
@@ -31,7 +31,7 @@
           "condo": 1.06,
           "maison": 1.09,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "L'Île-Bizard-Sainte-Geneviève": {
@@ -39,7 +39,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "LaSalle": {
@@ -47,7 +47,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Lachine": {
@@ -55,7 +55,7 @@
           "condo": 1.03,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Le Plateau-Mont-Royal": {
@@ -63,7 +63,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Le Sud-Ouest": {
@@ -71,7 +71,7 @@
           "condo": 1.06,
           "maison": 1.25,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Mercier-Hochelaga-Maisonneuve": {
@@ -79,7 +79,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Montréal-Nord": {
@@ -87,7 +87,7 @@
           "condo": 1.06,
           "maison": 1.06,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Outremont": {
@@ -95,7 +95,7 @@
           "condo": 1.06,
           "maison": 1.05,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Pierrefonds-Roxboro": {
@@ -103,7 +103,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Rivière-des-Prairies-Pointe-aux-Trembles": {
@@ -111,7 +111,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Rosemont-La Petite-Patrie": {
@@ -119,7 +119,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Saint-Laurent": {
@@ -127,7 +127,7 @@
           "condo": 1.06,
           "maison": 1.21,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Saint-Léonard": {
@@ -135,7 +135,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Verdun": {
@@ -143,7 +143,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Ville-Marie": {
@@ -151,7 +151,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         },
         "Villeray-Saint-Michel-Parc-Extension": {
@@ -159,7 +159,7 @@
           "condo": 1.06,
           "maison": 1.22,
           "multi": 1.1,
-          "plex": 1.1,
+          "plex": 1.14,
           "terrain": 1.05
         }
       },
@@ -183,161 +183,7 @@
         "Ahuntsic-Cartierville",
         "Saint-Laurent",
         "Ville-Marie"
-      ],
-      "lots_medians_m2_par_arrondissement": {
-        "Le Sud-Ouest": {
-          "maison": 179,
-          "multi": 335,
-          "commercial": 495,
-          "condo": 22,
-          "plex": 209,
-          "terrain": 224
-        },
-        "Pierrefonds-Roxboro": {
-          "maison": 561,
-          "condo": 430,
-          "plex": 555,
-          "commercial": 1901,
-          "terrain": 559,
-          "multi": 1467
-        },
-        "Rivière-des-Prairies-Pointe-aux-Trembles": {
-          "plex": 448,
-          "condo": 254,
-          "maison": 436,
-          "multi": 671,
-          "commercial": 1583,
-          "terrain": 487
-        },
-        "LaSalle": {
-          "condo": 76,
-          "plex": 296,
-          "commercial": 2160,
-          "maison": 259,
-          "multi": 436,
-          "terrain": 301
-        },
-        "Outremont": {
-          "plex": 233,
-          "maison": 253,
-          "multi": 520,
-          "condo": 58,
-          "commercial": 401,
-          "terrain": 247
-        },
-        "L'Île-Bizard-Sainte-Geneviève": {
-          "multi": 780,
-          "maison": 755,
-          "condo": 557,
-          "commercial": 1669,
-          "plex": 686,
-          "terrain": 877
-        },
-        "Ville-Marie": {
-          "commercial": 152,
-          "condo": 12,
-          "maison": 96,
-          "multi": 312,
-          "plex": 187,
-          "terrain": 30
-        },
-        "Le Plateau-Mont-Royal": {
-          "commercial": 321,
-          "multi": 270,
-          "plex": 201,
-          "condo": 45,
-          "maison": 156,
-          "terrain": 260
-        },
-        "Lachine": {
-          "condo": 112,
-          "commercial": 2506,
-          "plex": 327,
-          "multi": 471,
-          "maison": 465,
-          "terrain": 511
-        },
-        "Rosemont-La Petite-Patrie": {
-          "condo": 47,
-          "plex": 235,
-          "commercial": 434,
-          "multi": 265,
-          "terrain": 298,
-          "maison": 209
-        },
-        "Saint-Laurent": {
-          "commercial": 4284,
-          "multi": 528,
-          "maison": 324,
-          "plex": 371,
-          "condo": 69,
-          "terrain": 770
-        },
-        "Ahuntsic-Cartierville": {
-          "maison": 431,
-          "plex": 322,
-          "multi": 450,
-          "commercial": 1087,
-          "condo": 52,
-          "terrain": 538
-        },
-        "Verdun": {
-          "commercial": 557,
-          "maison": 176,
-          "condo": 59,
-          "multi": 310,
-          "plex": 278,
-          "terrain": 184
-        },
-        "Mercier-Hochelaga-Maisonneuve": {
-          "commercial": 990,
-          "condo": 57,
-          "plex": 247,
-          "multi": 285,
-          "maison": 239,
-          "terrain": 209
-        },
-        "Villeray-Saint-Michel-Parc-Extension": {
-          "commercial": 555,
-          "maison": 188,
-          "condo": 45,
-          "multi": 290,
-          "plex": 204,
-          "terrain": 257
-        },
-        "Côte-des-Neiges-Notre-Dame-de-Grâce": {
-          "plex": 308,
-          "multi": 788,
-          "commercial": 1066,
-          "condo": 41,
-          "maison": 278,
-          "terrain": 370
-        },
-        "Montréal-Nord": {
-          "multi": 451,
-          "commercial": 818,
-          "plex": 317,
-          "condo": 228,
-          "maison": 456,
-          "terrain": 285
-        },
-        "Anjou": {
-          "commercial": 4938,
-          "condo": 84,
-          "multi": 461,
-          "maison": 419,
-          "terrain": 1203,
-          "plex": 311
-        },
-        "Saint-Léonard": {
-          "commercial": 1742,
-          "plex": 390,
-          "multi": 517,
-          "condo": 46,
-          "maison": 347,
-          "terrain": 752
-        }
-      }
+      ]
     },
     "quebec": {
       "nom": "Québec",
@@ -348,18 +194,10 @@
       "facteurs": {
         "maison": 1.35,
         "condo": 1.36,
-        "plex": 1.27,
+        "plex": 1.32,
         "multi": 1.1,
         "terrain": 1.05,
         "commercial": 1.05
-      },
-      "lots_medians_m2": {
-        "plex": 452,
-        "condo": 370,
-        "maison": 650,
-        "commercial": 945,
-        "multi": 789,
-        "terrain": 748
       }
     },
     "levis": {
@@ -371,18 +209,10 @@
       "facteurs": {
         "maison": 1.2,
         "condo": 1.31,
-        "plex": 1.1,
+        "plex": 1.14,
         "multi": 1.1,
         "terrain": 1.05,
         "commercial": 1.05
-      },
-      "lots_medians_m2": {
-        "condo": 557,
-        "plex": 615,
-        "commercial": 2494,
-        "multi": 1235,
-        "maison": 751,
-        "terrain": 1123
       }
     },
     "gatineau": {
@@ -394,18 +224,10 @@
       "facteurs": {
         "maison": 1.13,
         "condo": 1.01,
-        "plex": 1.16,
+        "plex": 1.21,
         "multi": 1.1,
         "terrain": 1.05,
         "commercial": 1.05
-      },
-      "lots_medians_m2": {
-        "condo": 336,
-        "commercial": 1684,
-        "maison": 564,
-        "terrain": 734,
-        "plex": 524,
-        "multi": 1642
       }
     },
     "laval": {
@@ -417,18 +239,10 @@
       "facteurs": {
         "maison": 1.13,
         "condo": 1.11,
-        "plex": 1.15,
+        "plex": 1.2,
         "multi": 1.1,
         "terrain": 1.05,
         "commercial": 1.05
-      },
-      "lots_medians_m2": {
-        "maison": 473,
-        "plex": 475,
-        "terrain": 2660,
-        "condo": 324,
-        "commercial": 1890,
-        "multi": 887
       }
     },
     "longueuil": {
@@ -440,18 +254,10 @@
       "facteurs": {
         "maison": 1.25,
         "condo": 1.18,
-        "plex": 1.16,
+        "plex": 1.21,
         "multi": 1.1,
         "terrain": 1.05,
         "commercial": 1.05
-      },
-      "lots_medians_m2": {
-        "commercial": 1112,
-        "plex": 474,
-        "condo": 305,
-        "maison": 509,
-        "multi": 870,
-        "terrain": 56
       }
     },
     "brossard": {
@@ -463,23 +269,13 @@
       "facteurs": {
         "maison": 1.28,
         "condo": 1.05,
-        "plex": 1.07,
+        "plex": 1.11,
         "multi": 1.1,
         "terrain": 1.05,
         "commercial": 1.05
-      },
-      "lots_medians_m2": {
-        "commercial": 4020,
-        "maison": 539,
-        "condo": 162,
-        "plex": 466,
-        "multi": 1876,
-        "terrain": 27
       }
     }
   },
   "reference_marche": "T2 2026",
-  "elasticite_terrain": 0.12,
-  "ajustement_terrain_min": 0.88,
-  "ajustement_terrain_max": 1.15
+  "plafond_taux_projection": 0.05
 }
