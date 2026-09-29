@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
 import { AuthUnavailable } from "@/components/auth/AuthUnavailable";
 import { SignupForm } from "@/components/auth/SignupForm";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Inscription",
   description: "Crée ton compte Nesta gratuitement.",
-};
+  path: "/inscription",
+  noIndex: true,
+});
 
 /**
  * Page d'inscription. Déjà connecté → accueil.

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button, EmptyState } from "@/components/ui";
@@ -8,10 +9,12 @@ import { getViewerContext } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Mes favoris",
   description: "Retrouvez les propriétés que vous avez sauvegardées.",
-};
+  path: "/favoris",
+  noIndex: true,
+});
 
 /** Favoris réels de l'utilisateur connecté. */
 export default async function FavoritesPage() {

@@ -7,6 +7,7 @@ import { getViewerContext } from "@/lib/auth";
 import { propertyMediaPublicUrl } from "@/lib/media";
 import { resolveVirtualTourUrl } from "@/lib/virtual-tours";
 import { propertyIdSchema } from "@/lib/validation";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -20,15 +21,20 @@ export async function generateMetadata({
   const { id } = await params;
   const result = await getPublicProperty(id);
   if (!result) {
-    return { title: "Annonce introuvable" };
+    return pageMetadata({
+      title: "Annonce introuvable",
+      description: "Cette annonce n'existe pas ou n'est plus publiée sur Nesta.",
+      path: "/search",
+    });
   }
   const { property } = result;
-  return {
+  return pageMetadata({
     title: `${property.address}, ${property.city}`,
     description:
       property.description?.slice(0, 160) ??
       `Annonce immobilière à ${property.city}.`,
-  };
+    path: `/properties/${id}`,
+  });
 }
 
 /** Page détail d'une annonce (publique si publiée, sinon 404 sauf owner/admin). */

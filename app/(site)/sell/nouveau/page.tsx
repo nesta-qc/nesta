@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Container, EmptyState, Button } from "@/components/ui";
@@ -7,10 +8,12 @@ import { getViewerContext } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Nouvelle annonce",
   description: "Créez votre annonce de vente ou de location sur Nesta.",
-};
+  path: "/sell/nouveau",
+  noIndex: true,
+});
 
 /** Page de création d'annonce — rôle vendeur requis. */
 export default async function NewListingPage() {

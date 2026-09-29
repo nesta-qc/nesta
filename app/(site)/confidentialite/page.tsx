@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Confidentialité",
   description: "Comment Nesta collecte et protège vos renseignements personnels.",
-};
+  path: "/confidentialite",
+});
 
 /** Politique de confidentialité — sobre, conforme à l'esprit de la Loi 25. */
 export default function ConfidentialitePage() {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Button, Card, EmptyState } from "@/components/ui";
 import { AddressAutocomplete } from "@/components/passeport/AddressAutocomplete";
@@ -8,11 +9,11 @@ import {
 } from "@/actions/property-profiles";
 import { formatPrice } from "@/lib/format";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Passeport Nesta",
-  description:
-    "Une fiche honnête pour chaque adresse : caractéristiques, données sourcées, hypothèses affichées. Analyse d'une propriété sans créer de compte.",
-};
+  description: "Une fiche honnête pour chaque adresse : caractéristiques, données sourcées, hypothèses affichées. Analyse d'une propriété sans créer de compte.",
+  path: "/passeport",
+});
 
 /* Compteur calculé en live : les profils arrivent via les données
    ouvertes (migration 000013 + seeds). */

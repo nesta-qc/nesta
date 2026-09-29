@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import {
   searchPublishedProperties,
   type SearchFilters as Filters,
@@ -10,10 +11,12 @@ import type { FilterValues } from "@/components/search/SearchFilters";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Rechercher",
   description: "Recherchez une propriété à vendre ou à louer au Québec.",
-};
+  path: "/search",
+  noIndex: true,
+});
 
 interface RawSearchParams {
   ville?: string;

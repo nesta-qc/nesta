@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
@@ -7,10 +8,12 @@ import { AuthShell } from "@/components/auth/AuthShell";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { Button } from "@/components/ui";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Nouveau mot de passe",
   description: "Choisis un nouveau mot de passe pour ton compte Nesta.",
-};
+  path: "/reinitialiser-mot-de-passe",
+  noIndex: true,
+});
 
 /**
  * Page de réinitialisation du mot de passe, atteinte après l'échange du

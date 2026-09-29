@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { getViewerContext } from "@/lib/auth";
 import { getServiceById } from "@/lib/services";
 import { ServiceRequestForm } from "@/components/services/ServiceRequestForm";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Demander un devis",
   description: "Décrivez votre projet et recevez un devis sans engagement.",
-};
+  path: "/services/demande",
+});
 
 const STEPS = ["Devis", "Infos projet", "Fichiers", "Confirmation"];
 

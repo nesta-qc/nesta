@@ -5,6 +5,7 @@ import { getDevelopmentById } from "@/actions/developments";
 import { Badge, Card } from "@/components/ui";
 import { PropertyMap } from "@/components/properties/PropertyMap";
 import { formatNumber, formatPrice } from "@/lib/format";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -30,12 +31,18 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const dev = await getDevelopmentById(id);
-  if (!dev) return { title: "Projet introuvable" };
+  if (!dev)
+    return pageMetadata({
+      title: "Projet introuvable",
+      description: "Ce projet immobilier n'existe pas ou n'est plus publié sur Nesta.",
+      path: "/projects",
+    });
   const where = dev.city ? ` — ${dev.city}` : "";
-  return {
+  return pageMetadata({
     title: `${dev.name}${where}`,
     description: dev.description ?? `Projet immobilier neuf : ${dev.name}.`,
-  };
+    path: `/projects/${id}`,
+  });
 }
 
 /**

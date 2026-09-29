@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
+import { pageMetadata, SITE_URL } from "@/lib/seo";
 import { EstimationForm } from "./EstimationForm";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = dictionaries[await getLang()].estimation;
-  return {
+  return pageMetadata({
     title: t.metaTitre,
     description: t.metaDescription,
-  };
+    path: "/estimation",
+  });
 }
 
 /** Page d'estimation indicative : formulaire + résultat. */

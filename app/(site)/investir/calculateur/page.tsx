@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { CalculatorWizard } from "@/components/investor/CalculatorWizard";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Calculateur investisseur",
-  description:
-    "Répondez à 8 questions simples et obtenez le taux de capitalisation, le cash-flow et le rendement sur mise de fonds d'un immeuble.",
-};
+  description: "Répondez à 8 questions simples et obtenez le taux de capitalisation, le cash-flow et le rendement sur mise de fonds d'un immeuble.",
+  path: "/investir/calculateur",
+});
 
 /** Calculateur investisseur : assistant guidé, une question à la fois. */
 export default function CalculateurPage() {

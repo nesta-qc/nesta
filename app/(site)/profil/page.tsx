@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -9,10 +10,12 @@ import { ProfileForm } from "@/components/auth/ProfileForm";
 import { PasswordChangeForm } from "@/components/auth/PasswordChangeForm";
 import { Badge, Card, Container } from "@/components/ui";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Mon profil",
   description: "Consulte et mets à jour ton profil Nesta.",
-};
+  path: "/profil",
+  noIndex: true,
+});
 
 /**
  * Page de profil (protégée) : nom affiché, courriel (lecture seule),

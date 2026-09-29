@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { HERO_IMAGES } from "@/lib/site-images";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
@@ -17,6 +19,14 @@ import { FinalCTA } from "@/components/home/FinalCTA";
  * sections éditoriales photographiques. Aucune statistique inventée,
  * aucune fausse annonce, aucun faux témoignage.
  */
+export const metadata: Metadata = pageMetadata({
+  // Titre absolu : l'accueil garde l'intitulé de marque sans le suffixe du template.
+  title: "Nesta — L'immobilier, à votre façon",
+  description:
+    "Nesta, la plateforme immobilière québécoise : recherchez une propriété, vendez sans commission en pourcentage, estimez et investissez en toute transparence.",
+  path: "/",
+  absoluteTitle: true,
+});
 export default async function Home() {
   const t = dictionaries[await getLang()].accueil;
   return (

@@ -14,6 +14,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Modifier l'annonce",
   description: "Modifiez votre annonce sur Nesta.",
+  robots: { index: false, follow: true },
 };
 
 interface PageProps {

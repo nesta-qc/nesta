@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { InvestorView } from "@/components/investor/InvestorView";
 import { getInvestmentProperties, getMarketComparables } from "@/actions/properties";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Investir",
-  description:
-    "Analysez des immeubles publiés sur Nesta et des comparables du marché vérifiés : prix, taxes, superficies, année.",
-};
+  description: "Analysez des immeubles publiés sur Nesta et des comparables du marché vérifiés : prix, taxes, superficies, année.",
+  path: "/investir",
+});
 
 /** Espace investisseurs : annonces Nesta + comparables du marché vérifiés. */
 export default async function InvestirPage() {

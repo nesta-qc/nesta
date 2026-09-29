@@ -12,6 +12,7 @@ import {
   propertyTypeLabel,
 } from "@/lib/format";
 import { propertyIdSchema } from "@/lib/validation";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -25,13 +26,18 @@ export async function generateMetadata({
   const { id } = await params;
   const result = await getPublicProperty(id);
   if (!result) {
-    return { title: "Passeport Nesta" };
+    return pageMetadata({
+      title: "Passeport Nesta",
+      description: "Fiche Passeport Nesta : caractéristiques et données sourcées d'une propriété.",
+      path: "/passeport",
+    });
   }
   const { property } = result;
-  return {
+  return pageMetadata({
     title: `Passeport Nesta — ${property.address}, ${property.city}`,
     description: `Données disponibles et points à confirmer pour ${property.address}, ${property.city}.`,
-  };
+    path: `/passeport/${id}`,
+  });
 }
 
 /**

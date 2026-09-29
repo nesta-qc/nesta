@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Button } from "@/components/ui";
 import { GlowCard } from "@/components/services/GlowCard";
 import { NESTA_SERVICES } from "@/lib/services";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Services",
-  description:
-    "Estimation de construction, dessin Revit et modélisation 3D. Demandez un devis.",
-};
+  description: "Estimation de construction, dessin Revit et modélisation 3D. Demandez un devis.",
+  path: "/services",
+});
 
 /** Services professionnels : catalogue, devis, suivi. */
 export default function ServicesPage() {

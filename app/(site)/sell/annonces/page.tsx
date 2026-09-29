@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Badge, Button, Card, EmptyState } from "@/components/ui";
@@ -14,10 +15,12 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Mes annonces",
   description: "Gérez vos annonces publiées sur Nesta.",
-};
+  path: "/sell/annonces",
+  noIndex: true,
+});
 
 /**
  * Tableau de bord vendeur : une propriété dominante par carte,

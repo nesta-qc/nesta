@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Button, Card } from "@/components/ui";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Demande envoyée",
   description: "Votre demande de devis a bien été enregistrée.",
-};
+  path: "/services/demande/confirmation",
+  noIndex: true,
+});
 
 /**
  * Confirmation d'une demande de devis faite SANS compte.

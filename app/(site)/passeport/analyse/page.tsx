@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { AnalysisRequestForm } from "@/components/passeport/AnalysisRequestForm";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Demander l'analyse d'une propriété",
-  description:
-    "Demandez l'analyse d'une propriété sans créer de compte : nom, courriel et objectif suffisent.",
-};
+  description: "Demandez l'analyse d'une propriété sans créer de compte : nom, courriel et objectif suffisent.",
+  path: "/passeport/analyse",
+});
 
 /** Passeport : demande d'analyse d'une propriété, sans compte. */
 export default async function AnalysePage({

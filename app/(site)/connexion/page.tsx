@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
 import { AuthUnavailable } from "@/components/auth/AuthUnavailable";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Connexion",
   description: "Connecte-toi à ton compte Nesta.",
-};
+  path: "/connexion",
+  noIndex: true,
+});
 
 interface ConnexionPageProps {
   searchParams: Promise<{ erreur?: string }>;

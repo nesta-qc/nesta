@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
 import { AuthUnavailable } from "@/components/auth/AuthUnavailable";
 import { OnboardingForm } from "@/components/auth/OnboardingForm";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Bienvenue",
   description: "Complète ton profil d'arrivée sur Nesta.",
-};
+  path: "/onboarding",
+  noIndex: true,
+});
 
 /**
  * Page d'onboarding (protégée) : questionnaire d'arrivée sobre.

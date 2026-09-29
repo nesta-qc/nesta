@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui";
@@ -8,10 +9,12 @@ import { ServiceRequestList } from "@/components/services/ServiceRequestList";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Suivi de mes demandes",
   description: "Suivez l'avancement de vos demandes de services.",
-};
+  path: "/services/suivi",
+  noIndex: true,
+});
 
 /** Suivi des demandes de services : statuts réels uniquement. */
 export default async function ServiceTrackingPage({

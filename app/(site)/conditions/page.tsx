@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Conditions d'utilisation",
   description: "Les règles d'utilisation de la plateforme Nesta.",
-};
+  path: "/conditions",
+});
 
 /** Conditions d'utilisation — claires, sans jargon inutile. */
 export default function ConditionsPage() {

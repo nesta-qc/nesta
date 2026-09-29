@@ -14,6 +14,7 @@ import {
 } from "@/components/passeport/PassportSections";
 import { formatDate, formatNumber, formatPrice } from "@/lib/format";
 import { profileIdSchema } from "@/lib/validation";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -27,12 +28,17 @@ export async function generateMetadata({
   const { id } = await params;
   const profile = await getPropertyProfile(id);
   if (!profile) {
-    return { title: "Passeport Nesta" };
+    return pageMetadata({
+      title: "Passeport Nesta",
+      description: "Fiche Passeport Nesta : caractéristiques et données sourcées d'une propriété.",
+      path: "/passeport",
+    });
   }
-  return {
+  return pageMetadata({
     title: `Passeport Nesta — ${profile.address}`,
     description: `Profil issu des données publiques pour ${profile.address}, ${profile.borough ?? profile.city} : valeur au rôle, caractéristiques, points à confirmer.`,
-  };
+    path: `/passeport/profil/${id}`,
+  });
 }
 
 /**

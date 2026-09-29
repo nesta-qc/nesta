@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Badge, Card } from "@/components/ui";
 import { getDevelopments } from "@/actions/developments";
@@ -8,11 +9,11 @@ import { formatPrice } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Projets",
-  description:
-    "Découvrez les projets immobiliers neufs publiés sur Nesta.",
-};
+  description: "Découvrez les projets immobiliers neufs publiés sur Nesta.",
+  path: "/projects",
+});
 
 const STATUS_LABELS: Record<string, string> = {
   planned: "En planification",
