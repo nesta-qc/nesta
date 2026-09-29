@@ -20,5 +20,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin"],
       },
     ],
+    sitemap: "https://nesta-drab.vercel.app/sitemap.xml",
   };
 }

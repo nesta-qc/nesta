@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   },
   description:
     "Nesta, la plateforme immobilière québécoise : recherchez, vendez et gérez vos projets immobiliers en toute transparence.",
+  verification: {
+    google: "n9pGQae67DyLFXyZEbm3KGBAypsOKInkTxpuzAC7aE0",
+  },
   icons: {
     icon: "/nesta-icon.png",
     apple: "/nesta-icon.png",
