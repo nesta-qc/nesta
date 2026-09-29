@@ -205,7 +205,7 @@ export function InvestorView({
   }
 
   return (
-    <div className="flex h-[calc(100dvh-64px)] flex-col">
+    <div className="flex flex-col lg:h-[calc(100dvh-64px)]">
       {/* Barre de filtres pro. */}
       <div className="border-b border-border bg-white">
         <form

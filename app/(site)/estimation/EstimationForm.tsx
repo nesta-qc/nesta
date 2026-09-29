@@ -355,7 +355,7 @@ export function EstimationForm() {
                       setPorteePlex(o.value);
                       setResult(null);
                     }}
-                    className={`flex-1 rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors duration-200 ${
+                    className={`flex-1 rounded-full border px-3 py-2.5 text-[13px] font-semibold transition-colors duration-200 sm:px-4 sm:text-sm ${
                       porteePlex === o.value
                         ? "border-forest bg-forest text-white"
                         : "border-border bg-white text-charcoal hover:border-forest/50"
@@ -393,7 +393,7 @@ export function EstimationForm() {
                     setHorizon(o.value);
                     setResult(null);
                   }}
-                  className={`flex-1 rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors duration-200 ${
+                  className={`flex-1 rounded-full border px-3 py-2.5 text-[13px] font-semibold transition-colors duration-200 sm:px-4 sm:text-sm ${
                     horizon === o.value
                       ? "border-forest bg-forest text-white"
                       : "border-border bg-white text-charcoal hover:border-forest/50"

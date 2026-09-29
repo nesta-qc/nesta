@@ -90,8 +90,7 @@ export function HeroBackgroundSlider({ images, children }: HeroBackgroundSliderP
 
   return (
     <section
-      className="relative flex min-h-[560px] items-end overflow-hidden bg-forest-ink sm:items-center"
-      style={{ height: "88vh" }}
+      className="relative flex min-h-[88vh] items-end overflow-hidden bg-forest-ink sm:items-center"
       aria-roledescription="carousel"
       aria-label="Propriétés en vedette"
       tabIndex={0}

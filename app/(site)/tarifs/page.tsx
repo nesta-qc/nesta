@@ -174,7 +174,7 @@ export default function TarifsPage() {
               ))}
             </ul>
             <Link href="/projects" className="mt-auto pt-8">
-              <Button className="w-full bg-white text-forest hover:bg-ivory">
+              <Button variant="secondary" className="w-full">
                 Devenir Pro
               </Button>
             </Link>

@@ -126,7 +126,7 @@ export async function SiteHeader() {
             <Link
               href="/favoris"
               aria-label={t.favorisAria}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest"
+              className="hidden h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest md:flex"
             >
               <HeartIcon />
             </Link>

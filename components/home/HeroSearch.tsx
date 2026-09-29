@@ -77,7 +77,7 @@ export function HeroSearch() {
             <option value="1500000">1,5 M$</option>
           </select>
         </label>
-        <label className={`${field} border-t border-charcoal/8 sm:border-t-0`}>
+        <label className={`${field} col-span-2 border-t border-charcoal/8 sm:col-span-1 sm:border-t-0`}>
           <span className={label}>{a.rechercheChambres}</span>
           <select name="chambres" defaultValue="" className={`${input} cursor-pointer`}>
             <option value="">{a.rechercheToutes}</option>
