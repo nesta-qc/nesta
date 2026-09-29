@@ -6,8 +6,7 @@ const BASE_URL = "https://nesta-drab.vercel.app";
 /*
  * Plan du site, selon le site servi (même code, deux déploiements) :
  * - SITE_MODE=admin : site d'administration dédié → aucun URL exposée.
- * - sinon : pages publiques statiques + 240 profils Passeport publiés.
- * Les profils [TEST] internes sont exclus, comme sur les fiches publiques.
+ * - sinon : pages publiques statiques + profils Passeport (table property_profiles).
  */
 type StaticRoute = {
   path: string;
@@ -44,19 +43,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const supabase = await createClient();
     const { data } = await supabase
-      .from("properties")
-      .select("id, address, updated_at")
-      .eq("status", "published")
+      .from("property_profiles")
+      .select("id, created_at")
       .limit(1000);
     for (const row of (data ?? []) as Array<{
       id: string;
-      address: string | null;
-      updated_at: string | null;
+      created_at: string | null;
     }>) {
-      if ((row.address ?? "").startsWith("[TEST")) continue;
       urls.push({
-        url: `${BASE_URL}/passeport/${row.id}`,
-        lastModified: row.updated_at ? new Date(row.updated_at) : now,
+        url: `${BASE_URL}/passeport/profil/${row.id}`,
+        lastModified: row.created_at ? new Date(row.created_at) : now,
         changeFrequency: "weekly",
         priority: 0.7,
       });
