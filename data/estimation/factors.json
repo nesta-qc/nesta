@@ -274,6 +274,21 @@
         "terrain": 1.05,
         "commercial": 1.05
       }
+    },
+    "terrasse-vaudreuil": {
+      "nom": "Terrasse-Vaudreuil",
+      "code_geo": "71075",
+      "millesime_role": "2025",
+      "date_reference_marche_role": "2023-07-01",
+      "granularite_facteurs": "ville",
+      "facteurs": {
+        "maison": 1.34,
+        "condo": 1.05,
+        "plex": 1.2,
+        "multi": 1.1,
+        "terrain": 1.05,
+        "commercial": 1.05
+      }
     }
   },
   "reference_marche": "T2 2026",

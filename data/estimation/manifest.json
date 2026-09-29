@@ -51,6 +51,13 @@
       "nb_enregistrements": 32669,
       "millesime_role": "2025",
       "fichier": "index-brossard.json.gz"
+    },
+    "terrasse-vaudreuil": {
+      "nom": "Terrasse-Vaudreuil",
+      "nb_cles": 804,
+      "nb_enregistrements": 698,
+      "millesime_role": "2025",
+      "fichier": "index-terrasse-vaudreuil.json.gz"
     }
   }
 }

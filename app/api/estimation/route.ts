@@ -12,7 +12,8 @@ import {
  *
  * POST /api/estimation
  *   Body JSON : { ville: "montreal" | "quebec" | "laval" | "gatineau"
- *                       | "longueuil" | "brossard" | "levis",
+ *                       | "longueuil" | "brossard" | "terrasse-vaudreuil"
+ *                       | "levis",
  *                 adresse: "2219 rue Duvernay",
  *                 suite?: "201",
  *                 typeBien?: "maison" | "condo" | "plex" | "multi"

@@ -51,6 +51,12 @@ export const VILLES: VilleEstimation[] = [
     dateReferenceMarche: "2023-07-01",
   },
   {
+    slug: "terrasse-vaudreuil",
+    nom: "Terrasse-Vaudreuil",
+    millesimeRole: "2025",
+    dateReferenceMarche: "2023-07-01",
+  },
+  {
     slug: "levis",
     nom: "Lévis",
     millesimeRole: "2026",
