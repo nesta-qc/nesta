@@ -33,6 +33,7 @@ import {
   stripParticules,
   TYPES_VOIE_INSERTION,
   varianteOrdreType,
+  variantesOrdinaux,
 } from "./normalize";
 import { getVille, VILLES, type VilleSlug } from "./villes";
 
@@ -278,13 +279,20 @@ export function estimate(input: EstimateInput): EstimateResult {
   if (!baseKey) return { found: false, reason: "adresse_invalide" };
 
   // Bases de recherche : clé exacte, variante sans particules
-  // ("285 BOUL DE LA CITE" → "285 BOUL CITE"), variante sans
-  // orientation finale ("1000 AV DU MONT-ROYAL E" → sans le " E"),
-  // variante d'ordre du type de voie ("7620 47E AV" → "7620 AV 47E" :
-  // les rôles n'ordonnent pas le type de voie pareil partout).
+  // ("285 BOUL DE LA CITE" → "285 BOUL CITE"), variantes ordinales
+  // ("280 5EME BOUL" → "280 5 IEME BOUL" : "5e"/"5ème"/"5eme" tapés
+  // par l'utilisateur, "5 IEME" au rôle), variante sans orientation
+  // finale ("1000 AV DU MONT-ROYAL E" → sans le " E"), variante
+  // d'ordre du type de voie ("7620 47E AV" → "7620 AV 47E" : les
+  // rôles n'ordonnent pas le type de voie pareil partout).
   const bases: string[] = [baseKey];
   const stripped = stripParticules(baseKey);
   if (stripped && stripped !== baseKey) bases.push(stripped);
+  for (const b of [...bases]) {
+    for (const v of variantesOrdinaux(b)) {
+      if (!bases.includes(v)) bases.push(v);
+    }
+  }
   for (const b of [...bases]) {
     const sansOrient = b.replace(/ ([EONS])$/, "");
     if (sansOrient !== b && !bases.includes(sansOrient)) bases.push(sansOrient);
@@ -357,14 +365,23 @@ export function estimate(input: EstimateInput): EstimateResult {
       if (parts.length < 2 || estTypeVoie(parts[1])) continue;
       const [civique, ...rue] = parts;
       for (const t of TYPES_VOIE_INSERTION) {
-        const cle = suiteN
-          ? `${civique} ${t} ${rue.join(" ")}|APT ${suiteN}`
-          : `${civique} ${t} ${rue.join(" ")}`;
-        if (vus.has(cle)) continue;
-        vus.add(cle);
-        const hit = map[cle];
-        if (hit && hit.length > 0 && !hitsInsertion.includes(cle)) {
-          hitsInsertion.push(cle);
+        // Type inséré après le civique ("2219 R DUVERNAY"), puis avec
+        // l'ordre inversé ("280 5 IEME BOUL") : les rôles n'ordonnent
+        // pas le type de voie pareil partout.
+        const baseSansSuite = `${civique} ${t} ${rue.join(" ")}`;
+        const inverse = varianteOrdreType(baseSansSuite);
+        const candidats =
+          inverse && inverse !== baseSansSuite
+            ? [baseSansSuite, inverse]
+            : [baseSansSuite];
+        for (const cb of candidats) {
+          const cle = suiteN ? `${cb}|APT ${suiteN}` : cb;
+          if (vus.has(cle)) continue;
+          vus.add(cle);
+          const hit = map[cle];
+          if (hit && hit.length > 0 && !hitsInsertion.includes(cle)) {
+            hitsInsertion.push(cle);
+          }
         }
       }
     }
@@ -584,38 +601,55 @@ export function suggestAddresses(
 ): string[] {
   const firstPrefix = normalizeAddress(query);
   if (!firstPrefix || firstPrefix.length < 2) return [];
-  // La convention d'ordre du type de voie varie selon les rôles
-  // ("47e Avenue" à Montréal, "Avenue 47e" à Laval) : on essaie les
-  // deux ordres pour l'autocomplétion aussi.
+  // Tolérances cumulées sur le préfixe :
+  // - ordinaux ("280 5EME" → "280 5 IEME" : "5e"/"5ème"/"5eme" tapés,
+  //   "5 IEME" au rôle) ;
+  // - ordre du type de voie ("47e Avenue" à Montréal, "Avenue 47e"
+  //   à Laval) : on essaie les deux ordres pour l'autocomplétion aussi.
   const prefixes = [firstPrefix];
-  const variante = varianteOrdreType(firstPrefix);
-  if (variante) prefixes.push(variante);
+  const vus = new Set(prefixes);
+  const addPrefix = (p: string | null) => {
+    if (p && !vus.has(p)) {
+      vus.add(p);
+      prefixes.push(p);
+    }
+  };
+  for (const v of variantesOrdinaux(firstPrefix)) addPrefix(v);
+  for (const p of [...prefixes]) addPrefix(varianteOrdreType(p));
   const { sortedKeys } = loadIndex(ville);
   for (const prefix of prefixes) {
     const out = searchPrefix(sortedKeys, prefix);
     if (out.length > 0) return rankSuggestions(prefix, out).slice(0, limit);
   }
   // Dernier recours : le type de voie a été omis dans la frappe
-  // ("7620 47e", "2219 Duvernay"). On essaie chaque type de voie et
-  // on fusionne les suggestions trouvées.
-  const parts = firstPrefix.split(" ");
-  if (parts.length >= 2 && !estTypeVoie(parts[1])) {
+  // ("7620 47e", "2219 Duvernay", "280 5e"). On essaie chaque type de
+  // voie, dans les deux ordres, et on fusionne les suggestions.
+  const merged: string[] = [];
+  const seen = new Set<string>();
+  for (const pre of prefixes) {
+    const parts = pre.split(" ");
+    if (parts.length < 2 || estTypeVoie(parts[1])) continue;
     const [civique, ...rue] = parts;
-    const merged: string[] = [];
-    const seen = new Set<string>();
     for (const t of TYPES_VOIE_INSERTION) {
-      const prefix = `${civique} ${t} ${rue.join(" ")}`;
-      const out = rankSuggestions(prefix, searchPrefix(sortedKeys, prefix));
-      for (const k of out) {
-        if (seen.has(k)) continue;
-        seen.add(k);
-        merged.push(k);
+      const basePrefix = `${civique} ${t} ${rue.join(" ")}`;
+      const inverse = varianteOrdreType(basePrefix);
+      const tries =
+        inverse && inverse !== basePrefix ? [basePrefix, inverse] : [basePrefix];
+      for (const prefix of tries) {
+        const out = rankSuggestions(prefix, searchPrefix(sortedKeys, prefix));
+        for (const k of out) {
+          if (seen.has(k)) continue;
+          seen.add(k);
+          merged.push(k);
+          if (merged.length >= 60) break;
+        }
         if (merged.length >= 60) break;
       }
       if (merged.length >= 60) break;
     }
-    if (merged.length > 0) return merged.slice(0, limit);
+    if (merged.length >= 60) break;
   }
+  if (merged.length > 0) return merged.slice(0, limit);
   return [];
 }
 

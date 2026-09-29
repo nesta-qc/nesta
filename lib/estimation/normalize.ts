@@ -134,6 +134,33 @@ export function normalizeSuite(s: string): string {
 }
 
 /**
+ * Variantes ordinales ("5E"/"5EME"/"5IEME" → "5 IEME", "1ER"/"1RE" →
+ * "1 ER" et "1 IEME") : les utilisateurs écrivent "5e", "5ème", "5eme",
+ * "1er"… alors que les rôles n'ordonnent pas pareil partout
+ * ("5 IEME BOUL" à Terrasse-Vaudreuil, "47E AV" à Montréal).
+ *
+ * Utilisée UNIQUEMENT comme repli au moment de la recherche : la
+ * normalisation (et donc les clés d'index) est inchangée, les scripts
+ * de construction des index n'ont pas besoin d'être modifiés.
+ */
+export function variantesOrdinaux(cleNormalisee: string): string[] {
+  const out: string[] = [];
+  // "280 5E BOUL" / "280 5EME BOUL" → "280 5 IEME BOUL".
+  // Un chiffre suivi de E/EME/IEME est sans ambiguïté un ordinal.
+  const ieme = cleNormalisee.replace(/\b(\d+)(E|EME|IEME)\b/g, "$1 IEME");
+  if (ieme !== cleNormalisee) out.push(ieme);
+  // "1ER" / "1ERE" / "1RE" → "1 ER" (autres villes) et "1 IEME"
+  // (Terrasse-Vaudreuil écrit "1 IEME").
+  const er = cleNormalisee.replace(/\b(\d+)(ER|ERE|RE)\b/g, "$1 ER");
+  if (er !== cleNormalisee) {
+    out.push(er);
+    const erIeme = er.replace(/\b(\d+) ER\b/g, "$1 IEME");
+    if (!out.includes(erIeme)) out.push(erIeme);
+  }
+  return out;
+}
+
+/**
  * Variante avec le type de voie déplacé à l'autre bout
  * ("7620 47E AV" → "7620 AV 47E", et inversement).
  *
