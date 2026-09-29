@@ -163,21 +163,29 @@ export const en = {
       "Ideal before buying land or renovating",
     ],
     estimateCta: "Request an estimate",
+    pourquoiSurTitre: "Why Nesta",
+    pourquoiTitre1: "What others charge you for,",
+    pourquoiTitre2: "we spare you.",
     confiance: [
       {
-        titre: "Transparent data",
+        titre: "$25,000 or $699?",
         texte:
-          "Every listing shows its real characteristics: taxes, area, year. When information is missing, it says so.",
+          "Example: a 5% commission (negotiable rate, for illustration only) on a $500,000 sale = $25,000 + taxes. The Nesta SELL plan: $699, one-time payment.",
       },
       {
-        titre: "Immersive tours",
+        titre: "Real prices, finally readable",
         texte:
-          "Sellers can add a real Matterport 3D tour, embedded directly in the listing.",
+          "Actual sale prices are nearly inaccessible to the Quebec public. Our comparables are verified, with the source and date on every listing.",
       },
       {
-        titre: "No forced middleman",
+        titre: "Every listing verified",
         texte:
-          "Buy or sell with or without a broker. Nesta stays your tool, not your intermediary.",
+          "Against classified-ad scams: our team verifies every listing before publication.",
+      },
+      {
+        titre: "Zero solicitation",
+        texte:
+          "Your contact details are never sold or shared. Listing on Nesta attracts no canvassing.",
       },
     ],
     finalTitre: "Your next project starts here.",

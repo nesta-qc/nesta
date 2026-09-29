@@ -28,6 +28,14 @@ const PRO_FEATURES = [
 
 const FAQ = [
   {
+    q: "Pourquoi pas de commission en pourcentage ?",
+    a: "Parce qu'un pourcentage fait payer le même service 25 000 $ ou 10 000 $ selon le prix de la maison (exemple à 5 %, un taux qui se négocie). Nos forfaits sont fixes et affichés d'avance : vous savez exactement ce que coûte votre vente, avant de payer.",
+  },
+  {
+    q: "Et si je ne vends pas ?",
+    a: "Votre annonce reste en ligne pendant toute la durée du forfait, et vous pouvez la renouveler. L'entrée est à 299 $ : un risque minime, sans engager des milliers de dollars d'avance.",
+  },
+  {
     q: "Le pilote gratuit de 3 mois m'engage-t-il ?",
     a: "Non. Vous publiez votre projet gratuitement pendant 3 mois, sans carte et sans engagement. À la fin du pilote, vous choisissez l'annuel ou le mensuel — ou vous arrêtez, simplement.",
   },
@@ -70,7 +78,31 @@ export default function TarifsPage() {
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-charcoal/60">
             Nesta Free pour comprendre le marché. Nesta Pro pour les
-            promoteurs. Des services à la carte quand vous en avez besoin.
+            promoteurs. Et pour vendre : des forfaits fixes, affichés
+            d'avance — jamais de commission en pourcentage.
+          </p>
+        </div>
+      </section>
+
+      {/* ---------- Ancrage : pourquoi forfaitaire ---------- */}
+      <section className="mx-auto w-full max-w-7xl px-5 pb-16 sm:px-8">
+        <div className="rounded-2xl bg-forest p-8 text-ivory sm:p-10">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-champagne">
+            Pourquoi forfaitaire ?
+          </p>
+          <p className="mt-4 font-display text-3xl leading-tight sm:text-4xl">
+            25 000 $ ou 699 $ ?
+          </p>
+          <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-ivory/75">
+            Exemple : une commission de 5 % (taux négociable, à titre
+            indicatif) sur une vente de 500 000 $ = 25 000 $ + taxes. Le
+            forfait Nesta SELL : 699 $, paiement unique. Le même
+            accompagnement, un prix affiché d'avance, zéro pourcentage prélevé
+            sur votre vente.
+          </p>
+          <p className="mt-4 max-w-2xl text-xs leading-relaxed text-ivory/45">
+            Les taux de commission varient et se négocient librement : ce
+            calcul est un exemple, pas un taux imposé.
           </p>
         </div>
       </section>
@@ -229,7 +261,8 @@ export default function TarifsPage() {
             Forfaits vendeur
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-charcoal/55">
-            Un seul paiement, sans commission cachée.
+            Un seul paiement. Pas de commission en %, pas de pari payé
+            d'avance, pas de surprise.
           </p>
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-3">

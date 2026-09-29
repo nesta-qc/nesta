@@ -72,9 +72,19 @@ export default async function Home() {
       {/* ---------- Estimation ---------- */}
       <EstimateSection />
 
-      {/* ---------- Confiance sobre ---------- */}
+      {/* ---------- Pourquoi Nesta : les angles d'attaque ---------- */}
       <section className="mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="max-w-2xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-forest">
+            {t.pourquoiSurTitre}
+          </p>
+          <h2 className="mt-4 font-display text-2xl text-charcoal sm:text-3xl">
+            {t.pourquoiTitre1}
+            <br />
+            {t.pourquoiTitre2}
+          </h2>
+        </div>
+        <div className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {t.confiance.map((f) => (
             <div key={f.titre} className="border-t-2 border-forest/15 pt-5">
               <h3 className="font-display text-lg text-charcoal">{f.titre}</h3>

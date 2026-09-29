@@ -163,21 +163,29 @@ export const fr = {
       "Idéal avant d'acheter un terrain ou de rénover",
     ],
     estimateCta: "Demander une estimation",
+    pourquoiSurTitre: "Pourquoi Nesta",
+    pourquoiTitre1: "Ce que les autres vous facturent,",
+    pourquoiTitre2: "on vous l'épargne.",
     confiance: [
       {
-        titre: "Données transparentes",
+        titre: "25 000 $ ou 699 $ ?",
         texte:
-          "Chaque annonce affiche ses caractéristiques réelles : taxes, superficie, année. Quand une information manque, c'est indiqué.",
+          "Exemple : 5 % de commission (taux négociable, à titre indicatif) sur une vente de 500 000 $ = 25 000 $ + taxes. Le forfait Nesta SELL : 699 $, paiement unique.",
       },
       {
-        titre: "Visites immersives",
+        titre: "Les prix réels, enfin lisibles",
         texte:
-          "Les vendeurs peuvent ajouter une vraie visite 3D Matterport, intégrée directement dans l'annonce.",
+          "Les prix de vente réels sont quasi inaccessibles au public québécois. Nos comparables sont vérifiés, avec la source et la date sur chaque fiche.",
       },
       {
-        titre: "Sans intermédiaire obligé",
+        titre: "Chaque annonce vérifiée",
         texte:
-          "Achetez ou vendez avec ou sans courtier. Nesta reste votre outil, pas votre intermédiaire.",
+          "Contre les arnaques des petites annonces : notre équipe vérifie chaque annonce avant sa publication.",
+      },
+      {
+        titre: "Zéro sollicitation",
+        texte:
+          "Vos coordonnées ne sont jamais revendues ni partagées. Publier sur Nesta n'attire aucun démarchage.",
       },
     ],
     finalTitre: "Votre prochain projet commence ici.",
