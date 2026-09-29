@@ -3,20 +3,30 @@
  * Aucune donnée fictive : que du formatage de valeurs réelles.
  * ============================================================ */
 
-const priceFormatter = new Intl.NumberFormat("fr-CA", {
-  style: "currency",
-  currency: "CAD",
-  maximumFractionDigits: 0,
-});
-
 const dateFormatter = new Intl.DateTimeFormat("fr-CA", {
   dateStyle: "medium",
 });
 
-/** Formate un prix en dollars canadiens (ex. « 549 000 $ »). */
-export function formatPrice(value: number | null | undefined): string {
+const priceFormatters = {
+  fr: new Intl.NumberFormat("fr-CA", {
+    style: "currency",
+    currency: "CAD",
+    maximumFractionDigits: 0,
+  }),
+  en: new Intl.NumberFormat("en-CA", {
+    style: "currency",
+    currency: "CAD",
+    maximumFractionDigits: 0,
+  }),
+} as const;
+
+/** Formate un prix en dollars canadiens (ex. « 549 000 $ » / « $549,000 »). */
+export function formatPrice(
+  value: number | null | undefined,
+  lang: "fr" | "en" = "fr",
+): string {
   if (value === null || value === undefined || Number.isNaN(value)) return "—";
-  return priceFormatter.format(value);
+  return priceFormatters[lang].format(value);
 }
 
 /** Formate un prix court pour les marqueurs de carte (ex. « 549k », « 1,2M »). */

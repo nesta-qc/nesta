@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { EDITORIAL_IMAGES } from "@/lib/site-images";
+import { getLang } from "@/lib/i18n/lang";
+import { dictionaries } from "@/lib/i18n/dictionaries";
 import { EditorialImage } from "./EditorialImage";
 
 /**
@@ -7,19 +9,19 @@ import { EditorialImage } from "./EditorialImage";
  * trois parcours, trois grandes photographies, beaucoup d'espace.
  * Pas de cartes SaaS identiques.
  */
-export function ExploreSection() {
+export async function ExploreSection() {
+  const t = dictionaries[await getLang()].accueil;
   return (
     <section className="mx-auto w-full max-w-7xl px-5 py-20 sm:px-8 sm:py-28">
       <div className="max-w-2xl">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-forest">
-          Parcours
+          {t.parcoursSurTitre}
         </p>
         <h2 className="mt-4 font-display text-3xl text-charcoal sm:text-5xl">
-          Explorez autrement.
+          {t.parcoursTitre}
         </h2>
         <p className="mt-4 text-base leading-relaxed text-charcoal/60 sm:text-lg">
-          Trois façons d&apos;avancer dans votre projet immobilier — avec ou
-          sans courtier.
+          {t.parcoursSousTitre}
         </p>
       </div>
 
@@ -41,11 +43,10 @@ export function ExploreSection() {
           <div className="mt-5 flex items-baseline justify-between">
             <div>
               <h3 className="font-display text-2xl text-charcoal sm:text-3xl">
-                Acheter
+                {t.parcoursAcheter}
               </h3>
               <p className="mt-1.5 max-w-md text-[15px] leading-relaxed text-charcoal/55">
-                Explorez les propriétés au Québec, visitez en 3D et estimez
-                votre coût réel.
+                {t.parcoursAcheterTexte}
               </p>
             </div>
             <span
@@ -72,11 +73,10 @@ export function ExploreSection() {
             <div className="mt-4 flex items-baseline justify-between">
               <div>
                 <h3 className="font-display text-xl text-charcoal sm:text-2xl">
-                  Vendre
+                  {t.parcoursVendre}
                 </h3>
                 <p className="mt-1 text-sm leading-relaxed text-charcoal/55">
-                  Publiez votre annonce vous-même, avec accompagnement ou
-                  avec un courtier.
+                  {t.parcoursVendreTexte}
                 </p>
               </div>
               <span
@@ -101,11 +101,10 @@ export function ExploreSection() {
             <div className="mt-4 flex items-baseline justify-between">
               <div>
                 <h3 className="font-display text-xl text-charcoal sm:text-2xl">
-                  Investir
+                  {t.parcoursInvestir}
                 </h3>
                 <p className="mt-1 text-sm leading-relaxed text-charcoal/55">
-                  Analysez des immeubles et préparez vos offres avec des
-                  données claires.
+                  {t.parcoursInvestirTexte}
                 </p>
               </div>
               <span

@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 /**
  * Barre de recherche premium du hero : ville, transaction, type, prix max,
  * chambres. Soumet en GET vers /search (mêmes paramètres que la page).
  */
 export function HeroSearch() {
+  const { t } = useLanguage();
+  const a = t.accueil;
   const [transaction, setTransaction] = useState<"sale" | "rent">("sale");
 
   const field =
@@ -20,24 +23,24 @@ export function HeroSearch() {
       method="get"
       action="/search"
       role="search"
-      aria-label="Recherche de propriété"
+      aria-label={a.rechercheAria}
       className="mt-8 w-full max-w-3xl rounded-2xl bg-white/95 shadow-[0_24px_60px_-12px_rgb(10_31_25/0.45)] backdrop-blur-sm"
     >
       {/* Segmented Acheter / Louer */}
       <div className="flex gap-1 border-b border-charcoal/8 px-4 pt-3">
-        {(["sale", "rent"] as const).map((t) => (
+        {(["sale", "rent"] as const).map((t2) => (
           <button
-            key={t}
+            key={t2}
             type="button"
-            onClick={() => setTransaction(t)}
-            aria-pressed={transaction === t}
+            onClick={() => setTransaction(t2)}
+            aria-pressed={transaction === t2}
             className={`rounded-t-lg px-4 py-2 text-sm font-semibold transition-colors ${
-              transaction === t
+              transaction === t2
                 ? "bg-forest text-white"
                 : "text-charcoal/55 hover:text-charcoal"
             }`}
           >
-            {t === "sale" ? "Acheter" : "Louer"}
+            {t2 === "sale" ? a.rechercheAcheter : a.rechercheLouer}
           </button>
         ))}
         <input type="hidden" name="transaction" value={transaction} />
@@ -45,28 +48,28 @@ export function HeroSearch() {
 
       <div className="grid grid-cols-2 divide-x divide-charcoal/8 sm:grid-cols-[1.4fr_1fr_1fr_1fr_auto]">
         <label className={`${field} col-span-2 sm:col-span-1`}>
-          <span className={label}>Où cherchez-vous ?</span>
+          <span className={label}>{a.rechercheOu}</span>
           <input
             name="ville"
-            placeholder="Ville, quartier…"
+            placeholder={a.rechercheOuPlaceholder}
             autoComplete="off"
             className={input}
           />
         </label>
         <label className={field}>
-          <span className={label}>Type</span>
+          <span className={label}>{a.rechercheType}</span>
           <select name="type" defaultValue="" className={`${input} cursor-pointer`}>
-            <option value="">Tous</option>
-            <option value="house">Maison</option>
-            <option value="condo">Condo</option>
-            <option value="plex">Plex</option>
-            <option value="land">Terrain</option>
+            <option value="">{a.rechercheTous}</option>
+            <option value="house">{a.rechercheMaison}</option>
+            <option value="condo">{a.rechercheCondo}</option>
+            <option value="plex">{a.recherchePlex}</option>
+            <option value="land">{a.rechercheTerrain}</option>
           </select>
         </label>
         <label className={`${field} border-t border-charcoal/8 sm:border-t-0`}>
-          <span className={label}>Prix max</span>
+          <span className={label}>{a.recherchePrixMax}</span>
           <select name="prix_max" defaultValue="" className={`${input} cursor-pointer`}>
-            <option value="">Sans limite</option>
+            <option value="">{a.rechercheSansLimite}</option>
             <option value="300000">300 000 $</option>
             <option value="500000">500 000 $</option>
             <option value="750000">750 000 $</option>
@@ -75,9 +78,9 @@ export function HeroSearch() {
           </select>
         </label>
         <label className={`${field} border-t border-charcoal/8 sm:border-t-0`}>
-          <span className={label}>Chambres</span>
+          <span className={label}>{a.rechercheChambres}</span>
           <select name="chambres" defaultValue="" className={`${input} cursor-pointer`}>
-            <option value="">Toutes</option>
+            <option value="">{a.rechercheToutes}</option>
             <option value="1">1+</option>
             <option value="2">2+</option>
             <option value="3">3+</option>
@@ -87,14 +90,14 @@ export function HeroSearch() {
         <div className="col-span-2 flex items-stretch p-2 sm:col-span-1">
           <button
             type="submit"
-            aria-label="Rechercher"
+            aria-label={a.rechercheBouton}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-forest px-6 text-[15px] font-semibold text-white transition-all hover:bg-forest-deep sm:w-auto"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
               <circle cx="11" cy="11" r="7" />
               <path d="m20 20-3.5-3.5" />
             </svg>
-            <span className="sm:hidden">Rechercher</span>
+            <span className="sm:hidden">{a.rechercheBouton}</span>
           </button>
         </div>
       </div>

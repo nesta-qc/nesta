@@ -3,17 +3,22 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
 import { signOutAction } from "@/actions/auth";
+import { getLang } from "@/lib/i18n/lang";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 /* Navigation principale — volontairement courte.
    Les fonctionnalités secondaires se découvrent dans leur contexte. */
-const navLinks = [
-  { href: "/search", label: "Acheter" },
-  { href: "/sell", label: "Vendre" },
-  { href: "/investir", label: "Investir" },
-  { href: "/projects", label: "Projets" },
-  { href: "/services", label: "Services" },
-  { href: "/tarifs", label: "Tarifs" },
-];
+function getNavLinks(t: (typeof dictionaries)["fr"]["nav"]) {
+  return [
+    { href: "/search", label: t.acheter },
+    { href: "/sell", label: t.vendre },
+    { href: "/investir", label: t.investir },
+    { href: "/projects", label: t.projets },
+    { href: "/services", label: t.services },
+    { href: "/tarifs", label: t.tarifs },
+  ];
+}
 
 /* Icônes sobres (SVG inline, aucun emoji). */
 function HeartIcon({ className = "" }: { className?: string }) {
@@ -71,11 +76,22 @@ export async function SiteHeader() {
     connected = user !== null;
   }
 
+  const t = dictionaries[await getLang()].nav;
+  const navLinks = getNavLinks(t);
+  const mobileLinks = [
+    { href: "/passeport", label: t.passeport },
+    { href: "/search", label: t.acheter },
+    { href: "/sell", label: t.vendre },
+    { href: "/investir", label: t.investir },
+    { href: "/favoris", label: t.favoris },
+    { href: connected ? "/profil" : "/connexion", label: t.profil },
+  ];
+
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border/70 bg-ivory/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 sm:px-8">
-          <Link href="/" className="flex items-center" aria-label="Nesta — accueil">
+          <Link href="/" className="flex items-center" aria-label={t.accueilAria}>
             <Image
               src="/nesta-wordmark-transparent.png"
               alt="Nesta"
@@ -87,13 +103,13 @@ export async function SiteHeader() {
           </Link>
           <nav
             className="hidden items-center gap-8 md:flex"
-            aria-label="Navigation principale"
+            aria-label={t.navPrincipaleAria}
           >
             <Link
               href="/passeport"
               className="rounded-full border border-forest/30 bg-white/50 px-4 py-1.5 text-[15px] font-semibold text-forest transition-colors duration-200 hover:border-forest hover:bg-white"
             >
-              Passeport
+              {t.passeport}
             </Link>
             {navLinks.map((link) => (
               <Link
@@ -106,9 +122,10 @@ export async function SiteHeader() {
             ))}
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
+            <LanguageToggle />
             <Link
               href="/favoris"
-              aria-label="Mes favoris"
+              aria-label={t.favorisAria}
               className="flex h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest"
             >
               <HeartIcon />
@@ -116,7 +133,7 @@ export async function SiteHeader() {
             {connected ? (
               <Link
                 href="/profil"
-                aria-label="Mon profil"
+                aria-label={t.profilAria}
                 className="flex h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest"
               >
                 <UserIcon />
@@ -127,13 +144,13 @@ export async function SiteHeader() {
                   href="/connexion"
                   className="hidden px-3 py-2 text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest sm:inline"
                 >
-                  Connexion
+                  {t.connexion}
                 </Link>
                 <Link
                   href="/inscription"
                   className="inline-flex items-center rounded-full bg-forest px-5 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest-deep"
                 >
-                  Inscription
+                  {t.inscription}
                 </Link>
               </>
             )}
@@ -143,18 +160,11 @@ export async function SiteHeader() {
 
       {/* Barre d'onglets mobile : navigation native, pouce accessible. */}
       <nav
-        aria-label="Navigation mobile"
+        aria-label={t.navMobileAria}
         className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 backdrop-blur-md md:hidden"
       >
         <div className="grid grid-cols-6">
-          {[
-            { href: "/passeport", label: "Passeport" },
-            { href: "/search", label: "Acheter" },
-            { href: "/sell", label: "Vendre" },
-            { href: "/investir", label: "Investir" },
-            { href: "/favoris", label: "Favoris" },
-            { href: connected ? "/profil" : "/connexion", label: "Profil" },
-          ].map((link) => (
+          {mobileLinks.map((link) => (
             <Link
               key={link.href + link.label}
               href={link.href}
@@ -172,14 +182,15 @@ export async function SiteHeader() {
 }
 
 /** Déconnexion (formulaire discret, utilisé dans /profil). */
-export function SignOutButton() {
+export async function SignOutButton() {
+  const t = dictionaries[await getLang()].nav;
   return (
     <form action={signOutAction}>
       <button
         type="submit"
         className="inline-flex items-center rounded-full border border-border bg-white px-5 py-2.5 text-sm font-medium text-charcoal transition-colors duration-200 hover:border-champagne"
       >
-        Déconnexion
+        {t.deconnexion}
       </button>
     </form>
   );

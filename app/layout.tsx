@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Splash } from "@/components/Splash";
+import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
+import { getLang } from "@/lib/i18n/lang";
 import "./globals.css";
 
 /* Serif éditorial pour les titres — repli Georgia si le chargement échoue. */
@@ -36,19 +38,22 @@ export const metadata: Metadata = {
  * leur propre habillage ((site) = header/footer publics,
  * (admin) = coquille du centre de contrôle interne).
  */
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const lang = await getLang();
   return (
     <html
-      lang="fr"
+      lang={lang}
       className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans">
-        <Splash />
-        {children}
+        <LanguageProvider initialLang={lang}>
+          <Splash />
+          {children}
+        </LanguageProvider>
         <Analytics />
       </body>
     </html>
