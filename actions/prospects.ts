@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { assertAdmin } from "@/lib/admin";
 import { PROSPECT_STATUSES, type ProspectStatus } from "@/lib/prospects";
+import { isEmailConfidence, type EmailConfidence } from "@/lib/crm";
 
 /*
  * NESTA — Server Actions de la prospection (/admin/prospection).
@@ -28,6 +29,13 @@ export interface ProspectRow {
   last_contact_at: string | null;
   created_at: string;
   updated_at: string;
+  /* Colonnes CRM (migration 000023). */
+  assigned_to: string | null;
+  next_follow_up_at: string | null;
+  estimated_projects: number;
+  email_confidence: EmailConfidence;
+  email_step: number;
+  do_not_contact: boolean;
 }
 
 export interface ProspectInput {
@@ -42,6 +50,13 @@ export interface ProspectInput {
   status?: ProspectStatus;
   source?: string | null;
   notes?: string | null;
+  /* Champs CRM (optionnels, migration 000023). */
+  assigned_to?: string | null;
+  next_follow_up_at?: string | null;
+  estimated_projects?: number | null;
+  email_confidence?: EmailConfidence | null;
+  email_step?: number | null;
+  do_not_contact?: boolean | null;
 }
 
 function clean(value: string | null | undefined): string | null {
@@ -66,6 +81,17 @@ function toInput(form: ProspectInput): Record<string, unknown> {
     status,
     source: clean(form.source),
     notes: clean(form.notes),
+    assigned_to: clean(form.assigned_to),
+    next_follow_up_at: clean(form.next_follow_up_at),
+    estimated_projects: Math.max(
+      0,
+      Math.round(Number(form.estimated_projects ?? 1) || 0),
+    ),
+    email_confidence: isEmailConfidence(form.email_confidence)
+      ? form.email_confidence
+      : "a_confirmer",
+    email_step: Math.max(0, Math.round(Number(form.email_step ?? 0) || 0)),
+    do_not_contact: form.do_not_contact === true,
   };
 }
 
