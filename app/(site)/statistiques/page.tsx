@@ -10,7 +10,7 @@ import { formatPrice } from "@/lib/format";
 export const metadata: Metadata = pageMetadata({
   title: "Statistiques du marché",
   description:
-    "Agrégats honnêtes calculés sur les profils du Passeport Nesta : répartition par arrondissement, valeur au rôle médiane, catégories — issus des données ouvertes de la Ville de Montréal.",
+    "Agrégats honnêtes calculés sur les profils du Passeport Nesta : répartition par ville et arrondissement, valeur au rôle médiane, catégories — issus des données ouvertes (Ville de Montréal et MAMH, Données Québec).",
   path: "/statistiques",
 });
 

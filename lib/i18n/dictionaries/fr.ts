@@ -44,7 +44,7 @@ export const fr = {
     eyebrow: "Statistiques du marché",
     titre: "Le marché, en chiffres honnêtes",
     intro:
-      "Des agrégats calculés à partir des {n} profils du Passeport Nesta, issus des données ouvertes de la Ville de Montréal. Aucun chiffre inventé : ce que nous ne savons pas, nous ne l'affichons pas.",
+      "Des agrégats calculés à partir des {n} profils du Passeport Nesta, issus des données ouvertes : Ville de Montréal et MAMH (Données Québec). Aucun chiffre inventé : ce que nous ne savons pas, nous ne l'affichons pas.",
     vueEnsemble: "Vue d'ensemble",
     profilsAnalyses: "Profils analysés",
     valeurMediane: "Valeur au rôle médiane",
@@ -57,11 +57,11 @@ export const fr = {
     categories: "Catégories de propriétés",
     methodoTitre: "Méthodologie",
     methodoSource:
-      "Source : Ville de Montréal — Données ouvertes (rôle d'évaluation foncière, taxes municipales).",
+      "Sources : Ville de Montréal — Données ouvertes (rôle d'évaluation foncière, taxes municipales) ; MAMH — Données Québec (rôles d'évaluation foncière).",
     methodoEchantillon:
       "Échantillon de {n} adresses ({nb} arrondissements, environ {par} profils par arrondissement) : ce n'est pas un portrait représentatif du marché montréalais.",
     methodoEchantillonMulti:
-      "Échantillon de {n} adresses ({nv} municipalités, {nb} arrondissements ou secteurs, environ {par} profils par secteur) : ce n'est pas un portrait représentatif du marché.",
+      "Échantillon de {n} adresses ({nv} municipalités, {nb} arrondissements ou secteurs) : ce n'est pas un portrait représentatif du marché.",
     methodoRole:
       "Les valeurs affichées sont des valeurs au rôle (évaluation foncière), pas des prix de vente.",
     methodoAnnees:

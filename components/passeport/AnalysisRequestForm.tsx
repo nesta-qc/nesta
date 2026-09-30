@@ -48,7 +48,7 @@ export function AnalysisRequestForm({ initialAddress }: { initialAddress: string
       <Field
         label="Adresse de la propriété"
         htmlFor="adresse"
-        hint="Vous pouvez modifier l'adresse saisie précédemment. Les suggestions proviennent des données ouvertes de la Ville de Montréal."
+        hint="Vous pouvez modifier l'adresse saisie précédemment. Les suggestions proviennent des données ouvertes (Ville de Montréal et MAMH — Données Québec)."
       >
         <AddressAutocomplete
           id="adresse"
