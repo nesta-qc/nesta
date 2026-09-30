@@ -99,7 +99,7 @@ export async function SiteHeader() {
           className="h-10 w-10 rounded-[10px] sm:h-11 sm:w-11"
         />
         <Image
-          src="/nesta-wordmark-transparent.png"
+          src="/nesta-wordmark-navy.png"
           alt="Groupe Nesta"
           width={1711}
           height={328}
