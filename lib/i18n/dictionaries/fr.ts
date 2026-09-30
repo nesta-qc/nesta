@@ -21,6 +21,9 @@ export const fr = {
     profilAria: "Mon profil",
     langueAria: "Choisir la langue",
   },
+  investir: {
+    exempleBadge: "Exemple",
+  },
   footer: {
     tagline: "L'immobilier, à votre façon.",
     colonnes: [

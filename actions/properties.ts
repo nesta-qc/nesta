@@ -979,12 +979,18 @@ export interface MarketComparable {
   source_url: string | null;
   verified_at: string;
   notes: string | null;
+  /** true = comparable illustratif (exemple) : affiché avec un badge « Exemple ». */
+  is_example: boolean;
 }
+
+const MARKET_COMPARABLE_COLUMNS =
+  "id, address, city, borough, property_type, asking_price, bedrooms, bathrooms, living_area, lot_area, year_built, condo_fees_monthly, gross_revenue_annual, latitude, longitude, source_name, source_url, verified_at, notes";
 
 /**
  * Comparables du marché : faits publics vérifiés (adresse, prix demandé,
  * caractéristiques) relevés sur des annonces DuProprio actives, avec URL
  * source et date de vérification. Ce NE SONT PAS des annonces Nesta.
+ * Les lignes marquées is_example sont illustratives (badge « Exemple »).
  */
 export async function getMarketComparables(
   filters: { city?: string; propertyType?: string; maxPrice?: number; minYear?: number } = {},
@@ -992,23 +998,36 @@ export async function getMarketComparables(
   if (!hasSupabaseConfig()) return [];
   const supabase = await createClient();
 
-  let query = supabase
-    .from("market_comparables")
-    .select(
-      "id, address, city, borough, property_type, asking_price, bedrooms, bathrooms, living_area, lot_area, year_built, condo_fees_monthly, gross_revenue_annual, latitude, longitude, source_name, source_url, verified_at, notes",
-    );
+  /* La colonne is_example arrive avec la migration 000025. Si elle n'est
+     pas encore appliquée en base, on relit sans le flag (tout = false)
+     plutôt que de casser la page. */
+  async function run(withFlag: boolean) {
+    let query = supabase
+      .from("market_comparables")
+      .select(
+        withFlag
+          ? `${MARKET_COMPARABLE_COLUMNS}, is_example`
+          : MARKET_COMPARABLE_COLUMNS,
+      );
 
-  if (filters.city) query = query.ilike("city", `%${filters.city}%`);
-  if (filters.propertyType) query = query.eq("property_type", filters.propertyType);
-  if (filters.maxPrice !== undefined) query = query.lte("asking_price", filters.maxPrice);
-  if (filters.minYear !== undefined) query = query.gte("year_built", filters.minYear);
+    if (filters.city) query = query.ilike("city", `%${filters.city}%`);
+    if (filters.propertyType) query = query.eq("property_type", filters.propertyType);
+    if (filters.maxPrice !== undefined) query = query.lte("asking_price", filters.maxPrice);
+    if (filters.minYear !== undefined) query = query.gte("year_built", filters.minYear);
 
-  const { data, error } = await query
-    .order("asking_price", { ascending: true })
-    .limit(200);
-  if (error) return [];
+    return query.order("asking_price", { ascending: true }).limit(200);
+  }
 
-  return asRows<MarketComparable>(data);
+  let { data, error } = await run(true);
+  if (error && /is_example/i.test(error.message ?? "")) {
+    ({ data, error } = await run(false));
+  }
+  if (error || !data) return [];
+
+  return asRows<Record<string, unknown>>(data).map((row) => ({
+    ...(row as object),
+    is_example: (row as { is_example?: unknown }).is_example === true,
+  })) as MarketComparable[];
 }
 
 /* ---------- Admin ---------- */

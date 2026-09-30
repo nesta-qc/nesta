@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Button, EmptyState, FavoriteButton, Input, Modal, Select } from "@/components/ui";
 import { GoogleMapEmbed } from "@/components/map/GoogleMapEmbed";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import type { InvestmentProperty, MarketComparable } from "@/actions/properties";
 import { formatPrice } from "@/lib/format";
 
@@ -138,6 +139,8 @@ export function InvestorView({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [letterFor, setLetterFor] = useState<LetterData | null>(null);
   const [copied, setCopied] = useState(false);
+  const { t } = useLanguage();
+  const exempleLabel = t.investir.exempleBadge;
 
   const items: InvestorItem[] = useMemo(
     () => [
@@ -305,6 +308,11 @@ export function InvestorView({
                                   Comparable marché
                                 </span>
                               ) : null}
+                              {isComparable && item.comparable.is_example ? (
+                                <span className="rounded-full border border-dashed border-charcoal/40 bg-ivory px-2 py-0.5 text-[11px] font-semibold text-charcoal/70">
+                                  {exempleLabel}
+                                </span>
+                              ) : null}
                             </div>
                             <p className="mt-0.5 text-sm font-medium text-charcoal">
                               {d.address}
@@ -399,6 +407,7 @@ function SelectedPanel({
 
   if (item.kind === "comparable") {
     const c = item.comparable;
+    const { t } = useLanguage();
     return (
       <div className="border-t border-border bg-white p-5">
         <div className="flex items-start justify-between gap-3">
@@ -410,6 +419,11 @@ function SelectedPanel({
               <span className="rounded-full bg-champagne/25 px-2 py-0.5 text-[11px] font-semibold text-charcoal/70">
                 Comparable marché
               </span>
+              {c.is_example ? (
+                <span className="rounded-full border border-dashed border-charcoal/40 bg-ivory px-2 py-0.5 text-[11px] font-semibold text-charcoal/70">
+                  {t.investir.exempleBadge}
+                </span>
+              ) : null}
             </div>
             <p className="mt-0.5 text-sm font-medium text-charcoal">
               {d.address}, {d.city}
