@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import Link from "next/link";
 import { Button, Card, EmptyState } from "@/components/ui";
 import { AddressAutocomplete } from "@/components/passeport/AddressAutocomplete";
+import { ProfileExplorer } from "@/components/passeport/ProfileExplorer";
 import {
   countPropertyProfiles,
-  listPropertyProfiles,
+  listPropertyProfilesForExplorer,
 } from "@/actions/property-profiles";
-import { formatPrice } from "@/lib/format";
 
 export const metadata: Metadata = pageMetadata({
   title: "Passeport Nesta",
@@ -19,13 +18,11 @@ export const metadata: Metadata = pageMetadata({
    ouvertes (migration 000013 + seeds). */
 export const dynamic = "force-dynamic";
 
-const EXPLORER_LIMIT = 12;
-
 /** Passeport Nesta : fiche adresse → analyse, sans compte. */
 export default async function PasseportPage() {
-  const [count, profiles] = await Promise.all([
+  const [count, explorerProfiles] = await Promise.all([
     countPropertyProfiles(),
-    listPropertyProfiles(EXPLORER_LIMIT),
+    listPropertyProfilesForExplorer(),
   ]);
 
   return (
@@ -125,38 +122,8 @@ export default async function PasseportPage() {
                   ? "1 propriété réelle issue des données ouvertes"
                   : `${count} propriétés réelles issues des données ouvertes`}
               </p>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                {profiles.map((profile) => (
-                  <Link
-                    key={profile.id}
-                    href={`/passeport/profil/${profile.id}`}
-                    className="group rounded-2xl border border-border bg-white p-5 transition-colors duration-200 hover:border-forest/40 hover:bg-cream"
-                  >
-                    <p className="text-[15px] font-semibold text-charcoal group-hover:text-forest">
-                      {profile.address}
-                    </p>
-                    {profile.borough ? (
-                      <p className="mt-1 text-sm text-charcoal/55">
-                        {profile.borough}
-                      </p>
-                    ) : null}
-                    <p className="mt-3 text-xs font-medium uppercase tracking-wider text-charcoal/45">
-                      Valeur au rôle
-                    </p>
-                    <p className="mt-0.5 text-base font-medium text-charcoal">
-                      {profile.assessment_total != null ? (
-                        formatPrice(profile.assessment_total)
-                      ) : (
-                        <span className="italic text-charcoal/45">
-                          À confirmer
-                        </span>
-                      )}
-                    </p>
-                    <p className="mt-3 text-sm font-medium text-forest">
-                      Voir le Passeport →
-                    </p>
-                  </Link>
-                ))}
+              <div className="mt-4">
+                <ProfileExplorer profiles={explorerProfiles} />
               </div>
             </>
           ) : (

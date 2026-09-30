@@ -131,6 +131,48 @@ export async function countPropertyProfiles(): Promise<number | null> {
   return count;
 }
 
+/** Profil allégé pour l'explorateur Passeport (recherche + filtres côté client). */
+export interface ExplorerProfile {
+  id: string;
+  address: string;
+  borough: string | null;
+  city: string;
+  assessment_total: number | null;
+  property_category: string | null;
+}
+
+/**
+ * Tous les profils, colonnes allégées, triés par adresse.
+ * Sert l'explorateur avec recherche et filtres instantanés (240 profils).
+ */
+export async function listPropertyProfilesForExplorer(
+  limit = 500,
+): Promise<ExplorerProfile[]> {
+  if (!hasSupabaseConfig()) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("property_profiles")
+    .select("id, address, borough, city, assessment_total, property_category")
+    .order("address", { ascending: true })
+    .limit(limit);
+  if (error || !data) return [];
+  const out: ExplorerProfile[] = [];
+  for (const raw of data as Record<string, unknown>[]) {
+    const id = toText(raw.id);
+    const address = toText(raw.address);
+    if (!id || !address) continue;
+    out.push({
+      id,
+      address,
+      borough: toText(raw.borough),
+      city: toText(raw.city) ?? "Montréal",
+      assessment_total: toNumber(raw.assessment_total),
+      property_category: toText(raw.property_category),
+    });
+  }
+  return out;
+}
+
 /** Suggestions d'adresses pour l'autocomplétion (ilike, triées, limitées). */
 export async function searchPropertyProfiles(
   query: string,

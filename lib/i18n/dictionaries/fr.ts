@@ -24,6 +24,20 @@ export const fr = {
   investir: {
     exempleBadge: "Exemple",
   },
+  passeport: {
+    explorer: {
+      recherchePlaceholder: "Rechercher une adresse, un secteur…",
+      rechercheAria: "Rechercher parmi les profils",
+      arrondissement: "Arrondissement",
+      tousArrondissements: "Tous les arrondissements",
+      valeurMax: "Valeur au rôle max ($)",
+      resultats: "{n} profils",
+      aucunResultatTitre: "Aucun résultat",
+      aucunResultatTexte:
+        "Aucun profil ne correspond à ces critères. Essayez d'élargir la recherche.",
+      reinitialiser: "Réinitialiser",
+    },
+  },
   footer: {
     tagline: "L'immobilier, à votre façon.",
     colonnes: [

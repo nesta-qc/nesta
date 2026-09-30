@@ -24,6 +24,20 @@ export const en = {
   investir: {
     exempleBadge: "Example",
   },
+  passeport: {
+    explorer: {
+      recherchePlaceholder: "Search an address, a neighbourhood…",
+      rechercheAria: "Search profiles",
+      arrondissement: "Borough",
+      tousArrondissements: "All boroughs",
+      valeurMax: "Max assessed value ($)",
+      resultats: "{n} profiles",
+      aucunResultatTitre: "No results",
+      aucunResultatTexte:
+        "No profile matches these criteria. Try broadening your search.",
+      reinitialiser: "Reset",
+    },
+  },
   footer: {
     tagline: "Real estate, your way.",
     colonnes: [
