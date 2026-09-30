@@ -321,7 +321,7 @@ export async function getMarketStats(): Promise<MarketStats | null> {
     newestConstructionYear:
       constructionYears.length > 0 ? Math.max(...constructionYears) : null,
     assessmentYears: [...countByYear.entries()]
-      .map(([year, count]) => ({ year, count })
+      .map(([year, count]) => ({ year, count }))
       .sort((a, b) => a.year - b.year),
   };
 }
