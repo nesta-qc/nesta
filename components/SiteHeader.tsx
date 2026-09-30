@@ -92,12 +92,15 @@ export async function SiteHeader() {
       >
         <Image
           src="/nesta-hexagone-navy.png"
-          alt="Groupe Nesta"
+          alt=""
           width={1038}
           height={1126}
           priority
-          className="h-11 w-auto sm:h-12"
+          className="h-10 w-auto sm:h-11"
         />
+        <span className="hidden font-signature text-[30px] leading-none text-forest min-[480px]:block sm:text-[34px]">
+          Groupe Nesta
+        </span>
       </Link>
       <nav
         className="hidden items-center gap-8 md:flex"
