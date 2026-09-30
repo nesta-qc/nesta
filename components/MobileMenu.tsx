@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 
@@ -45,6 +46,10 @@ function CloseIcon({ className = "" }: { className?: string }) {
 /**
  * Menu hamburger mobile : remplace la barre d'onglets du bas.
  * Contient TOUTE la navigation (dont Statistiques), en tiroir latéral.
+ *
+ * Le dialogue est rendu via un portail sur <body> : le header porte un
+ * backdrop-blur qui, sinon, servirait de bloc de référence au
+ * positionnement `fixed` et couperait le tiroir à 64 px de haut.
  */
 export function MobileMenu({
   t,
@@ -97,62 +102,77 @@ export function MobileMenu({
         <MenuIcon />
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={t.navMobileAria}>
-          {/* Fond assombri */}
-          <button
-            type="button"
-            aria-label={t.fermerMenu}
-            onClick={() => setOpen(false)}
-            className="absolute inset-0 h-full w-full cursor-default bg-charcoal/40 backdrop-blur-[2px]"
-          />
-          {/* Tiroir */}
-          <aside className="absolute inset-y-0 right-0 flex w-[82%] max-w-xs flex-col bg-ivory shadow-2xl">
-            <div className="flex h-16 items-center justify-between border-b border-border/70 px-5">
-              <span className="font-display text-lg text-charcoal">{t.menu}</span>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label={t.fermerMenu}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-charcoal/80 transition-colors hover:bg-white active:text-forest"
-              >
-                <CloseIcon />
-              </button>
-            </div>
-            <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label={t.navMobileAria}>
-              <ul className="flex flex-col gap-1">
-                {links.map((link) => (
-                  <li key={link.href + link.label}>
-                    <Link
-                      href={link.href}
-                      onClick={() => setOpen(false)}
-                      className={
-                        link.highlight
-                          ? "flex items-center rounded-xl border border-forest/30 bg-white/70 px-4 py-3 text-[16px] font-semibold text-forest"
-                          : "flex items-center rounded-xl px-4 py-3 text-[16px] font-medium text-charcoal/80 transition-colors hover:bg-white active:text-forest"
-                      }
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            {!connected && (
-              <div className="border-t border-border/70 p-4">
-                <Link
-                  href="/inscription"
+      {open &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t.navMobileAria}
+          >
+            {/* Fond assombri */}
+            <button
+              type="button"
+              aria-label={t.fermerMenu}
+              onClick={() => setOpen(false)}
+              className="absolute inset-0 h-full w-full cursor-default bg-charcoal/40 backdrop-blur-[2px]"
+            />
+            {/* Tiroir */}
+            <aside className="absolute inset-y-0 right-0 flex w-[82%] max-w-xs flex-col bg-ivory shadow-2xl">
+              <div className="flex h-16 shrink-0 items-center justify-between border-b border-border/70 px-5">
+                <span className="font-display text-lg text-charcoal">
+                  {t.menu}
+                </span>
+                <button
+                  type="button"
                   onClick={() => setOpen(false)}
-                  className="flex w-full items-center justify-center rounded-full bg-forest px-5 py-3 text-[15px] font-medium text-white transition-colors active:bg-forest-deep"
+                  aria-label={t.fermerMenu}
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-charcoal/80 transition-colors hover:bg-white active:text-forest"
                 >
-                  {t.inscription}
-                </Link>
+                  <CloseIcon />
+                </button>
               </div>
-            )}
-            <div className="h-[env(safe-area-inset-bottom)]" aria-hidden="true" />
-          </aside>
-        </div>
-      )}
+              <nav
+                className="min-h-0 flex-1 overflow-y-auto px-3 py-4"
+                aria-label={t.navMobileAria}
+              >
+                <ul className="flex flex-col gap-1">
+                  {links.map((link) => (
+                    <li key={link.href + link.label}>
+                      <Link
+                        href={link.href}
+                        onClick={() => setOpen(false)}
+                        className={
+                          link.highlight
+                            ? "flex items-center rounded-xl border border-forest/30 bg-white/70 px-4 py-3 text-[16px] font-semibold text-forest"
+                            : "flex items-center rounded-xl px-4 py-3 text-[16px] font-medium text-charcoal/80 transition-colors hover:bg-white active:text-forest"
+                        }
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+              {!connected && (
+                <div className="shrink-0 border-t border-border/70 p-4">
+                  <Link
+                    href="/inscription"
+                    onClick={() => setOpen(false)}
+                    className="flex w-full items-center justify-center rounded-full bg-forest px-5 py-3 text-[15px] font-medium text-white transition-colors active:bg-forest-deep"
+                  >
+                    {t.inscription}
+                  </Link>
+                </div>
+              )}
+              <div
+                className="h-[env(safe-area-inset-bottom)] shrink-0"
+                aria-hidden="true"
+              />
+            </aside>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
