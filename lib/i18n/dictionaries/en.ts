@@ -58,7 +58,7 @@ export const en = {
     methodoSource:
       "Source: City of Montréal — Open data (property assessment roll, municipal taxes).",
     methodoEchantillon:
-      "Sample of {n} addresses (40 per borough, 6 boroughs): this is not a representative portrait of the Montréal market.",
+      "Sample of {n} addresses ({nb} boroughs, about {par} profiles per borough): this is not a representative portrait of the Montréal market.",
     methodoRole:
       "Values shown are assessed values (property assessment), not sale prices.",
     methodoAnnees:

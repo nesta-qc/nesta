@@ -58,7 +58,7 @@ export const fr = {
     methodoSource:
       "Source : Ville de Montréal — Données ouvertes (rôle d'évaluation foncière, taxes municipales).",
     methodoEchantillon:
-      "Échantillon de {n} adresses (40 par arrondissement, 6 arrondissements) : ce n'est pas un portrait représentatif du marché montréalais.",
+      "Échantillon de {n} adresses ({nb} arrondissements, environ {par} profils par arrondissement) : ce n'est pas un portrait représentatif du marché montréalais.",
     methodoRole:
       "Les valeurs affichées sont des valeurs au rôle (évaluation foncière), pas des prix de vente.",
     methodoAnnees:

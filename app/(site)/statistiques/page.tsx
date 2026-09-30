@@ -42,6 +42,13 @@ export default async function StatistiquesPage() {
     ...stats.boroughs.map((b) => b.medianAssessment ?? 0),
   );
   const roleYears = stats.assessmentYears.map((y) => String(y.year)).join(", ");
+  const nbBoroughs = stats.boroughs.length;
+  const avgPerBorough =
+    nbBoroughs > 0 ? Math.round(stats.total / nbBoroughs) : 0;
+  const methodoEchantillon = t.methodoEchantillon
+    .replace("{n}", String(stats.total))
+    .replace("{nb}", String(nbBoroughs))
+    .replace("{par}", String(avgPerBorough));
   const computedOn = new Date().toLocaleDateString(
     lang === "fr" ? "fr-CA" : "en-CA",
     { day: "numeric", month: "long", year: "numeric" },
@@ -166,7 +173,7 @@ export default async function StatistiquesPage() {
         </h2>
         <ul className="mt-3 flex list-disc flex-col gap-2 pl-5 text-sm leading-relaxed text-charcoal/70">
           <li>{t.methodoSource}</li>
-          <li>{t.methodoEchantillon.replace("{n}", String(stats.total))}</li>
+          <li>{methodoEchantillon}</li>
           <li>{t.methodoRole}</li>
           <li>{t.methodoAnnees.replace("{annees}", roleYears || "—")}</li>
         </ul>
