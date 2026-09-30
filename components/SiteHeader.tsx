@@ -93,12 +93,12 @@ export async function SiteHeader() {
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 sm:px-8">
           <Link href="/" className="flex items-center" aria-label={t.accueilAria}>
             <Image
-              src="/nesta-wordmark-transparent.png"
-              alt="Nesta"
-              width={120}
-              height={32}
+              src="/groupe-nesta-logo.png"
+              alt="Groupe Nesta"
+              width={140}
+              height={56}
               priority
-              className="h-8 w-auto"
+              className="h-10 w-auto"
             />
           </Link>
           <nav
