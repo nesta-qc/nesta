@@ -6,6 +6,7 @@ import { signOutAction } from "@/actions/auth";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { MobileMenu } from "@/components/MobileMenu";
 
 /* Navigation principale — volontairement courte.
    Les fonctionnalités secondaires se découvrent dans leur contexte. */
@@ -63,8 +64,8 @@ function UserIcon({ className = "" }: { className?: string }) {
 
 /**
  * En-tête NESTA : sticky, très léger.
- * Desktop : NESTA | Passeport (mise en avant) Acheter Vendre Investir Projets Services — Favoris, Connexion/Profil.
- * Mobile : barre haute compacte + barre d'onglets basse (conçue pour mobile, pas compressée).
+ * Desktop : NESTA | Passeport (mise en avant) Acheter Vendre Investir Statistiques Projets Services Tarifs — Favoris, Connexion/Profil.
+ * Mobile : barre haute compacte + menu hamburger (tiroir latéral avec toute la navigation).
  */
 export async function SiteHeader() {
   let connected = false;
@@ -79,14 +80,6 @@ export async function SiteHeader() {
 
   const t = dictionaries[await getLang()].nav;
   const navLinks = getNavLinks(t);
-  const mobileLinks = [
-    { href: "/passeport", label: t.passeport },
-    { href: "/search", label: t.acheter },
-    { href: "/sell", label: t.vendre },
-    { href: "/investir", label: t.investir },
-    { href: "/favoris", label: t.favoris },
-    { href: connected ? "/profil" : "/connexion", label: t.profil },
-  ];
 
   return (
     <>
@@ -135,49 +128,29 @@ export async function SiteHeader() {
               <Link
                 href="/profil"
                 aria-label={t.profilAria}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest"
+                className="hidden h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest md:flex"
               >
                 <UserIcon />
               </Link>
             ) : (
-              <>
-                <Link
-                  href="/connexion"
-                  className="hidden px-3 py-2 text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest sm:inline"
-                >
-                  {t.connexion}
-                </Link>
-                <Link
-                  href="/inscription"
-                  className="inline-flex items-center rounded-full bg-forest px-5 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest-deep"
-                >
-                  {t.inscription}
-                </Link>
-              </>
+              <Link
+                href="/connexion"
+                className="hidden px-3 py-2 text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest sm:inline"
+              >
+                {t.connexion}
+              </Link>
             )}
+            <Link
+              href="/inscription"
+              className="hidden items-center rounded-full bg-forest px-5 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest-deep sm:inline-flex"
+            >
+              {t.inscription}
+            </Link>
+            {/* Mobile : tout passe par le menu hamburger. */}
+            <MobileMenu t={t} connected={connected} />
           </div>
         </div>
       </header>
-
-      {/* Barre d'onglets mobile : navigation native, pouce accessible. */}
-      <nav
-        aria-label={t.navMobileAria}
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-white/95 backdrop-blur-md md:hidden"
-      >
-        <div className="grid grid-cols-6">
-          {mobileLinks.map((link) => (
-            <Link
-              key={link.href + link.label}
-              href={link.href}
-              className="flex min-h-[60px] flex-col items-center justify-center gap-1 text-[11px] font-medium text-charcoal/60 transition-colors active:text-forest"
-            >
-              <span className="h-1 w-8 rounded-full bg-transparent" aria-hidden="true" />
-              {link.label}
-            </Link>
-          ))}
-        </div>
-        <div className="h-[env(safe-area-inset-bottom)]" aria-hidden="true" />
-      </nav>
     </>
   );
 }

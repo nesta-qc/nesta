@@ -47,3 +47,6 @@ __pycache__/
 scripts/.profiles_checkpoint.jsonl
 scripts/import.log
 supabase/seed_property_profiles_1.sql
+
+# Fichiers temporaires d'import (ne jamais committer)
+supabase/txt/

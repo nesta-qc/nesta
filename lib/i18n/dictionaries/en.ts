@@ -15,6 +15,8 @@ export const en = {
     profil: "Profile",
     favoris: "Favorites",
     deconnexion: "Log out",
+    menu: "Menu",
+    fermerMenu: "Close menu",
     accueilAria: "Nesta — home",
     navPrincipaleAria: "Main navigation",
     navMobileAria: "Mobile navigation",

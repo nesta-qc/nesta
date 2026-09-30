@@ -47,8 +47,7 @@ export default function SiteLayout({
       />
       <SiteHeader />
 
-      {/* Espace sous la barre d'onglets mobile. */}
-      <main className="flex flex-1 flex-col pb-20 md:pb-0">{children}</main>
+      <main className="flex flex-1 flex-col">{children}</main>
 
       <SiteFooter />
 
