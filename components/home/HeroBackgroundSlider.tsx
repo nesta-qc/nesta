@@ -129,11 +129,11 @@ export function HeroBackgroundSlider({ images, children }: HeroBackgroundSliderP
       {/* Overlay de lisibilité uniquement : teinte forêt profonde, jamais décoratif. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a1f19]/75 via-[#0a1f19]/25 to-[#0a1f19]/10"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0d1c30]/75 via-[#0d1c30]/25 to-[#0d1c30]/10"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a1f19]/45 via-transparent to-transparent"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0d1c30]/45 via-transparent to-transparent"
       />
 
       {/* Contenu. */}

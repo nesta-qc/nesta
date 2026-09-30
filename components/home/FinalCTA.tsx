@@ -24,7 +24,7 @@ export async function FinalCTA() {
       </div>
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0a1f19]/60 via-[#0a1f19]/30 to-[#0a1f19]/70"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#0d1c30]/60 via-[#0d1c30]/30 to-[#0d1c30]/70"
       />
       <div className="relative mx-auto w-full max-w-4xl px-5 py-24 text-center sm:px-8 sm:py-32">
         <h2 className="font-display text-3xl text-white sm:text-5xl">

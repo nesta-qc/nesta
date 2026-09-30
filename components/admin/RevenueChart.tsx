@@ -87,7 +87,7 @@ export function RevenueChart({
                 width={barW}
                 height={h}
                 rx={6}
-                fill={d.totalCents > 0 ? "#2f4a3c" : "currentColor"}
+                fill={d.totalCents > 0 ? "#2e4a6b" : "currentColor"}
                 fillOpacity={d.totalCents > 0 ? 1 : 0.08}
               />
               {d.totalCents > 0 ? (
@@ -97,7 +97,7 @@ export function RevenueChart({
                   textAnchor="middle"
                   fontSize={12}
                   fontWeight={700}
-                  fill="#2f4a3c"
+                  fill="#2e4a6b"
                 >
                   {formatDollars(d.totalCents)}
                 </text>

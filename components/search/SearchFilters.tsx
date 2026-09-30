@@ -86,7 +86,7 @@ function OptionRow({
             name={name}
             value={opt.value}
             defaultChecked={current === opt.value}
-            className="h-5 w-5 accent-[#163d32]"
+            className="h-5 w-5 accent-[#1d3a5f]"
           />
         </label>
       ))}
@@ -247,7 +247,7 @@ export function SearchFilters({ initial }: SearchFiltersProps) {
             name="visite_3d"
             value="1"
             defaultChecked={initial.visite_3d}
-            className="h-5 w-5 rounded accent-[#163d32]"
+            className="h-5 w-5 rounded accent-[#1d3a5f]"
           />
           Visite 3D uniquement
         </label>

@@ -7,8 +7,8 @@
  * « Complexe derrière. Extrêmement simple devant. »
  *
  * Palette :
- *  - forest      #163D32  vert forêt — couleur de marque principale
- *  - forest-deep #0E2A23  vert profond — fonds sombres, survols
+ *  - forest      #1D3A5F  bleu nuit — couleur de marque principale
+ *  - forest-deep #142A4A  bleu profond — fonds sombres, survols
  *  - ivory       #F7F5EF  ivoire chaud — fond principal
  *  - white       #FFFFFF  blanc — cartes, surfaces
  *  - charcoal    #181A19  anthracite — texte principal
@@ -16,14 +16,14 @@
  *  - border      #E7E1D3  bordures subtiles
  *
  * Typographie : Fraunces (titres, serif éditorial) + Inter (interface).
- * Interdits : emojis, gradients bleu/violet, glassmorphism excessif,
+ * Interdits : emojis, gradients violets, glassmorphism excessif,
  * animations gratuites, look « dashboard IA ».
  */
 
 @theme {
-  --color-forest: #163d32;
-  --color-forest-deep: #0e2a23;
-  --color-forest-ink: #0a1f19;
+  --color-forest: #1d3a5f;
+  --color-forest-deep: #142a4a;
+  --color-forest-ink: #0d1c30;
   --color-ivory: #f7f5ef;
   --color-cream: #f7f5ef; /* alias historique */
   --color-charcoal: #181a19;

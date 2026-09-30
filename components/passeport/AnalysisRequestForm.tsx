@@ -78,7 +78,7 @@ export function AnalysisRequestForm({ initialAddress }: { initialAddress: string
                 value={o.value}
                 defaultChecked={o.value === "acheter"}
                 required
-                className="h-4 w-4 accent-[#163d32]"
+                className="h-4 w-4 accent-[#1d3a5f]"
               />
               {o.label}
             </label>

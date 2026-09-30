@@ -28,7 +28,7 @@ export function PropertyMapInner({ latitude, longitude, address }: Props) {
     }).addTo(map);
     const icon = L.divIcon({
       className: "",
-      html: `<div style="width:18px;height:18px;border-radius:50%;background:#163d32;border:3px solid #fff;box-shadow:0 2px 8px rgb(24 26 25 / .3)"></div>`,
+      html: `<div style="width:18px;height:18px;border-radius:50%;background:#1d3a5f;border:3px solid #fff;box-shadow:0 2px 8px rgb(24 26 25 / .3)"></div>`,
       iconSize: [18, 18],
       iconAnchor: [9, 9],
     });
