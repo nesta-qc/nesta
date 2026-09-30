@@ -14,6 +14,7 @@ function getNavLinks(t: (typeof dictionaries)["fr"]["nav"]) {
     { href: "/search", label: t.acheter },
     { href: "/sell", label: t.vendre },
     { href: "/investir", label: t.investir },
+    { href: "/statistiques", label: t.statistiques },
     { href: "/projects", label: t.projets },
     { href: "/services", label: t.services },
     { href: "/tarifs", label: t.tarifs },

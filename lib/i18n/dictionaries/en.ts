@@ -9,6 +9,7 @@ export const en = {
     projets: "Projects",
     services: "Services",
     tarifs: "Pricing",
+    statistiques: "Statistics",
     connexion: "Log in",
     inscription: "Sign up",
     profil: "Profile",
@@ -37,6 +38,35 @@ export const en = {
         "No profile matches these criteria. Try broadening your search.",
       reinitialiser: "Reset",
     },
+    voirStats: "See market statistics",
+  },
+  statistiques: {
+    eyebrow: "Market statistics",
+    titre: "The market, in honest numbers",
+    intro:
+      "Aggregates computed from the {n} Nesta Passport profiles, sourced from the City of Montréal's open data. No invented numbers: what we don't know, we don't show.",
+    vueEnsemble: "Overview",
+    profilsAnalyses: "Profiles analyzed",
+    valeurMediane: "Median assessed value",
+    anneeMediane: "Median year built",
+    parArrondissement: "By borough",
+    arrondissement: "Borough",
+    profils: "Profiles",
+    valeurMedianeColonne: "Median assessed value",
+    categories: "Property categories",
+    methodoTitre: "Methodology",
+    methodoSource:
+      "Source: City of Montréal — Open data (property assessment roll, municipal taxes).",
+    methodoEchantillon:
+      "Sample of {n} addresses (40 per borough, 6 boroughs): this is not a representative portrait of the Montréal market.",
+    methodoRole:
+      "Values shown are assessed values (property assessment), not sale prices.",
+    methodoAnnees:
+      "Assessment roll years vary ({annees}): medians mix several assessment rolls.",
+    donneesAu: "Data computed on {date}",
+    indisponibleTitre: "Statistics unavailable",
+    indisponibleTexte:
+      "Profile data is currently unreachable. Please come back soon.",
   },
   footer: {
     tagline: "Real estate, your way.",
@@ -56,6 +86,7 @@ export const en = {
           { href: "/search", label: "Buy" },
           { href: "/sell", label: "Sell" },
           { href: "/investir", label: "Invest" },
+          { href: "/statistiques", label: "Statistics" },
           { href: "/projects", label: "Projects" },
         ],
       },

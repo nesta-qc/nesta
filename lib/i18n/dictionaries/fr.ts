@@ -9,6 +9,7 @@ export const fr = {
     projets: "Projets",
     services: "Services",
     tarifs: "Tarifs",
+    statistiques: "Statistiques",
     connexion: "Connexion",
     inscription: "Inscription",
     profil: "Profil",
@@ -37,6 +38,35 @@ export const fr = {
         "Aucun profil ne correspond à ces critères. Essayez d'élargir la recherche.",
       reinitialiser: "Réinitialiser",
     },
+    voirStats: "Voir les statistiques du marché",
+  },
+  statistiques: {
+    eyebrow: "Statistiques du marché",
+    titre: "Le marché, en chiffres honnêtes",
+    intro:
+      "Des agrégats calculés à partir des {n} profils du Passeport Nesta, issus des données ouvertes de la Ville de Montréal. Aucun chiffre inventé : ce que nous ne savons pas, nous ne l'affichons pas.",
+    vueEnsemble: "Vue d'ensemble",
+    profilsAnalyses: "Profils analysés",
+    valeurMediane: "Valeur au rôle médiane",
+    anneeMediane: "Année de construction médiane",
+    parArrondissement: "Par arrondissement",
+    arrondissement: "Arrondissement",
+    profils: "Profils",
+    valeurMedianeColonne: "Valeur médiane au rôle",
+    categories: "Catégories de propriétés",
+    methodoTitre: "Méthodologie",
+    methodoSource:
+      "Source : Ville de Montréal — Données ouvertes (rôle d'évaluation foncière, taxes municipales).",
+    methodoEchantillon:
+      "Échantillon de {n} adresses (40 par arrondissement, 6 arrondissements) : ce n'est pas un portrait représentatif du marché montréalais.",
+    methodoRole:
+      "Les valeurs affichées sont des valeurs au rôle (évaluation foncière), pas des prix de vente.",
+    methodoAnnees:
+      "Les années de rôle varient ({annees}) : les médianes mélangent plusieurs rôles d'évaluation.",
+    donneesAu: "Données calculées le {date}",
+    indisponibleTitre: "Statistiques indisponibles",
+    indisponibleTexte:
+      "Les données des profils sont inaccessibles pour le moment. Revenez bientôt.",
   },
   footer: {
     tagline: "L'immobilier, à votre façon.",
@@ -56,6 +86,7 @@ export const fr = {
           { href: "/search", label: "Acheter" },
           { href: "/sell", label: "Vendre" },
           { href: "/investir", label: "Investir" },
+          { href: "/statistiques", label: "Statistiques" },
           { href: "/projects", label: "Projets" },
         ],
       },

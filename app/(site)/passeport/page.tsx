@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import Link from "next/link";
 import { Button, Card, EmptyState } from "@/components/ui";
 import { AddressAutocomplete } from "@/components/passeport/AddressAutocomplete";
 import { ProfileExplorer } from "@/components/passeport/ProfileExplorer";
+import { getLang } from "@/lib/i18n/lang";
+import { dictionaries } from "@/lib/i18n/dictionaries";
 import {
   countPropertyProfiles,
   listPropertyProfilesForExplorer,
@@ -24,6 +27,7 @@ export default async function PasseportPage() {
     countPropertyProfiles(),
     listPropertyProfilesForExplorer(),
   ]);
+  const t = dictionaries[await getLang()].passeport;
 
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-8 sm:py-14">
@@ -112,6 +116,14 @@ export default async function PasseportPage() {
           Des profils issus des données publiques de la Ville de Montréal —
           ce ne sont pas des annonces à vendre, mais des fiches honnêtes :
           caractéristiques connues, sources nommées, points à confirmer.
+        </p>
+        <p className="mt-3">
+          <Link
+            href="/statistiques"
+            className="text-sm font-medium text-forest underline decoration-forest/30 underline-offset-4 hover:decoration-forest"
+          >
+            {t.voirStats} →
+          </Link>
         </p>
 
         <div className="mt-6">

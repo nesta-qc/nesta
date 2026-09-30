@@ -201,3 +201,127 @@ export async function searchPropertyProfiles(
   }
   return suggestions;
 }
+
+/* ============================================================
+ * NESTA — Statistiques du marché (hub /statistiques).
+ * Agrégats calculés EXCLUSIVEMENT depuis les profils Passeport
+ * (property_profiles, données ouvertes de la Ville de Montréal).
+ * Aucun chiffre inventé : si la base est inaccessible, null.
+ * ============================================================ */
+
+export interface BoroughStat {
+  borough: string;
+  count: number;
+  medianAssessment: number | null;
+}
+
+export interface CategoryStat {
+  category: string;
+  count: number;
+}
+
+export interface AssessmentYearStat {
+  year: number;
+  count: number;
+}
+
+export interface MarketStats {
+  total: number;
+  medianAssessment: number | null;
+  minAssessment: number | null;
+  maxAssessment: number | null;
+  boroughs: BoroughStat[];
+  categories: CategoryStat[];
+  medianConstructionYear: number | null;
+  oldestConstructionYear: number | null;
+  newestConstructionYear: number | null;
+  assessmentYears: AssessmentYearStat[];
+}
+
+function median(values: number[]): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0
+    ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
+    : sorted[mid];
+}
+
+/**
+ * Agrégats honnêtes sur les profils Passeport : répartition par
+ * arrondissement et par catégorie, valeur au rôle (médiane/min/max),
+ * années de construction et années de rôle couvertes.
+ */
+export async function getMarketStats(): Promise<MarketStats | null> {
+  if (!hasSupabaseConfig()) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("property_profiles")
+    .select(
+      "borough, assessment_total, assessment_year, property_category, construction_year",
+    )
+    .limit(1000);
+  if (error || !data) return null;
+  const rows = data as Record<string, unknown>[];
+  if (rows.length === 0) return null;
+
+  const assessments: number[] = [];
+  const constructionYears: number[] = [];
+  const assessmentsByBorough = new Map<string, number[]>();
+  const countByBorough = new Map<string, number>();
+  const countByCategory = new Map<string, number>();
+  const countByYear = new Map<number, number>();
+
+  for (const r of rows) {
+    const borough = toText(r.borough) ?? "Non précisé";
+    countByBorough.set(borough, (countByBorough.get(borough) ?? 0) + 1);
+
+    const assessment = toNumber(r.assessment_total);
+    if (assessment !== null) {
+      assessments.push(assessment);
+      const arr = assessmentsByBorough.get(borough) ?? [];
+      arr.push(assessment);
+      assessmentsByBorough.set(borough, arr);
+    }
+
+    const built = toNumber(r.construction_year);
+    if (built !== null) constructionYears.push(built);
+
+    const category = toText(r.property_category) ?? "Non précisé";
+    countByCategory.set(category, (countByCategory.get(category) ?? 0) + 1);
+
+    const roleYear = toNumber(r.assessment_year);
+    if (roleYear !== null)
+      countByYear.set(roleYear, (countByYear.get(roleYear) ?? 0) + 1);
+  }
+
+  const boroughs: BoroughStat[] = [...countByBorough.entries()]
+    .map(([borough, count]) => ({
+      borough,
+      count,
+      medianAssessment: median(assessmentsByBorough.get(borough) ?? []),
+    }))
+    .sort(
+      (a, b) =>
+        b.count - a.count || a.borough.localeCompare(b.borough, "fr"),
+    );
+
+  return {
+    total: rows.length,
+    medianAssessment: median(assessments),
+    minAssessment: assessments.length > 0 ? Math.min(...assessments) : null,
+    maxAssessment: assessments.length > 0 ? Math.max(...assessments) : null,
+    boroughs,
+    categories: [...countByCategory.entries()]
+      .map(([category, count]) => ({ category, count }))
+      .sort((a, b) => b.count - a.count),
+    medianConstructionYear: median(constructionYears),
+    oldestConstructionYear:
+      constructionYears.length > 0 ? Math.min(...constructionYears) : null,
+    newestConstructionYear:
+      constructionYears.length > 0 ? Math.max(...constructionYears) : null,
+    assessmentYears: [...countByYear.entries()]
+      .map(([year, count]) => ({ year, count })
+      .sort((a, b) => a.year - b.year),
+  };
+}
