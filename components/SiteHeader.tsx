@@ -89,10 +89,10 @@ export async function SiteHeader() {
             <Image
               src="/groupe-nesta-logo.png"
               alt="Groupe Nesta"
-              width={140}
-              height={56}
+              width={1022}
+              height={404}
               priority
-              className="h-10 w-auto"
+              className="h-12 w-auto"
             />
           </Link>
           <nav
