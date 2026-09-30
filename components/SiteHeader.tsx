@@ -7,6 +7,7 @@ import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { MobileMenu } from "@/components/MobileMenu";
+import { HeaderShell } from "@/components/HeaderShell";
 
 /* Navigation principale — volontairement courte.
    Les fonctionnalités secondaires se découvrent dans leur contexte. */
@@ -63,9 +64,10 @@ function UserIcon({ className = "" }: { className?: string }) {
 }
 
 /**
- * En-tête NESTA : sticky, très léger.
- * Desktop : NESTA | Passeport (mise en avant) Acheter Vendre Investir Statistiques Projets Services Tarifs — Favoris, Connexion/Profil.
- * Mobile : barre haute compacte + menu hamburger (tiroir latéral avec toute la navigation).
+ * En-tête NESTA : sticky, se compacte au scroll.
+ * Logo simplifié (tuile + NESTA, sans slogan illisible).
+ * Desktop : un seul CTA primaire = Passeport (Connexion/Inscription en liens discrets).
+ * Mobile : bouton Inscription compact toujours visible + menu hamburger.
  */
 export async function SiteHeader() {
   let connected = false;
@@ -82,76 +84,94 @@ export async function SiteHeader() {
   const navLinks = getNavLinks(t);
 
   return (
-    <>
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-ivory/90 backdrop-blur-md">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 sm:px-8">
-          <Link href="/" className="flex items-center" aria-label={t.accueilAria}>
-            <Image
-              src="/groupe-nesta-logo.png"
-              alt="Groupe Nesta"
-              width={1022}
-              height={404}
-              priority
-              className="h-12 w-auto"
-            />
-          </Link>
-          <nav
-            className="hidden items-center gap-8 md:flex"
-            aria-label={t.navPrincipaleAria}
+    <HeaderShell>
+      <Link
+        href="/"
+        className="flex shrink-0 items-center gap-2.5"
+        aria-label={t.accueilAria}
+      >
+        <Image
+          src="/nesta-icon.png"
+          alt=""
+          width={1206}
+          height={1206}
+          priority
+          className="h-10 w-10 rounded-[10px] sm:h-11 sm:w-11"
+        />
+        <Image
+          src="/nesta-wordmark-transparent.png"
+          alt="Groupe Nesta"
+          width={1711}
+          height={328}
+          priority
+          className="hidden h-6 w-auto min-[480px]:block sm:h-7"
+        />
+      </Link>
+      <nav
+        className="hidden items-center gap-8 md:flex"
+        aria-label={t.navPrincipaleAria}
+      >
+        <Link
+          href="/passeport"
+          className="rounded-full border border-forest/30 bg-white/50 px-4 py-1.5 text-[15px] font-semibold text-forest transition-colors duration-200 hover:border-forest hover:bg-white"
+        >
+          {t.passeport}
+        </Link>
+        {navLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest"
           >
+            {link.label}
+          </Link>
+        ))}
+      </nav>
+      <div className="flex items-center gap-2 sm:gap-3">
+        <LanguageToggle />
+        <Link
+          href="/favoris"
+          aria-label={t.favorisAria}
+          className="hidden h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest md:flex"
+        >
+          <HeartIcon />
+        </Link>
+        {connected ? (
+          <Link
+            href="/profil"
+            aria-label={t.profilAria}
+            className="hidden h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest md:flex"
+          >
+            <UserIcon />
+          </Link>
+        ) : (
+          <>
             <Link
-              href="/passeport"
-              className="rounded-full border border-forest/30 bg-white/50 px-4 py-1.5 text-[15px] font-semibold text-forest transition-colors duration-200 hover:border-forest hover:bg-white"
+              href="/connexion"
+              className="hidden text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest md:inline"
             >
-              {t.passeport}
+              {t.connexion}
             </Link>
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <LanguageToggle />
-            <Link
-              href="/favoris"
-              aria-label={t.favorisAria}
-              className="hidden h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest md:flex"
-            >
-              <HeartIcon />
-            </Link>
-            {connected ? (
-              <Link
-                href="/profil"
-                aria-label={t.profilAria}
-                className="hidden h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest md:flex"
-              >
-                <UserIcon />
-              </Link>
-            ) : (
-              <Link
-                href="/connexion"
-                className="hidden px-3 py-2 text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest sm:inline"
-              >
-                {t.connexion}
-              </Link>
-            )}
+            {/* Desktop : lien discret — le CTA primaire est Passeport. */}
             <Link
               href="/inscription"
-              className="hidden items-center rounded-full bg-forest px-5 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-forest-deep sm:inline-flex"
+              className="hidden text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest md:inline"
             >
               {t.inscription}
             </Link>
-            {/* Mobile : tout passe par le menu hamburger. */}
-            <MobileMenu t={t} connected={connected} />
-          </div>
-        </div>
-      </header>
-    </>
+            {/* Mobile : bouton compact, toujours visible. */}
+            <Link
+              href="/inscription"
+              className="inline-flex items-center rounded-full bg-forest px-4 py-2 text-[13px] font-medium text-white transition-colors duration-200 hover:bg-forest-deep md:hidden"
+            >
+              {t.inscription}
+            </Link>
+          </>
+        )}
+        {/* Mobile : tout passe par le menu hamburger. */}
+        <MobileMenu t={t} connected={connected} />
+      </div>
+    </HeaderShell>
   );
 }
 
