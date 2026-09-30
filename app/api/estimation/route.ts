@@ -8,6 +8,7 @@ import {
   type PorteePlex,
 } from "@/lib/estimation";
 import { createClient } from "@/lib/supabase/server";
+import { estLimite, ipCliente } from "@/lib/rate-limit";
 
 /* ============================================================
  * Journalise l'estimation en base (table estimation_requests).
@@ -65,6 +66,18 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  /* Anti-abus : 30 estimations / minute / IP. */
+  const quota = estLimite(`estimation:${ipCliente(request)}`, 30, 60_000);
+  if (quota.limite) {
+    return NextResponse.json(
+      { found: false, reason: "trop_de_requetes" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(quota.reessayerDansSec) },
+      },
+    );
+  }
+
   try {
     const body = (await request.json().catch(() => null)) as {
       ville?: unknown;

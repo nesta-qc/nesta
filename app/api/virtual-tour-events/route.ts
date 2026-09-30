@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
 import { propertyIdSchema } from "@/lib/validation";
+import { estLimite, ipCliente } from "@/lib/rate-limit";
 
 /* ============================================================
  * NESTA — API : événements de visite 3D (analytics).
@@ -15,6 +16,18 @@ import { propertyIdSchema } from "@/lib/validation";
  * ============================================================ */
 
 export async function POST(req: Request) {
+  /* Anti-abus : 60 événements / minute / IP. */
+  const quota = estLimite(`visite3d:${ipCliente(req)}`, 60, 60_000);
+  if (quota.limite) {
+    return NextResponse.json(
+      { ok: false },
+      {
+        status: 429,
+        headers: { "Retry-After": String(quota.reessayerDansSec) },
+      },
+    );
+  }
+
   try {
     if (!hasSupabaseConfig()) {
       return NextResponse.json({ ok: false }, { status: 503 });
