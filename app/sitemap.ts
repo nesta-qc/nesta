@@ -43,20 +43,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const supabase = await createClient();
-    const { data } = await supabase
-      .from("property_profiles")
-      .select("id, created_at")
-      .limit(1000);
-    for (const row of (data ?? []) as Array<{
-      id: string;
-      created_at: string | null;
-    }>) {
-      urls.push({
-        url: `${BASE_URL}/passeport/profil/${row.id}`,
-        lastModified: row.created_at ? new Date(row.created_at) : now,
-        changeFrequency: "weekly",
-        priority: 0.7,
-      });
+    // Paginer : le jeu dépasse les 1 000 lignes (limite Supabase par requête).
+    // 5 000 URLs restent très sous la limite d'un sitemap (50 000 URLs / 50 Mo).
+    const PAGE = 1000;
+    for (let offset = 0; ; offset += PAGE) {
+      const { data } = await supabase
+        .from("property_profiles")
+        .select("id, created_at")
+        .range(offset, offset + PAGE - 1);
+      const page = (data ?? []) as Array<{
+        id: string;
+        created_at: string | null;
+      }>;
+      for (const row of page) {
+        urls.push({
+          url: `${BASE_URL}/passeport/profil/${row.id}`,
+          lastModified: row.created_at ? new Date(row.created_at) : now,
+          changeFrequency: "weekly",
+          priority: 0.7,
+        });
+      }
+      if (page.length < PAGE) break;
     }
   } catch {
     /* Sans base accessible, le sitemap statique reste servi. */

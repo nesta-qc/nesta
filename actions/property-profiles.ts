@@ -143,32 +143,38 @@ export interface ExplorerProfile {
 
 /**
  * Tous les profils, colonnes allégées, triés par adresse.
- * Sert l'explorateur avec recherche et filtres instantanés (240 profils).
+ * Sert l'explorateur avec recherche et filtres instantanés.
+ * Paginer : le jeu dépasse les 1 000 lignes (limite Supabase par requête).
  */
-export async function listPropertyProfilesForExplorer(
-  limit = 500,
-): Promise<ExplorerProfile[]> {
+export async function listPropertyProfilesForExplorer(): Promise<
+  ExplorerProfile[]
+> {
   if (!hasSupabaseConfig()) return [];
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("property_profiles")
-    .select("id, address, borough, city, assessment_total, property_category")
-    .order("address", { ascending: true })
-    .limit(limit);
-  if (error || !data) return [];
   const out: ExplorerProfile[] = [];
-  for (const raw of data as Record<string, unknown>[]) {
-    const id = toText(raw.id);
-    const address = toText(raw.address);
-    if (!id || !address) continue;
-    out.push({
-      id,
-      address,
-      borough: toText(raw.borough),
-      city: toText(raw.city) ?? "Montréal",
-      assessment_total: toNumber(raw.assessment_total),
-      property_category: toText(raw.property_category),
-    });
+  const PAGE = 1000;
+  for (let offset = 0; ; offset += PAGE) {
+    const { data, error } = await supabase
+      .from("property_profiles")
+      .select("id, address, borough, city, assessment_total, property_category")
+      .order("address", { ascending: true })
+      .range(offset, offset + PAGE - 1);
+    if (error || !data) return out.length > 0 ? out : [];
+    const page = data as Record<string, unknown>[];
+    for (const raw of page) {
+      const id = toText(raw.id);
+      const address = toText(raw.address);
+      if (!id || !address) continue;
+      out.push({
+        id,
+        address,
+        borough: toText(raw.borough),
+        city: toText(raw.city) ?? "Montréal",
+        assessment_total: toNumber(raw.assessment_total),
+        property_category: toText(raw.property_category),
+      });
+    }
+    if (page.length < PAGE) break;
   }
   return out;
 }
@@ -215,6 +221,12 @@ export interface BoroughStat {
   medianAssessment: number | null;
 }
 
+export interface CityStat {
+  city: string;
+  count: number;
+  boroughs: BoroughStat[];
+}
+
 export interface CategoryStat {
   category: string;
   count: number;
@@ -231,6 +243,7 @@ export interface MarketStats {
   minAssessment: number | null;
   maxAssessment: number | null;
   boroughs: BoroughStat[];
+  cities: CityStat[];
   categories: CategoryStat[];
   medianConstructionYear: number | null;
   oldestConstructionYear: number | null;
@@ -255,14 +268,21 @@ function median(values: number[]): number | null {
 export async function getMarketStats(): Promise<MarketStats | null> {
   if (!hasSupabaseConfig()) return null;
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("property_profiles")
-    .select(
-      "borough, assessment_total, assessment_year, property_category, construction_year",
-    )
-    .limit(1000);
-  if (error || !data) return null;
-  const rows = data as Record<string, unknown>[];
+  // Paginer : le jeu dépasse les 1 000 lignes (limite Supabase par requête).
+  const rows: Record<string, unknown>[] = [];
+  const PAGE = 1000;
+  for (let offset = 0; ; offset += PAGE) {
+    const { data, error } = await supabase
+      .from("property_profiles")
+      .select(
+        "city, borough, assessment_total, assessment_year, property_category, construction_year",
+      )
+      .range(offset, offset + PAGE - 1);
+    if (error || !data) return null;
+    const page = data as Record<string, unknown>[];
+    rows.push(...page);
+    if (page.length < PAGE) break;
+  }
   if (rows.length === 0) return null;
 
   const assessments: number[] = [];
@@ -271,10 +291,28 @@ export async function getMarketStats(): Promise<MarketStats | null> {
   const countByBorough = new Map<string, number>();
   const countByCategory = new Map<string, number>();
   const countByYear = new Map<number, number>();
+  // Ville -> arrondissement -> { count, assessments }
+  const citiesAcc = new Map<
+    string,
+    Map<string, { count: number; assessments: number[] }>
+  >();
 
   for (const r of rows) {
+    const city = toText(r.city) ?? "Non précisé";
     const borough = toText(r.borough) ?? "Non précisé";
     countByBorough.set(borough, (countByBorough.get(borough) ?? 0) + 1);
+
+    let cityMap = citiesAcc.get(city);
+    if (!cityMap) {
+      cityMap = new Map();
+      citiesAcc.set(city, cityMap);
+    }
+    let bAcc = cityMap.get(borough);
+    if (!bAcc) {
+      bAcc = { count: 0, assessments: [] };
+      cityMap.set(borough, bAcc);
+    }
+    bAcc.count += 1;
 
     const assessment = toNumber(r.assessment_total);
     if (assessment !== null) {
@@ -282,6 +320,7 @@ export async function getMarketStats(): Promise<MarketStats | null> {
       const arr = assessmentsByBorough.get(borough) ?? [];
       arr.push(assessment);
       assessmentsByBorough.set(borough, arr);
+      bAcc.assessments.push(assessment);
     }
 
     const built = toNumber(r.construction_year);
@@ -306,12 +345,33 @@ export async function getMarketStats(): Promise<MarketStats | null> {
         b.count - a.count || a.borough.localeCompare(b.borough, "fr"),
     );
 
+  const cities: CityStat[] = [...citiesAcc.entries()]
+    .map(([city, cityMap]) => {
+      const cityBoroughs: BoroughStat[] = [...cityMap.entries()]
+        .map(([borough, acc]) => ({
+          borough,
+          count: acc.count,
+          medianAssessment: median(acc.assessments),
+        }))
+        .sort(
+          (a, b) =>
+            b.count - a.count || a.borough.localeCompare(b.borough, "fr"),
+        );
+      return {
+        city,
+        count: cityBoroughs.reduce((s, b) => s + b.count, 0),
+        boroughs: cityBoroughs,
+      };
+    })
+    .sort((a, b) => b.count - a.count || a.city.localeCompare(b.city, "fr"));
+
   return {
     total: rows.length,
     medianAssessment: median(assessments),
     minAssessment: assessments.length > 0 ? Math.min(...assessments) : null,
     maxAssessment: assessments.length > 0 ? Math.max(...assessments) : null,
     boroughs,
+    cities,
     categories: [...countByCategory.entries()]
       .map(([category, count]) => ({ category, count }))
       .sort((a, b) => b.count - a.count),

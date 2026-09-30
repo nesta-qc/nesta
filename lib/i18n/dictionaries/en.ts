@@ -50,6 +50,7 @@ export const en = {
     valeurMediane: "Median assessed value",
     anneeMediane: "Median year built",
     parArrondissement: "By borough",
+    parVilleArrondissement: "By city and borough",
     arrondissement: "Borough",
     profils: "Profiles",
     valeurMedianeColonne: "Median assessed value",
@@ -59,6 +60,8 @@ export const en = {
       "Source: City of Montréal — Open data (property assessment roll, municipal taxes).",
     methodoEchantillon:
       "Sample of {n} addresses ({nb} boroughs, about {par} profiles per borough): this is not a representative portrait of the Montréal market.",
+    methodoEchantillonMulti:
+      "Sample of {n} addresses ({nv} municipalities, {nb} boroughs or sectors, about {par} profiles per sector): this is not a representative portrait of the market.",
     methodoRole:
       "Values shown are assessed values (property assessment), not sale prices.",
     methodoAnnees:

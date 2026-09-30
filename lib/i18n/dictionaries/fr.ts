@@ -50,6 +50,7 @@ export const fr = {
     valeurMediane: "Valeur au rôle médiane",
     anneeMediane: "Année de construction médiane",
     parArrondissement: "Par arrondissement",
+    parVilleArrondissement: "Par ville et arrondissement",
     arrondissement: "Arrondissement",
     profils: "Profils",
     valeurMedianeColonne: "Valeur médiane au rôle",
@@ -59,6 +60,8 @@ export const fr = {
       "Source : Ville de Montréal — Données ouvertes (rôle d'évaluation foncière, taxes municipales).",
     methodoEchantillon:
       "Échantillon de {n} adresses ({nb} arrondissements, environ {par} profils par arrondissement) : ce n'est pas un portrait représentatif du marché montréalais.",
+    methodoEchantillonMulti:
+      "Échantillon de {n} adresses ({nv} municipalités, {nb} arrondissements ou secteurs, environ {par} profils par secteur) : ce n'est pas un portrait représentatif du marché.",
     methodoRole:
       "Les valeurs affichées sont des valeurs au rôle (évaluation foncière), pas des prix de vente.",
     methodoAnnees:
