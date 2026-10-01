@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import {
   Badge,
   Button,
@@ -15,39 +15,15 @@ import { useCountUp } from "@/lib/hooks/useCountUp";
 import { VILLES, type VilleSlug } from "@/lib/estimation/villes";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { dictionaries, type Lang } from "@/lib/i18n/dictionaries";
+import {
+  AdresseAutocomplete,
+  prettyKey,
+} from "@/components/estimation/AdresseAutocomplete";
 import type {
   CategorieBien,
   EstimateResult,
   PorteePlex,
 } from "@/lib/estimation/engine";
-
-/** "1000 AV DU MONT-ROYAL E" → "1000 av. Du Mont-royal Est" / "1000 Du Mont-Royal Ave E". */
-function prettyKey(key: string, lang: Lang): string {
-  const [base, apt] = key.split("|APT ");
-  const en = lang === "en";
-  let pretty = base
-    .toLowerCase()
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .replace(/\bR\b/, en ? "St" : "rue")
-    .replace(/\bAv\b/, en ? "Ave" : "av.")
-    .replace(/\bBoul\b/, en ? "Blvd" : "boul.")
-    .replace(/\bCh\b/, en ? "Ch" : "ch.")
-    .replace(/\bPl\b/, en ? "Pl" : "pl.");
-  const orientations: Record<string, string> = en
-    ? { E: "E", O: "W", N: "N", S: "S" }
-    : {
-        E: dictionaries.fr.estimation.orientationEst,
-        O: dictionaries.fr.estimation.orientationOuest,
-        N: dictionaries.fr.estimation.orientationNord,
-        S: dictionaries.fr.estimation.orientationSud,
-      };
-  pretty = pretty.replace(
-    / ([EONS])$/,
-    (m, o: string) => ` ${orientations[o] ?? o}`,
-  );
-  if (!apt) return pretty;
-  return en ? `${pretty}, apt. ${apt}` : `${pretty}, app. ${apt}`;
-}
 
 /** Remplace {ville} / {n} / {taux} dans un gabarit du dictionnaire. */
 function fill(
@@ -58,6 +34,27 @@ function fill(
     (s, [k, v]) => s.replace(`{${k}}`, String(v)),
     template,
   );
+}
+
+/** "2026-10" → "oct. 2026" / "Oct 2026". */
+function libelleMoisCourt(mois: string, lang: Lang): string {
+  const NOMS =
+    lang === "fr"
+      ? ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
+      : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const [a, m] = mois.split("-").map(Number);
+  if (!a || !m || m < 1 || m > 12) return mois;
+  return `${NOMS[m - 1]} ${a}`;
+}
+
+/** Libellé du score de confiance du Système Marché. */
+function confianceLabel(
+  confiance: "haute" | "moyenne" | "faible",
+  lang: Lang,
+): string {
+  if (lang === "en")
+    return confiance === "haute" ? "high" : confiance === "moyenne" ? "medium" : "low";
+  return confiance;
 }
 
 /**
@@ -142,17 +139,21 @@ function ResultatSkeleton() {
  * Formulaire d'estimation : ville, adresse (avec autocomplétion sur le
  * rôle d'évaluation foncière), n° de suite optionnel, puis résultat.
  */
-export function EstimationForm() {
+export function EstimationForm({
+  initialAdresse = "",
+  initialVille = "montreal",
+}: {
+  initialAdresse?: string;
+  initialVille?: VilleSlug;
+}) {
   const { t, lang } = useLanguage();
   const e = t.estimation;
-  const [ville, setVille] = useState<VilleSlug>("montreal");
-  const [adresse, setAdresse] = useState("");
+  const [ville, setVille] = useState<VilleSlug>(initialVille);
+  const [adresse, setAdresse] = useState(initialAdresse);
   const [suite, setSuite] = useState("");
   const [typeBien, setTypeBien] = useState<"" | CategorieBien>("");
   const [porteePlex, setPorteePlex] = useState<PorteePlex>("immeuble");
   const [horizon, setHorizon] = useState(0);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<EstimateResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -160,8 +161,6 @@ export function EstimationForm() {
   const [villesSuggerees, setVillesSuggerees] = useState<
     { slug: VilleSlug; nom: string }[]
   >([]);
-  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const boxRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   const TYPE_OPTIONS: { value: "" | CategorieBien; label: string }[] = [
@@ -173,38 +172,6 @@ export function EstimationForm() {
     { value: "terrain", label: e.typeTerrain },
     { value: "commercial", label: e.typeCommercial },
   ];
-
-  // Autocomplétion (débouncée) sur l'index du rôle d'évaluation.
-  useEffect(() => {
-    if (adresse.trim().length < 3) return;
-    if (debounce.current) clearTimeout(debounce.current);
-    debounce.current = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `/api/estimation/suggest?ville=${ville}&q=${encodeURIComponent(adresse)}`,
-        );
-        const data = (await res.json()) as string[];
-        setSuggestions(Array.isArray(data) ? data : []);
-        setShowSuggestions(true);
-      } catch {
-        setSuggestions([]);
-      }
-    }, 250);
-    return () => {
-      if (debounce.current) clearTimeout(debounce.current);
-    };
-  }, [adresse, ville]);
-
-  // Fermer les suggestions au clic hors du champ.
-  useEffect(() => {
-    const onClick = (e2: MouseEvent) => {
-      if (boxRef.current && !boxRef.current.contains(e2.target as Node)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, []);
 
   async function onSubmit(ev: React.FormEvent) {
     ev.preventDefault();
@@ -224,6 +191,7 @@ export function EstimationForm() {
           typeBien: typeBien || undefined,
           porteePlex: typeBien === "plex" ? porteePlex : undefined,
           projectionAnnees: horizon > 0 ? horizon : undefined,
+          langue: lang,
         }),
       });
       const data = (await res.json()) as EstimateResult;
@@ -296,7 +264,6 @@ export function EstimationForm() {
               onChange={(ev) => {
                 setVille(ev.target.value as VilleSlug);
                 setAdresse("");
-                setSuggestions([]);
                 setResult(null);
                 setOptionsAmbigues(null);
                 setVillesSuggerees([]);
@@ -405,45 +372,23 @@ export function EstimationForm() {
             </div>
           </Field>
 
-          <div ref={boxRef} className="relative">
-            <Field
-              label={e.champAdresse}
-              htmlFor="estimation-adresse"
-              hint={e.champAdresseIndice}
+          <Field
+            label={e.champAdresse}
+            htmlFor="estimation-adresse"
+            hint={e.champAdresseIndice}
+            required
+          >
+            <AdresseAutocomplete
+              id="estimation-adresse"
+              value={adresse}
+              onChange={setAdresse}
+              ville={ville}
+              lang={lang}
+              placeholder={e.champAdressePlaceholder}
               required
-            >
-              <Input
-                id="estimation-adresse"
-                value={adresse}
-                onChange={(ev) => {
-                  const v = ev.target.value;
-                  setAdresse(v);
-                  if (v.trim().length < 3) setSuggestions([]);
-                }}
-                onFocus={() => setShowSuggestions(true)}
-                placeholder={e.champAdressePlaceholder}
-                autoComplete="off"
-              />
-            </Field>
-            {showSuggestions && suggestions.length > 0 && (
-              <ul className="nesta-fade-in absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-border bg-white shadow-lg">
-                {suggestions.map((s) => (
-                  <li key={s}>
-                    <button
-                      type="button"
-                      className="w-full px-4 py-2.5 text-left text-sm text-charcoal hover:bg-cream"
-                      onClick={() => {
-                        setAdresse(prettyKey(s, lang));
-                        setShowSuggestions(false);
-                      }}
-                    >
-                      {prettyKey(s, lang)}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+              className="w-full rounded-xl border border-charcoal/15 bg-ivory px-4 py-3 text-[15px] text-charcoal outline-none placeholder:text-charcoal/35 focus:border-forest"
+            />
+          </Field>
 
           <Field label={e.champSuite} htmlFor="estimation-suite">
             <Input
@@ -650,6 +595,12 @@ export function EstimationForm() {
             )}
 
             <p className="mt-6 text-xs leading-relaxed text-charcoal/50">
+              {e.dossierMarche
+                .replace("{mois}", libelleMoisCourt(result.moisPrix, lang))
+                .replace("{confiance}", confianceLabel(result.confiance, lang))
+                .replace("{n}", String(result.nbComparables))}
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-charcoal/50">
               {avertissementAffiche}
             </p>
             <p className="mt-2 text-xs text-charcoal/40">{e.sources}</p>

@@ -5,6 +5,7 @@ export const fr = {
     passeport: "Passeport",
     acheter: "Acheter",
     vendre: "Vendre",
+    estimer: "Estimation",
     investir: "Investir",
     projets: "Projets",
     services: "Services",
@@ -158,6 +159,7 @@ export const fr = {
       "Avant d'acheter, de rénover ou d'investir, comprenez ce qu'une propriété peut devenir — sans promesse, sans jargon.",
     ctaRecherche: "Rechercher une propriété",
     ctaVendre: "Vendre avec Nesta",
+    ctaEstimer: "Estimer ma propriété",
     ouExplorer: "Ou explorez les annonces",
     analyseTitre: "Analyser une adresse",
     analysePlaceholder: "Ex. 4215, rue Sherbrooke Ouest, Montréal",
@@ -203,6 +205,9 @@ export const fr = {
       "Fourchette indicative, sans engagement",
     ],
     valeurCta: "Estimer ma propriété",
+    valeurAdressePlaceholder: "Ex. 4215, rue Sherbrooke Ouest, Montréal",
+    valeurAdresseAria: "Adresse de la propriété à estimer",
+    valeurVilleAria: "Ville de la propriété",
     vendreSurTitre: "Vendre",
     vendreTitre: "Vendez à votre façon.",
     vendreTexte:
@@ -342,6 +347,8 @@ export const fr = {
       "Estimation indicative calculée à partir du rôle d'évaluation foncière et des prix de vente médians du marché. Elle ne constitue pas une évaluation agréée et ne remplace pas l'avis d'un évaluateur agréé.",
     sources:
       "Sources : MAMH — Rôle d'évaluation foncière du Québec (Données Québec, CC-BY 4.0), prix de vente médians APCIQ.",
+    dossierMarche:
+      "Prix établi aux conditions du marché de {mois} · confiance {confiance} · {n} comparables.",
     orientationEst: "Est",
     orientationOuest: "Ouest",
     orientationNord: "Nord",
@@ -374,5 +381,89 @@ export const fr = {
       "Aucun montant n'a été débité. Votre panier est conservé : vous pouvez reprendre votre paiement quand vous voulez.",
     annuleCtaTarifs: "Retour aux tarifs",
     annuleCtaContact: "Nous contacter",
+  },
+  analyse: {
+    demarrerSurTitre: "Passeport Nesta",
+    demarrerTitre: "Analyser une propriété",
+    demarrerTexte:
+      "Adresse, valeur, potentiel d'achat, de vente ou d'investissement : l'analyse complète d'un bien, en quelques secondes, à partir des données officielles.",
+    champVille: "Ville",
+    champAdresse: "Adresse de la propriété",
+    champAdressePlaceholder: "Ex. 4215, rue Sherbrooke Ouest",
+    boutonAnalyser: "Analyser",
+    ficheTitre: "Fiche du bien",
+    ficheAdresse: "Adresse",
+    ficheVille: "Ville",
+    ficheArrondissement: "Arrondissement",
+    ficheType: "Type de bien",
+    ficheAnnee: "Année de construction",
+    ficheAge: "ans",
+    ficheTerrain: "Terrain",
+    ficheBatiment: "Bâtiment",
+    ficheLogements: "Logements",
+    ficheValeurRole: "Valeur au rôle foncier",
+    ficheValeurEstimee: "Valeur marchande estimée",
+    ficheFourchette: "Fourchette indicative",
+    ficheMillesime: "Rôle {millesime} — marché de référence {reference}",
+    valeurTitre: "Valeur estimée aujourd'hui",
+    verdictsTitre: "Acheter, vendre, investir ?",
+    verdictsTexte:
+      "Lecture du marché pour ce bien, à partir des prix de vente réels (APCIQ). Indicatif seulement — pas un conseil financier.",
+    verdictAcheter: "Acheter",
+    verdictVendre: "Vendre",
+    verdictInvestir: "Investir",
+    niveauFavorable: "Favorable",
+    niveauNeutre: "Neutre",
+    niveauDefavorable: "Défavorable",
+    vendreFavorable:
+      "La demande porte les prix bien au-delà de l'évaluation foncière : un bon moment pour mettre en vente.",
+    vendreNeutre:
+      "Marché stable à légèrement haussier pour ce type de bien : une vente reste envisageable, sans précipitation.",
+    vendreDefavorable:
+      "Marché atone pour ce segment : sauf besoin, attendre peut rapporter davantage.",
+    acheterFavorable:
+      "Le prix estimé reste proche de l'évaluation foncière : le point d'entrée est raisonnable.",
+    acheterNeutre:
+      "Marché haussier : l'achat reste possible, mais la marge de négociation sera mince.",
+    acheterDefavorable:
+      "Vous paieriez le haut du marché : prime d'achat élevée — négociez serré ou attendez.",
+    investirFavorable:
+      "Immeuble à revenus dans un segment porteur : le profil investisseur est intéressant.",
+    investirNeutreRevenus:
+      "Immeuble à revenus, marché stable : vérifiez les loyers réels avant de conclure.",
+    investirNeutre:
+      "Ce type de bien mise sur l'appréciation uniquement : aucun revenu locatif attendu.",
+    investirNote:
+      "Sans données de loyers, aucun rendement locatif n'est calculé.",
+    horizonTitre: "Maintenant ou plus tard ?",
+    horizonTexte:
+      "Scénario tendanciel : si la dynamique actuelle se poursuit (taux plafonné à 5 %/an, par prudence).",
+    horizonMaintenant: "Aujourd'hui",
+    horizon3ans: "Dans 3 ans",
+    horizon5ans: "Dans 5 ans",
+    courbeTitre: "La valeur du bien, année par année",
+    courbeNote:
+      "Reconstitution indicative : ce que vaudrait le bien s'il avait suivi l'indice annuel des prix du marché québécois (FCIQ/APCIQ, 2010-2026). Pas l'historique réel de ses transactions.",
+    courbeTronquee:
+      "Indice disponible depuis 2010 : la courbe commence à cette date.",
+    courbeLegendePasse: "Reconstitué",
+    courbeLegendeActuel: "Aujourd'hui",
+    courbeLegendeScenario: "Scénario",
+    courbeDetails: "Voir les valeurs année par année",
+    courbeInfobulleScenario: "Scénario hypothétique",
+    courbeVariationAnnee: "sur un an",
+    courbeConsigne: "Survolez ou touchez un point pour voir la valeur de chaque année.",
+    methodeTitre: "Notre méthode",
+    methodeTexte:
+      "Données du rôle d'évaluation foncière (MAMH / Ville de Montréal, licence CC-BY 4.0), ajustées aux prix de vente médians du baromètre APCIQ (référence {reference}). Les prix utilisés sont des prix vendus, jamais des prix demandés.",
+    dossierTitre: "Dossier d'évaluation — Système Marché NESTA",
+    dossierMarche:
+      "Prix établi aux conditions du marché de {mois} · confiance {confiance} · {n} comparables.",
+    avertissement:
+      "Estimation indicative : ne constitue pas une évaluation agréée et ne remplace pas l'avis d'un professionnel.",
+    introuvableTitre: "Adresse introuvable",
+    introuvableTexte:
+      "Cette adresse n'est pas au rôle d'évaluation des villes couvertes. Demandez une analyse manuelle : la réponse vous parvient par courriel.",
+    demandeManuelle: "Demander une analyse manuelle",
   },
 };

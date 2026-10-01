@@ -18,6 +18,7 @@ function getNavLinks(t: NavDict) {
   return [
     { href: "/search", label: t.acheter },
     { href: "/sell", label: t.vendre },
+    { href: "/estimation", label: t.estimer },
     { href: "/investir", label: t.investir },
     { href: "/statistiques", label: t.statistiques },
     { href: "/projects", label: t.projets },

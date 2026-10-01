@@ -86,6 +86,7 @@ export async function POST(request: Request) {
       typeBien?: unknown;
       porteePlex?: unknown;
       projectionAnnees?: unknown;
+      langue?: unknown;
     } | null;
 
     const ville = body?.ville;
@@ -138,6 +139,8 @@ export async function POST(request: Request) {
           ? (porteePlex as PorteePlex)
           : undefined,
       projectionAnnees: horizon >= 1 && horizon <= 10 ? horizon : undefined,
+      langue:
+        body?.langue === "en" || body?.langue === "fr" ? body.langue : undefined,
     });
     if (!result.found && result.reason === "adresse_introuvable") {
       // L'adresse existe peut-être dans une autre ville couverte
