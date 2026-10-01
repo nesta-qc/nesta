@@ -52,7 +52,7 @@ export default function AccesForm({ next }: { next: string }) {
           <img
             src="/logo-groupe-nesta.png"
             alt="Groupe Nesta"
-            className="mx-auto h-10 w-auto brightness-0 invert"
+            className="mx-auto h-16 w-auto brightness-0 invert"
           />
           <h1 className="mt-4 text-xl font-semibold text-white">
             Accès protégé

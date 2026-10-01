@@ -7,20 +7,20 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/* Curseur crayon dessiné en SVG (pas d'emoji, rendu constant). */
+/* Curseur crayon dessiné en SVG : corps brun, efface rose, style épuré. */
 const PENCIL_SVG =
-  "<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'>" +
-  "<g transform='rotate(45 14 14)'>" +
-  "<rect x='12.2' y='4' width='3.6' height='12' rx='0.8' fill='%23F5C518'/>" +
-  "<rect x='12.2' y='1.6' width='3.6' height='2.6' rx='0.8' fill='%23E8737A'/>" +
-  "<rect x='12.2' y='3.9' width='3.6' height='0.9' fill='%23C0C0C0'/>" +
-  "<polygon points='12.2,16 15.8,16 14,22.5' fill='%23EAD9B8'/>" +
-  "<polygon points='13.3,18.6 14.7,18.6 14,22.5' fill='%23222222'/>" +
+  "<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'>" +
+  "<g transform='rotate(45 18 18)'>" +
+  "<rect x='15.5' y='5' width='5' height='15' rx='1' fill='%239C6B3C'/>" +
+  "<rect x='15.5' y='2' width='5' height='3.4' rx='1' fill='%23F2A3C0'/>" +
+  "<rect x='15.5' y='5' width='5' height='1.2' fill='%23D9CFC2'/>" +
+  "<polygon points='15.5,20 20.5,20 18,28.5' fill='%23EAD9B8'/>" +
+  "<polygon points='16.9,23.5 19.1,23.5 18,28.5' fill='%23333333'/>" +
   "</g></svg>";
 
 const CURSOR = `url("data:image/svg+xml,${encodeURIComponent(
   PENCIL_SVG
-)}") 8 20, crosshair`;
+)}") 11 25, crosshair`;
 
 const FOND = "#0b1526";
 const COULEUR_TRAIT = "rgba(226,232,240,0.55)";
