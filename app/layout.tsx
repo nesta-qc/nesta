@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, Allura } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Splash } from "@/components/Splash";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
@@ -18,14 +18,6 @@ const fraunces = Fraunces({
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  display: "swap",
-});
-
-/* Signature manuscrite du logo — repli cursive système si le chargement échoue. */
-const signature = Allura({
-  variable: "--font-allura",
-  subsets: ["latin"],
-  weight: "400",
   display: "swap",
 });
 
@@ -77,7 +69,7 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
-      className={`${fraunces.variable} ${inter.variable} ${signature.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans">
         <LanguageProvider initialLang={lang}>

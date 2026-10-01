@@ -44,7 +44,6 @@
      les polices système ci-dessous servent de repli si le chargement échoue. */
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-signature: "Allura", "Segoe Script", cursive;
 
   /* Rayons — sobre et architectural. */
   --radius-xs: 6px;

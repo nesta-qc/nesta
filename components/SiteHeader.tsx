@@ -98,8 +98,10 @@ export async function SiteHeader() {
           priority
           className="h-10 w-auto sm:h-11"
         />
-        <span className="hidden font-signature text-[30px] leading-none text-forest min-[480px]:block sm:text-[34px]">
-          Groupe Nesta
+        <span className="hidden leading-none min-[480px]:block">
+          <span className="block font-display text-[30px] font-semibold leading-none text-forest sm:text-[32px]">
+            Groupe Nesta
+          </span>
         </span>
       </Link>
       <nav
