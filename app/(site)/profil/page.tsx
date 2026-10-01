@@ -121,9 +121,8 @@ export default async function ProfilPage() {
         <Card className="p-6">
           <h2 className="font-display text-xl text-charcoal">Mot de passe</h2>
           <p className="mt-1 text-sm text-charcoal/60">
-            Choisis un nouveau mot de passe pour ton compte. Si tu t'es inscrit
-            avec Google, définir un mot de passe te permettra aussi de te
-            connecter avec ton courriel.
+            Choisis un nouveau mot de passe pour ton compte. C'est avec ton
+            courriel et ce mot de passe que tu te connectes.
           </p>
           <div className="mt-6">
             <PasswordChangeForm />

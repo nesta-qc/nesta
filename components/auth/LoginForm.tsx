@@ -3,21 +3,33 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Field, Input } from "@/components/ui";
 import { AuthShell } from "./AuthShell";
-import { GoogleAuthButton } from "./GoogleAuthButton";
 import { loginSchema } from "@/lib/auth/schemas";
 import { toFrenchAuthError } from "@/lib/auth/errors";
 import { createClient } from "@/lib/supabase/client";
 
 /**
+ * Valide une destination post-connexion (chemin interne uniquement,
+ * anti redirection ouverte).
+ */
+function sanitizeNext(value: string | null): string | null {
+  if (value && value.startsWith("/") && !value.startsWith("//")) {
+    return value;
+  }
+  return null;
+}
+
+/**
  * Formulaire de connexion : signInWithPassword via le client navigateur.
  * Après succès, redirection vers /onboarding si l'utilisateur n'a
- * encore aucun rôle, vers / sinon.
+ * encore aucun rôle, vers ?next=… (si fourni) ou / sinon.
  */
 export function LoginForm({ linkError = false }: { linkError?: boolean }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = sanitizeNext(searchParams.get("next"));
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(
     linkError ? "Le lien est invalide ou a expiré. Connecte-toi pour continuer." : null,
@@ -53,7 +65,7 @@ export function LoginForm({ linkError = false }: { linkError?: boolean }) {
       if (error) throw error;
 
       /* L'onboarding est obligatoire pour un compte sans rôle. */
-      let target = "/";
+      let target = next ?? "/";
       if (data.user) {
         const { data: roles } = await supabase
           .from("user_roles")
@@ -77,17 +89,6 @@ export function LoginForm({ linkError = false }: { linkError?: boolean }) {
       title="Connexion"
       subtitle="Ravi de te revoir sur Nesta."
     >
-      <div className="flex flex-col gap-4">
-        <GoogleAuthButton mode="login" />
-        <div
-          aria-hidden="true"
-          className="flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-charcoal/40"
-        >
-          <span className="h-px flex-1 bg-charcoal/15" />
-          <span>ou</span>
-          <span className="h-px flex-1 bg-charcoal/15" />
-        </div>
-      </div>
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <Field
           label="Courriel"

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { pageMetadata } from "@/lib/seo";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -41,5 +42,10 @@ export default async function ConnexionPage({
   }
 
   const params = await searchParams;
-  return <LoginForm linkError={params.erreur === "lien-invalide"} />;
+  /* useSearchParams() dans LoginForm exige une frontière Suspense. */
+  return (
+    <Suspense>
+      <LoginForm linkError={params.erreur === "lien-invalide"} />
+    </Suspense>
+  );
 }
