@@ -326,4 +326,82 @@ export const en = {
       commercial: "Commercial",
     } as Record<string, string>,
   },
+  analyse: {
+    demarrerSurTitre: "Nesta Passport",
+    demarrerTitre: "Analyze a property",
+    demarrerTexte:
+      "Address, value, buy, sell or invest potential: the full analysis of a property in seconds, from official data.",
+    champVille: "City",
+    champAdresse: "Property address",
+    champAdressePlaceholder: "E.g. 4215 Sherbrooke St W",
+    boutonAnalyser: "Analyze",
+    ficheTitre: "Property profile",
+    ficheAdresse: "Address",
+    ficheVille: "City",
+    ficheArrondissement: "Borough",
+    ficheType: "Property type",
+    ficheAnnee: "Year built",
+    ficheAge: "years old",
+    ficheTerrain: "Lot",
+    ficheBatiment: "Building",
+    ficheLogements: "Units",
+    ficheValeurRole: "Assessed value",
+    ficheValeurEstimee: "Estimated market value",
+    ficheFourchette: "Indicative range",
+    ficheMillesime: "{millesime} roll — market reference {reference}",
+    valeurTitre: "Estimated value today",
+    verdictsTitre: "Buy, sell, invest?",
+    verdictsTexte:
+      "Market read for this property, from actual sold prices (APCIQ). Indicative only — not financial advice.",
+    verdictAcheter: "Buy",
+    verdictVendre: "Sell",
+    verdictInvestir: "Invest",
+    niveauFavorable: "Favourable",
+    niveauNeutre: "Neutral",
+    niveauDefavorable: "Unfavourable",
+    vendreFavorable:
+      "Demand is pushing prices well above the assessed value: a good time to list.",
+    vendreNeutre:
+      "Steady to slightly rising market for this property type: a sale remains possible, no rush.",
+    vendreDefavorable:
+      "Soft market for this segment: unless you must sell, waiting may pay more.",
+    acheterFavorable:
+      "The estimated price sits close to the assessed value: a reasonable entry point.",
+    acheterNeutre:
+      "Rising market: buying remains possible, but negotiating room will be thin.",
+    acheterDefavorable:
+      "You would be buying at the top of the market: high entry premium — negotiate hard or wait.",
+    investirFavorable:
+      "Income property in a hot segment: an interesting investor profile.",
+    investirNeutreRevenus:
+      "Income property, steady market: verify actual rents before deciding.",
+    investirNeutre:
+      "This property type relies on appreciation only: no rental income expected.",
+    investirNote:
+      "Without rent data, no rental yield is calculated.",
+    horizonTitre: "Now or later?",
+    horizonTexte:
+      "Trend scenario: if current momentum continues (rate capped at 5%/yr, to stay prudent).",
+    horizonMaintenant: "Today",
+    horizon3ans: "In 3 years",
+    horizon5ans: "In 5 years",
+    courbeTitre: "The property's value, year by year",
+    courbeNote:
+      "Indicative reconstruction: what the property would be worth had it tracked the Quebec market price index (APCIQ). Not its actual transaction history.",
+    courbeTronquee:
+      "Index available since 2019: the curve starts on that date.",
+    courbeLegendePasse: "Reconstructed",
+    courbeLegendeActuel: "Today",
+    courbeLegendeScenario: "Scenario",
+    courbeDetails: "See year-by-year values",
+    methodeTitre: "Our method",
+    methodeTexte:
+      "Assessment roll data (MAMH / City of Montreal, CC-BY 4.0 licence), adjusted to median sold prices from the APCIQ barometer (reference {reference}). Prices used are sold prices, never asking prices.",
+    avertissement:
+      "Indicative estimate: not a certified appraisal and not a substitute for professional advice.",
+    introuvableTitre: "Address not found",
+    introuvableTexte:
+      "This address is not on the assessment roll of covered cities. Request a manual analysis: the answer comes by email.",
+    demandeManuelle: "Request a manual analysis",
+  },
 };
