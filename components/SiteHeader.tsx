@@ -91,18 +91,13 @@ export async function SiteHeader() {
         aria-label={t.accueilAria}
       >
         <Image
-          src="/nesta-hexagone-navy.png"
-          alt=""
-          width={1038}
-          height={1126}
+          src="/logo-groupe-nesta.png"
+          alt="Groupe Nesta"
+          width={800}
+          height={311}
           priority
           className="h-10 w-auto sm:h-11"
         />
-        <span className="hidden leading-none min-[480px]:block">
-          <span className="block font-display text-[30px] font-semibold leading-none text-forest sm:text-[32px]">
-            Groupe Nesta
-          </span>
-        </span>
       </Link>
       <nav
         className="hidden items-center gap-8 md:flex"
