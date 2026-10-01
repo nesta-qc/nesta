@@ -202,7 +202,7 @@ function appliquerSasAcces(request: NextRequest): NextResponse | null {
   }
 
   const session = request.cookies.get(GATE_COOKIE)?.value;
-  if (verifyToken(session, "session")) return null;
+  if (verifyToken(session)) return null;
 
   /* API : 403 JSON plutôt qu'une redirection HTML. */
   if (sansLangue.startsWith("/api/")) {
@@ -222,7 +222,7 @@ function appliquerSasAcces(request: NextRequest): NextResponse | null {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  /* ============ Sas d'accès au site (code + double vérification) ============
+  /* ============ Sas d'accès au site (code d'accès partagé) ============
    * Actif uniquement quand les variables SITE_GATE_* sont définies
    * (opt-in par environnement). Le site d'administration garde sa
    * propre connexion et n'est pas concerné.

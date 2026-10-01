@@ -8,8 +8,7 @@ export const metadata: Metadata = {
 };
 
 /*
- * Sas d'accès au site : étape 1 = code d'accès,
- * étape 2 = double vérification (application d'authentification).
+ * Sas d'accès au site : un seul code d'accès partagé.
  * Après validation, redirection vers la page demandée (?next=…).
  */
 export default async function AccesPage({

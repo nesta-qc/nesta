@@ -1,18 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
 import {
-  GATE_PREAUTH_COOKIE,
+  GATE_COOKIE,
   isGateEnabled,
   makeToken,
-  preauthTtlSec,
+  sessionTtlSec,
   verifyAccessCode,
 } from "@/lib/site-gate";
 import { estLimite, ipCliente } from "@/lib/rate-limit";
 
 /* ============================================================
- * NESTA — sas d'accès, étape 1/2 : vérification du code d'accès.
+ * NESTA — sas d'accès : vérification du code d'accès.
  *
  * POST /api/gate/code  { code: string }
- * → 200 { ok: true } + cookie de pré-authentification (10 min)
+ * → 200 { ok: true } + cookie de session signé (30 jours)
  * → 401 si le code est faux.
  *
  * Limite : 10 tentatives / 10 min / IP (anti force brute).
@@ -56,9 +56,9 @@ export async function POST(request: NextRequest) {
   }
 
   const res = NextResponse.json({ ok: true });
-  res.cookies.set(GATE_PREAUTH_COOKIE, makeToken("pre"), {
+  res.cookies.set(GATE_COOKIE, makeToken(), {
     ...COOKIE_ATTRS,
-    maxAge: preauthTtlSec(),
+    maxAge: sessionTtlSec(),
   });
   return res;
 }
