@@ -7,6 +7,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import DoodleBackground from "./DoodleBackground";
 
 export default function AccesForm({ next }: { next: string }) {
   const router = useRouter();
@@ -43,14 +44,15 @@ export default function AccesForm({ next }: { next: string }) {
   }
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-[#0b1526] px-4 py-12">
-      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl backdrop-blur">
+    <main className="relative flex min-h-dvh items-center justify-center bg-[#0b1526] px-4 py-12">
+      <DoodleBackground />
+      <div className="relative z-10 w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl backdrop-blur">
         <div className="mb-6 text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/nesta-wordmark-transparent.png"
-            alt="Nesta"
-            className="mx-auto h-10 w-auto"
+            src="/logo-groupe-nesta.png"
+            alt="Groupe Nesta"
+            className="mx-auto h-10 w-auto brightness-0 invert"
           />
           <h1 className="mt-4 text-xl font-semibold text-white">
             Accès protégé
