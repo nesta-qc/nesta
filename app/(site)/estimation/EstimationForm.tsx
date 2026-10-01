@@ -142,11 +142,11 @@ function ResultatSkeleton() {
  * Formulaire d'estimation : ville, adresse (avec autocomplétion sur le
  * rôle d'évaluation foncière), n° de suite optionnel, puis résultat.
  */
-export function EstimationForm() {
+export function EstimationForm({ initialAdresse = "" }: { initialAdresse?: string }) {
   const { t, lang } = useLanguage();
   const e = t.estimation;
   const [ville, setVille] = useState<VilleSlug>("montreal");
-  const [adresse, setAdresse] = useState("");
+  const [adresse, setAdresse] = useState(initialAdresse);
   const [suite, setSuite] = useState("");
   const [typeBien, setTypeBien] = useState<"" | CategorieBien>("");
   const [porteePlex, setPorteePlex] = useState<PorteePlex>("immeuble");

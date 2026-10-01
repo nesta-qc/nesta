@@ -53,6 +53,12 @@ export default async function Home() {
             {t.ctaRecherche}
           </a>
           <Link
+            href="/estimation"
+            className="inline-flex items-center justify-center rounded-full bg-champagne px-7 py-3.5 text-[15px] font-semibold text-charcoal transition-colors duration-200 hover:bg-champagne/85"
+          >
+            {t.ctaEstimer}
+          </Link>
+          <Link
             href="/sell"
             className="inline-flex items-center justify-center rounded-full border border-white/40 px-7 py-3.5 text-[15px] font-semibold text-white transition-colors duration-200 hover:border-white hover:bg-white/10"
           >

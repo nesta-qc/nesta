@@ -13,6 +13,7 @@ function getNavLinks(t: (typeof dictionaries)["fr"]["nav"]) {
   return [
     { href: "/search", label: t.acheter },
     { href: "/sell", label: t.vendre },
+    { href: "/estimation", label: t.estimer },
     { href: "/investir", label: t.investir },
     { href: "/statistiques", label: t.statistiques },
     { href: "/projects", label: t.projets },
@@ -83,6 +84,7 @@ export async function SiteHeader() {
     { href: "/passeport", label: t.passeport },
     { href: "/search", label: t.acheter },
     { href: "/sell", label: t.vendre },
+    { href: "/estimation", label: t.estimer },
     { href: "/investir", label: t.investir },
     { href: "/favoris", label: t.favoris },
     { href: connected ? "/profil" : "/connexion", label: t.profil },

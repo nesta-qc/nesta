@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 
@@ -6,8 +5,10 @@ import { dictionaries } from "@/lib/i18n/dictionaries";
  * NESTA — Valeur de propriété.
  * Section d'accueil qui mène vers /estimation : l'estimé instantané
  * de la valeur d'une propriété à partir du rôle d'évaluation foncière,
- * ajusté aux prix du marché. Composition centrée sur fond ivoire,
- * dans le design system du site (aucune retouche d'identité visuelle).
+ * ajusté aux prix du marché. L'adresse saisie est transmise en GET
+ * vers /estimation?adresse=… qui la pré-remplit. Composition centrée
+ * sur fond ivoire, dans le design system du site (aucune retouche
+ * d'identité visuelle).
  */
 export async function PropertyValueSection() {
   const t = dictionaries[await getLang()].accueil;
@@ -26,6 +27,35 @@ export async function PropertyValueSection() {
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-charcoal/70 sm:text-lg">
           {t.valeurTexte}
         </p>
+        <form
+          method="get"
+          action="/estimation"
+          role="search"
+          aria-label={t.valeurTitre}
+          className="mx-auto mt-8 flex w-full max-w-xl flex-col gap-2 sm:flex-row"
+        >
+          <label htmlFor="valeur-adresse" className="sr-only">
+            {t.valeurAdresseAria}
+          </label>
+          <input
+            id="valeur-adresse"
+            name="adresse"
+            type="text"
+            required
+            autoComplete="street-address"
+            placeholder={t.valeurAdressePlaceholder}
+            className="w-full flex-1 rounded-full border border-charcoal/10 bg-white px-6 py-4 text-[15px] text-charcoal shadow-sm placeholder:text-charcoal/35 focus:outline-none focus:ring-2 focus:ring-forest/30"
+          />
+          <button
+            type="submit"
+            className="inline-flex shrink-0 items-center justify-center rounded-full bg-forest px-8 py-4 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-forest-deep"
+          >
+            {t.valeurCta}
+            <span aria-hidden="true" className="ml-2">
+              →
+            </span>
+          </button>
+        </form>
         <ul className="mx-auto mt-8 grid max-w-2xl gap-3 text-left text-[15px] text-charcoal/80 sm:grid-cols-3 sm:text-center">
           {t.valeurPuces.map((item) => (
             <li key={item} className="flex items-start gap-2 sm:justify-center">
@@ -36,13 +66,6 @@ export async function PropertyValueSection() {
             </li>
           ))}
         </ul>
-        <Link
-          href="/estimation"
-          className="mt-10 inline-flex items-center justify-center rounded-full bg-forest px-9 py-4 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-forest-deep"
-        >
-          {t.valeurCta}
-          <span aria-hidden="true" className="ml-2">→</span>
-        </Link>
       </div>
     </section>
   );

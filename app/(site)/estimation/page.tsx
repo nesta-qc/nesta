@@ -15,8 +15,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /** Page d'estimation indicative : formulaire + résultat. */
-export default async function EstimationPage() {
+export default async function EstimationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ adresse?: string }>;
+}) {
   const t = dictionaries[await getLang()].estimation;
+  const { adresse } = await searchParams;
   return (
     <Container className="pb-20 pt-14 sm:pt-20">
       <div className="max-w-2xl">
@@ -34,7 +39,7 @@ export default async function EstimationPage() {
       </div>
 
       <div className="mt-10 max-w-2xl">
-        <EstimationForm />
+        <EstimationForm initialAdresse={typeof adresse === "string" ? adresse : ""} />
       </div>
     </Container>
   );
