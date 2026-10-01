@@ -39,6 +39,15 @@ export const fr = {
       aucunResultatTexte:
         "Aucun profil ne correspond à ces critères. Essayez d'élargir la recherche.",
       reinitialiser: "Réinitialiser",
+      rechercher: "Rechercher",
+      inviteTitre: "Explorez par adresse ou par secteur",
+      inviteTexte:
+        "Tapez une adresse, choisissez un arrondissement ou fixez une valeur maximale pour voir les profils correspondants.",
+      limiteNote:
+        "Affichage des 60 premiers résultats — affinez la recherche pour en voir d'autres.",
+      valeurAuRole: "Valeur au rôle",
+      voirPasseport: "Voir le Passeport →",
+      aConfirmer: "À confirmer",
     },
     voirStats: "Voir les statistiques du marché",
   },

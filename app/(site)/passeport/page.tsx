@@ -3,12 +3,14 @@ import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Button, Card, EmptyState } from "@/components/ui";
 import { AddressAutocomplete } from "@/components/passeport/AddressAutocomplete";
-import { ProfileExplorer } from "@/components/passeport/ProfileExplorer";
+import { ExplorerSearch } from "@/components/passeport/ExplorerSearch";
+import { ExplorerResults } from "@/components/passeport/ExplorerResults";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import {
   countPropertyProfiles,
-  listPropertyProfilesForExplorer,
+  getMarketStats,
+  searchExplorerProfiles,
 } from "@/actions/property-profiles";
 
 export const metadata: Metadata = pageMetadata({
@@ -22,12 +24,29 @@ export const metadata: Metadata = pageMetadata({
 export const dynamic = "force-dynamic";
 
 /** Passeport Nesta : fiche adresse → analyse, sans compte. */
-export default async function PasseportPage() {
-  const [count, explorerProfiles] = await Promise.all([
+export default async function PasseportPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; arrondissement?: string; max?: string }>;
+}) {
+  const params = await searchParams;
+  const lang = await getLang();
+  const q = (params.q ?? "").slice(0, 100);
+  const arrondissement = (params.arrondissement ?? "").slice(0, 120);
+  const max = (params.max ?? "").slice(0, 20);
+  const searched = q.trim() !== "" || arrondissement !== "" || max.trim() !== "";
+
+  /* Compteur + liste des arrondissements (cache ~7 ms) + recherche si filtres. */
+  const [count, stats, search] = await Promise.all([
     countPropertyProfiles(),
-    listPropertyProfilesForExplorer(),
+    getMarketStats(),
+    searched
+      ? searchExplorerProfiles({ query: q, borough: arrondissement, maxValue: max })
+      : Promise.resolve({ profiles: [], limited: false }),
   ]);
-  const t = dictionaries[await getLang()].passeport;
+  const t = dictionaries[lang].passeport;
+  const e = t.explorer;
+  const boroughs = (stats?.boroughs ?? []).map((b) => b.borough);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-8 sm:py-14">
@@ -135,7 +154,31 @@ export default async function PasseportPage() {
                   : `${count} propriétés réelles issues des données ouvertes`}
               </p>
               <div className="mt-4">
-                <ProfileExplorer profiles={explorerProfiles} />
+                <ExplorerSearch
+                  boroughs={boroughs}
+                  initialQuery={q}
+                  initialBorough={arrondissement}
+                  initialMaxValue={max}
+                />
+              </div>
+              <div className="mt-6">
+                <ExplorerResults
+                  profiles={search.profiles}
+                  limited={search.limited}
+                  searched={searched}
+                  lang={lang}
+                  labels={{
+                    resultats: e.resultats,
+                    aucunResultatTitre: e.aucunResultatTitre,
+                    aucunResultatTexte: e.aucunResultatTexte,
+                    limiteNote: e.limiteNote,
+                    inviteTitre: e.inviteTitre,
+                    inviteTexte: e.inviteTexte,
+                    valeurAuRole: e.valeurAuRole,
+                    voirPasseport: e.voirPasseport,
+                    aConfirmer: e.aConfirmer,
+                  }}
+                />
               </div>
             </>
           ) : (

@@ -141,42 +141,63 @@ export interface ExplorerProfile {
   property_category: string | null;
 }
 
+/** Filtres de la recherche explorateur Passeport (côté serveur). */
+export interface ExplorerSearchFilters {
+  query: string;
+  borough: string;
+  maxValue: string;
+}
+
+const EXPLORER_SEARCH_LIMIT = 60;
+
 /**
- * Tous les profils, colonnes allégées, triés par adresse.
- * Sert l'explorateur avec recherche et filtres instantanés.
- * Paginer : le jeu dépasse les 1 000 lignes (limite Supabase par requête).
+ * Recherche de profils côté serveur : UNE seule requête, 60 résultats max.
+ * Remplace listPropertyProfilesForExplorer() qui balayait les 532k+ lignes
+ * en 533 requêtes (~59 s). Au moins un filtre est requis par l'appelant.
  */
-export async function listPropertyProfilesForExplorer(): Promise<
-  ExplorerProfile[]
-> {
-  if (!hasSupabaseConfig()) return [];
+export async function searchExplorerProfiles(
+  filters: ExplorerSearchFilters,
+): Promise<{ profiles: ExplorerProfile[]; limited: boolean }> {
+  const empty = { profiles: [], limited: false };
+  if (!hasSupabaseConfig()) return empty;
+  const query = filters.query.trim();
+  const borough = filters.borough.trim();
+  const max = filters.maxValue.trim() === "" ? null : Number(filters.maxValue);
+  if (!query && !borough && (max === null || !Number.isFinite(max))) return empty;
+
   const supabase = await createClient();
-  const out: ExplorerProfile[] = [];
-  const PAGE = 1000;
-  for (let offset = 0; ; offset += PAGE) {
-    const { data, error } = await supabase
-      .from("property_profiles")
-      .select("id, address, borough, city, assessment_total, property_category")
-      .order("address", { ascending: true })
-      .range(offset, offset + PAGE - 1);
-    if (error || !data) return out.length > 0 ? out : [];
-    const page = data as Record<string, unknown>[];
-    for (const raw of page) {
+  let req = supabase
+    .from("property_profiles")
+    .select("id, address, borough, city, assessment_total, property_category")
+    .order("address", { ascending: true })
+    .limit(EXPLORER_SEARCH_LIMIT + 1);
+  if (query) {
+    /* Échappe les caractères spéciaux du motif LIKE (% _ \). */
+    const pattern = query.replace(/[\\%_]/g, (m) => `\\${m}`);
+    req = req.ilike("address", `%${pattern}%`);
+  }
+  if (borough) req = req.eq("borough", borough);
+  if (max !== null && Number.isFinite(max)) req = req.lte("assessment_total", max);
+
+  const { data, error } = await req;
+  if (error || !data) return empty;
+  const rows = (data as Record<string, unknown>[])
+    .map((raw) => {
       const id = toText(raw.id);
       const address = toText(raw.address);
-      if (!id || !address) continue;
-      out.push({
+      if (!id || !address) return null;
+      return {
         id,
         address,
         borough: toText(raw.borough),
         city: toText(raw.city) ?? "Montréal",
         assessment_total: toNumber(raw.assessment_total),
         property_category: toText(raw.property_category),
-      });
-    }
-    if (page.length < PAGE) break;
-  }
-  return out;
+      } satisfies ExplorerProfile;
+    })
+    .filter((r): r is ExplorerProfile => r !== null);
+  const limited = rows.length > EXPLORER_SEARCH_LIMIT;
+  return { profiles: rows.slice(0, EXPLORER_SEARCH_LIMIT), limited };
 }
 
 /** Suggestions d'adresses pour l'autocomplétion (ilike, triées, limitées). */

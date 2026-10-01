@@ -39,6 +39,15 @@ export const en = {
       aucunResultatTexte:
         "No profile matches these criteria. Try broadening your search.",
       reinitialiser: "Reset",
+      rechercher: "Search",
+      inviteTitre: "Browse by address or borough",
+      inviteTexte:
+        "Type an address, pick a borough or set a maximum value to see matching profiles.",
+      limiteNote:
+        "Showing the first 60 results — refine your search to see more.",
+      valeurAuRole: "Assessed value",
+      voirPasseport: "View Passport →",
+      aConfirmer: "To be confirmed",
     },
     voirStats: "See market statistics",
   },
