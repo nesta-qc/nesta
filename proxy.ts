@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
-import { getSupabaseAnonKey, getSupabaseUrl, hasSupabaseConfig } from "@/lib/env";
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/env";
 import { LANG_COOKIE } from "@/lib/i18n/constants";
 import { GATE_COOKIE, isGateEnabled, verifyToken } from "@/lib/site-gate";
 
@@ -74,107 +74,6 @@ function redirectTo(request: NextRequest, pathname: string): NextResponse {
   url.pathname = pathname;
   url.search = "";
   return NextResponse.redirect(url);
-}
-
-/* ============================================================
- * Consultation réservée aux administrateurs (décision produit).
- * Après le sas d'accès, la navigation exige une session Supabase
- * avec le rôle ADMIN : sans compte connecté → /connexion (avec
- * retour ?next=… après login) ; compte sans rôle ADMIN → 403.
- *
- * Restent accessibles sans compte :
- *   - le sas d'accès lui-même (/acces),
- *   - le parcours d'authentification (/connexion, /inscription,
- *     /mot-de-passe-oublie, /reinitialiser-mot-de-passe, /auth/*),
- *   - /onboarding (gère déjà lui-même le cas « pas de session »).
- * Les routes /api/* gardent leurs propres contrôles (sas + vérifs
- * par route) et ne sont pas concernées par cette redirection.
- * ============================================================ */
-
-const CHEMINS_SANS_COMPTE = [
-  "/acces",
-  "/connexion",
-  "/inscription",
-  "/mot-de-passe-oublie",
-  "/reinitialiser-mot-de-passe",
-  "/onboarding",
-];
-
-function cheminSansCompte(sansLangue: string): boolean {
-  if (CHEMINS_SANS_COMPTE.includes(sansLangue)) return true;
-  return (
-    sansLangue.startsWith("/acces/") ||
-    sansLangue.startsWith("/auth/") ||
-    sansLangue.startsWith("/onboarding/")
-  );
-}
-
-interface ResultatCompte {
-  /** Réponse à servir. */
-  reponse: NextResponse;
-  /** false → servir telle quelle (redirection ou 403) ;
-      true → réponse « next » avec session rafraîchie, poursuivre. */
-  poursuivre: boolean;
-}
-
-/**
- * Réserve la consultation du site client aux administrateurs.
- * Retourne :
- *   - `null` pour les routes /api/* (contrôles existants conservés),
- *   - `{ reponse: redirect(/connexion), poursuivre: false }` sans session,
- *   - `{ reponse: 403, poursuivre: false }` si le compte n'est pas ADMIN,
- *   - `{ reponse: next(), poursuivre: true }` sinon (session rafraîchie).
- */
-async function appliquerCompteRequis(
-  request: NextRequest,
-): Promise<ResultatCompte | null> {
-  const { pathname } = request.nextUrl;
-  const sansLangue =
-    pathname === "/en" || pathname.startsWith("/en/")
-      ? pathname.slice(3) || "/"
-      : pathname;
-
-  /* Les API gardent leurs propres contrôles. */
-  if (sansLangue.startsWith("/api/")) return null;
-  /* Parcours d'authentification + sas : accessibles sans compte. */
-  if (cheminSansCompte(sansLangue)) return null;
-  /* Sans configuration Supabase, impossible de vérifier : on laisse passer
-     (la page de connexion affiche alors son état dégradé). */
-  if (!hasSupabaseConfig()) return null;
-
-  /* Rafraîchit la session (met aussi à jour les cookies de la requête). */
-  const sessionRes = await updateSession(request);
-
-  /* Seuls les comptes avec le rôle ADMIN peuvent consulter le site. */
-  const access = await getAdminAccess(request).catch(
-    (): AdminAccess => ({ hasSession: false, isAdmin: false }),
-  );
-
-  if (!access.hasSession) {
-    /* Pas de compte → page de connexion, avec retour après login. */
-    const url = request.nextUrl.clone();
-    url.pathname = "/connexion";
-    url.search = "";
-    if (pathname !== "/") {
-      url.searchParams.set("next", pathname + request.nextUrl.search);
-    }
-    const res = NextResponse.redirect(url);
-    sessionRes.cookies.getAll().forEach((c) => {
-      res.cookies.set(c.name, c.value, c);
-    });
-    return { reponse: res, poursuivre: false };
-  }
-
-  if (!access.isAdmin) {
-    /* Compte connecté sans rôle ADMIN → accès refusé. */
-    const res = new NextResponse("Accès refusé.", { status: 403 });
-    sessionRes.cookies.getAll().forEach((c) => {
-      res.cookies.set(c.name, c.value, c);
-    });
-    return { reponse: res, poursuivre: false };
-  }
-
-  return { reponse: sessionRes, poursuivre: true };
 }
 
 /**
@@ -251,10 +150,9 @@ export async function proxy(request: NextRequest) {
     englishRest === "/admin" || englishRest.startsWith("/admin/");
   if (siteMode !== "admin" && isEnglishPath && !englishIsAdminPath) {
     request.headers.set("x-nesta-lang", "en");
-    const controle = await appliquerCompteRequis(request);
-    /* Redirection /connexion ou 403 (réservé aux admins) : servir tel quel. */
-    if (controle && !controle.poursuivre) return controle.reponse;
-    const sessionRes = controle ? controle.reponse : await updateSession(request);
+    /* Le sas d'accès (mot de passe partagé) est le seul contrôle :
+       pas de compte Supabase requis pour consulter le site. */
+    const sessionRes = await updateSession(request);
     const url = request.nextUrl.clone();
     url.pathname = englishRest;
     const res = NextResponse.rewrite(url, {
@@ -312,9 +210,8 @@ export async function proxy(request: NextRequest) {
     if (isAdminPath) {
       return new NextResponse("Not Found.", { status: 404 });
     }
-    /* Consultation réservée aux admins (redirection /connexion ou 403). */
-    const controle = await appliquerCompteRequis(request);
-    return controle ? controle.reponse : updateSession(request);
+    /* Accès contrôlé uniquement par le sas (mot de passe partagé). */
+    return updateSession(request);
   }
 
   /* ============ Dev local : comportement historique ============ */
@@ -327,9 +224,8 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  /* Consultation réservée aux admins, comme en production. */
-  const controle = await appliquerCompteRequis(request);
-  return controle ? controle.reponse : updateSession(request);
+  /* Accès contrôlé uniquement par le sas (mot de passe partagé). */
+  return updateSession(request);
 }
 
 export const config = {
