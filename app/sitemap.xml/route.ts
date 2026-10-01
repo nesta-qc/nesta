@@ -9,6 +9,12 @@ import { createClient } from "@/lib/supabase/server";
 const BASE_URL = "https://nesta-drab.vercel.app";
 const PER_SITEMAP = 40_000;
 
+/*
+ * Le décompte exact (COUNT sur 532k lignes) ne change qu'aux imports :
+ * servi depuis le cache 24 h au lieu d'être recalculé à chaque hit.
+ */
+export const revalidate = 86_400;
+
 export async function GET(): Promise<Response> {
   if (process.env.SITE_MODE === "admin") {
     return new Response("Sitemap disabled", { status: 404 });
@@ -41,6 +47,9 @@ export async function GET(): Promise<Response> {
     entries.join("\n") + `\n</sitemapindex>`;
 
   return new Response(xml, {
-    headers: { "Content-Type": "application/xml; charset=utf-8" },
+    headers: {
+      "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
+    },
   });
 }

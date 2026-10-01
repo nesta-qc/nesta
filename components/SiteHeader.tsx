@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -9,9 +10,11 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { MobileMenu } from "@/components/MobileMenu";
 import { HeaderShell } from "@/components/HeaderShell";
 
+type NavDict = (typeof dictionaries)["fr"]["nav"];
+
 /* Navigation principale — volontairement courte.
    Les fonctionnalités secondaires se découvrent dans leur contexte. */
-function getNavLinks(t: (typeof dictionaries)["fr"]["nav"]) {
+function getNavLinks(t: NavDict) {
   return [
     { href: "/search", label: t.acheter },
     { href: "/sell", label: t.vendre },
@@ -68,18 +71,12 @@ function UserIcon({ className = "" }: { className?: string }) {
  * Logo simplifié (tuile + NESTA, sans slogan illisible).
  * Desktop : un seul CTA primaire = Passeport (Connexion/Inscription en liens discrets).
  * Mobile : bouton Inscription compact toujours visible + menu hamburger.
+ *
+ * La vérification de session (getUser, ~100-300 ms) est isolée dans
+ * <HeaderAuth> sous Suspense : la coquille du header part en streaming
+ * immédiatement au lieu d'attendre l'API auth.
  */
 export async function SiteHeader() {
-  let connected = false;
-
-  if (hasSupabaseConfig()) {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    connected = user !== null;
-  }
-
   const t = dictionaries[await getLang()].nav;
   const navLinks = getNavLinks(t);
 
@@ -128,42 +125,81 @@ export async function SiteHeader() {
         >
           <HeartIcon />
         </Link>
-        {connected ? (
-          <Link
-            href="/profil"
-            aria-label={t.profilAria}
-            className="hidden h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest md:flex"
-          >
-            <UserIcon />
-          </Link>
-        ) : (
-          <>
-            <Link
-              href="/connexion"
-              className="hidden text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest md:inline"
-            >
-              {t.connexion}
-            </Link>
-            {/* Desktop : lien discret — le CTA primaire est Passeport. */}
-            <Link
-              href="/inscription"
-              className="hidden text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest md:inline"
-            >
-              {t.inscription}
-            </Link>
-            {/* Mobile : bouton compact, toujours visible. */}
-            <Link
-              href="/inscription"
-              className="inline-flex items-center rounded-full bg-forest px-4 py-2 text-[13px] font-medium text-white transition-colors duration-200 hover:bg-forest-deep md:hidden"
-            >
-              {t.inscription}
-            </Link>
-          </>
-        )}
-        {/* Mobile : tout passe par le menu hamburger. */}
-        <MobileMenu t={t} connected={connected} />
+        <Suspense fallback={<HeaderAuthFallback t={t} />}>
+          <HeaderAuth t={t} />
+        </Suspense>
       </div>
     </HeaderShell>
+  );
+}
+
+/** Vérification de session, hors du chemin critique (streamée). */
+async function HeaderAuth({ t }: { t: NavDict }) {
+  let connected = false;
+
+  if (hasSupabaseConfig()) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    connected = user !== null;
+  }
+
+  return <HeaderAuthContent t={t} connected={connected} />;
+}
+
+/**
+ * Repli affiché pendant la vérification : l'état déconnecté, que voient
+ * > 99 % des visiteurs — aucun décalage de mise en page pour eux.
+ */
+function HeaderAuthFallback({ t }: { t: NavDict }) {
+  return <HeaderAuthContent t={t} connected={false} />;
+}
+
+function HeaderAuthContent({
+  t,
+  connected,
+}: {
+  t: NavDict;
+  connected: boolean;
+}) {
+  return (
+    <>
+      {connected ? (
+        <Link
+          href="/profil"
+          aria-label={t.profilAria}
+          className="hidden h-10 w-10 items-center justify-center rounded-full text-charcoal/70 transition-colors duration-200 hover:bg-white hover:text-forest md:flex"
+        >
+          <UserIcon />
+        </Link>
+      ) : (
+        <>
+          <Link
+            href="/connexion"
+            className="hidden text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest md:inline"
+          >
+            {t.connexion}
+          </Link>
+          {/* Desktop : lien discret — le CTA primaire est Passeport. */}
+          <Link
+            href="/inscription"
+            className="hidden text-[15px] font-medium text-charcoal/70 transition-colors duration-200 hover:text-forest md:inline"
+          >
+            {t.inscription}
+          </Link>
+          {/* Mobile : bouton compact, toujours visible. */}
+          <Link
+            href="/inscription"
+            className="inline-flex items-center rounded-full bg-forest px-4 py-2 text-[13px] font-medium text-white transition-colors duration-200 hover:bg-forest-deep md:hidden"
+          >
+            {t.inscription}
+          </Link>
+        </>
+      )}
+      {/* Mobile : tout passe par le menu hamburger. */}
+      <MobileMenu t={t} connected={connected} />
+    </>
   );
 }
 

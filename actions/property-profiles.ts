@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
 import { profileIdSchema } from "@/lib/validation";
@@ -87,9 +88,8 @@ function toRow(raw: Record<string, unknown>): PropertyProfileRow | null {
 }
 
 /** Un profil par son id, ou null (invalide, inexistant, ou table absente). */
-export async function getPropertyProfile(
-  id: string,
-): Promise<PropertyProfileRow | null> {
+export const getPropertyProfile = cache(
+  async (id: string): Promise<PropertyProfileRow | null> => {
   if (!profileIdSchema.safeParse(id).success) return null;
   if (!hasSupabaseConfig()) return null;
   const supabase = await createClient();
@@ -100,7 +100,8 @@ export async function getPropertyProfile(
     .maybeSingle();
   if (error || !data) return null;
   return toRow(data as Record<string, unknown>);
-}
+  },
+);
 
 /** Liste des profils (les plus récents d'abord), [] si rien ou table absente. */
 export async function listPropertyProfiles(

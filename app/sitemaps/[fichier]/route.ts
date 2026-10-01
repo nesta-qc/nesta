@@ -9,6 +9,12 @@ import { createClient } from "@/lib/supabase/server";
 const BASE_URL = "https://nesta-drab.vercel.app";
 const PER_SITEMAP = 40_000;
 
+/*
+ * 40 000 URL assemblées en ~40 requêtes paginées (~22 s) : les robots
+ * n'ont pas besoin de fraîcheur à la minute — cache 24 h.
+ */
+export const revalidate = 86_400;
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ fichier: string }> }
@@ -68,6 +74,9 @@ export async function GET(
     urls.join("\n") +
     `\n</urlset>`;
   return new Response(xml, {
-    headers: { "Content-Type": "application/xml; charset=utf-8" },
+    headers: {
+      "Content-Type": "application/xml; charset=utf-8",
+      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=86400",
+    },
   });
 }

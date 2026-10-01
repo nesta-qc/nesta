@@ -782,7 +782,12 @@ export async function searchPublishedProperties(
 
   let query = supabase
     .from("properties")
-    .select("*", { count: "exact" })
+    /* Colonnes strictement utilisées par /search (pas de SELECT * :
+       description et URLs de visite 3D alourdissent chaque ligne). */
+    .select(
+      "id, asking_price, address, city, property_type, bedrooms, bathrooms, living_area, virtual_tour_enabled, latitude, longitude, created_at",
+      { count: "exact" },
+    )
     .eq("status", "published")
     /* Exclusion des annonces internes de test (adresse « [TEST… »),
        sans fausser le count (même requête). */
