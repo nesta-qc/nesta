@@ -264,124 +264,71 @@ function median(values: number[]): number | null {
  * Agrégats honnêtes sur les profils Passeport : répartition par
  * arrondissement et par catégorie, valeur au rôle (médiane/min/max),
  * années de construction et années de rôle couvertes.
+ *
+ * Calculés côté Postgres via la fonction SQL market_stats() (migration
+ * 000014) : UNE seule requête d'agrégation au lieu de balayer les
+ * 532k+ lignes page par page (timeout garanti depuis l'import Montérégie).
  */
+function toBoroughStat(raw: unknown): BoroughStat | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const r = raw as Record<string, unknown>;
+  const borough = toText(r.borough);
+  const count = toNumber(r.count);
+  if (borough === null || count === null) return null;
+  return { borough, count, medianAssessment: toNumber(r.medianAssessment) };
+}
+
+function toCityStat(raw: unknown): CityStat | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const r = raw as Record<string, unknown>;
+  const city = toText(r.city);
+  const count = toNumber(r.count);
+  if (city === null || count === null) return null;
+  const boroughs = Array.isArray(r.boroughs)
+    ? r.boroughs.map(toBoroughStat).filter((b): b is BoroughStat => b !== null)
+    : [];
+  return { city, count, boroughs };
+}
+
 export async function getMarketStats(): Promise<MarketStats | null> {
   if (!hasSupabaseConfig()) return null;
   const supabase = await createClient();
-  // Paginer : le jeu dépasse les 1 000 lignes (limite Supabase par requête).
-  const rows: Record<string, unknown>[] = [];
-  const PAGE = 1000;
-  for (let offset = 0; ; offset += PAGE) {
-    const { data, error } = await supabase
-      .from("property_profiles")
-      .select(
-        "city, borough, assessment_total, assessment_year, property_category, construction_year",
-      )
-      .range(offset, offset + PAGE - 1);
-    if (error || !data) return null;
-    const page = data as Record<string, unknown>[];
-    rows.push(...page);
-    if (page.length < PAGE) break;
-  }
-  if (rows.length === 0) return null;
-
-  const assessments: number[] = [];
-  const constructionYears: number[] = [];
-  const assessmentsByBorough = new Map<string, number[]>();
-  const countByBorough = new Map<string, number>();
-  const countByCategory = new Map<string, number>();
-  const countByYear = new Map<number, number>();
-  // Ville -> arrondissement -> { count, assessments }
-  const citiesAcc = new Map<
-    string,
-    Map<string, { count: number; assessments: number[] }>
-  >();
-
-  for (const r of rows) {
-    const city = toText(r.city) ?? "Non précisé";
-    const borough = toText(r.borough) ?? "Non précisé";
-    countByBorough.set(borough, (countByBorough.get(borough) ?? 0) + 1);
-
-    let cityMap = citiesAcc.get(city);
-    if (!cityMap) {
-      cityMap = new Map();
-      citiesAcc.set(city, cityMap);
-    }
-    let bAcc = cityMap.get(borough);
-    if (!bAcc) {
-      bAcc = { count: 0, assessments: [] };
-      cityMap.set(borough, bAcc);
-    }
-    bAcc.count += 1;
-
-    const assessment = toNumber(r.assessment_total);
-    if (assessment !== null) {
-      assessments.push(assessment);
-      const arr = assessmentsByBorough.get(borough) ?? [];
-      arr.push(assessment);
-      assessmentsByBorough.set(borough, arr);
-      bAcc.assessments.push(assessment);
-    }
-
-    const built = toNumber(r.construction_year);
-    if (built !== null) constructionYears.push(built);
-
-    const category = toText(r.property_category) ?? "Non précisé";
-    countByCategory.set(category, (countByCategory.get(category) ?? 0) + 1);
-
-    const roleYear = toNumber(r.assessment_year);
-    if (roleYear !== null)
-      countByYear.set(roleYear, (countByYear.get(roleYear) ?? 0) + 1);
-  }
-
-  const boroughs: BoroughStat[] = [...countByBorough.entries()]
-    .map(([borough, count]) => ({
-      borough,
-      count,
-      medianAssessment: median(assessmentsByBorough.get(borough) ?? []),
-    }))
-    .sort(
-      (a, b) =>
-        b.count - a.count || a.borough.localeCompare(b.borough, "fr"),
-    );
-
-  const cities: CityStat[] = [...citiesAcc.entries()]
-    .map(([city, cityMap]) => {
-      const cityBoroughs: BoroughStat[] = [...cityMap.entries()]
-        .map(([borough, acc]) => ({
-          borough,
-          count: acc.count,
-          medianAssessment: median(acc.assessments),
-        }))
-        .sort(
-          (a, b) =>
-            b.count - a.count || a.borough.localeCompare(b.borough, "fr"),
-        );
-      return {
-        city,
-        count: cityBoroughs.reduce((s, b) => s + b.count, 0),
-        boroughs: cityBoroughs,
-      };
-    })
-    .sort((a, b) => b.count - a.count || a.city.localeCompare(b.city, "fr"));
-
+  const { data, error } = await supabase.rpc("market_stats");
+  if (error || data === null || typeof data !== "object") return null;
+  const s = data as Record<string, unknown>;
+  const total = toNumber(s.total);
+  if (total === null) return null;
   return {
-    total: rows.length,
-    medianAssessment: median(assessments),
-    minAssessment: assessments.length > 0 ? Math.min(...assessments) : null,
-    maxAssessment: assessments.length > 0 ? Math.max(...assessments) : null,
-    boroughs,
-    cities,
-    categories: [...countByCategory.entries()]
-      .map(([category, count]) => ({ category, count }))
-      .sort((a, b) => b.count - a.count),
-    medianConstructionYear: median(constructionYears),
-    oldestConstructionYear:
-      constructionYears.length > 0 ? Math.min(...constructionYears) : null,
-    newestConstructionYear:
-      constructionYears.length > 0 ? Math.max(...constructionYears) : null,
-    assessmentYears: [...countByYear.entries()]
-      .map(([year, count]) => ({ year, count }))
-      .sort((a, b) => a.year - b.year),
+    total,
+    medianAssessment: toNumber(s.medianAssessment),
+    minAssessment: toNumber(s.minAssessment),
+    maxAssessment: toNumber(s.maxAssessment),
+    boroughs: Array.isArray(s.boroughs)
+      ? s.boroughs.map(toBoroughStat).filter((b): b is BoroughStat => b !== null)
+      : [],
+    cities: Array.isArray(s.cities)
+      ? s.cities.map(toCityStat).filter((c): c is CityStat => c !== null)
+      : [],
+    categories: Array.isArray(s.categories)
+      ? s.categories.flatMap((raw) => {
+          if (typeof raw !== "object" || raw === null) return [];
+          const r = raw as Record<string, unknown>;
+          const category = toText(r.category);
+          const count = toNumber(r.count);
+          return category !== null && count !== null ? [{ category, count }] : [];
+        })
+      : [],
+    medianConstructionYear: toNumber(s.medianConstructionYear),
+    oldestConstructionYear: toNumber(s.oldestConstructionYear),
+    newestConstructionYear: toNumber(s.newestConstructionYear),
+    assessmentYears: Array.isArray(s.assessmentYears)
+      ? s.assessmentYears.flatMap((raw) => {
+          if (typeof raw !== "object" || raw === null) return [];
+          const r = raw as Record<string, unknown>;
+          const year = toNumber(r.year);
+          const count = toNumber(r.count);
+          return year !== null && count !== null ? [{ year, count }] : [];
+        })
+      : [],
   };
 }
