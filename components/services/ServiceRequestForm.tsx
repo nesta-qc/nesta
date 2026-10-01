@@ -65,6 +65,15 @@ export function ServiceRequestForm({
 
   return (
     <form action={handleSubmit} className="mt-8 flex flex-col gap-5">
+      {/* Anti-robots : champ invisible — les humains ne le remplissent jamais. */}
+      <input
+        type="text"
+        name="site_web"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0"
+      />
       {error ? (
         <p role="alert" className="text-sm font-medium text-red-700">
           {error}

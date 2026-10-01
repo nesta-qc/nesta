@@ -29,6 +29,15 @@ export function ProWaitlistForm() {
 
   return (
     <form action={handleSubmit} className="mt-6 flex flex-col gap-3">
+      {/* Anti-robots : champ invisible — les humains ne le remplissent jamais. */}
+      <input
+        type="text"
+        name="site_web"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="pointer-events-none absolute h-px w-px overflow-hidden opacity-0"
+      />
       <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
         <input
           name="email"

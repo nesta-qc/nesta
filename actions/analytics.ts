@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
+import { estLimite, ipAction } from "@/lib/rate-limit";
 
 /* ============================================================
  * NESTA — compteur de visites (récap mensuel de Gabriel).
@@ -23,6 +24,9 @@ export async function trackPageView(path: string): Promise<void> {
     const h = await headers();
     const ua = h.get("user-agent") ?? "";
     if (BOT_RE.test(ua)) return;
+
+    /* Anti-abus : 100 pages vues / minute / IP. */
+    if (estLimite(`pageview:${await ipAction()}`, 100, 60_000).limite) return;
 
     const referer = h.get("referer");
     const referrer =

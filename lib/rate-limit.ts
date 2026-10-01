@@ -1,3 +1,5 @@
+import { headers } from "next/headers";
+
 /* ============================================================
  * NESTA — limitation de débit (rate limiting) par IP.
  *
@@ -52,4 +54,15 @@ export function ipCliente(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();
   return request.headers.get("x-real-ip")?.trim() || "inconnue";
+}
+
+/**
+ * IP cliente dans une Server Action (pas d'objet Request disponible).
+ * À utiliser avec `next/headers` — ne fonctionne que côté serveur.
+ */
+export async function ipAction(): Promise<string> {
+  const h = await headers();
+  const forwarded = h.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return h.get("x-real-ip")?.trim() || "inconnue";
 }

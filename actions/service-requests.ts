@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getViewerContext } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
+import { estLimite, ipAction } from "@/lib/rate-limit";
 import { getServiceById } from "@/lib/services";
 
 /* ============================================================
@@ -44,6 +45,20 @@ const INSERT_FAILURE_MESSAGE =
 export async function createAnonymousServiceRequest(
   formData: FormData,
 ): Promise<AnonymousInsertResult> {
+  /* Anti-abus : 10 demandes / heure / IP (un humain n'en fait jamais plus). */
+  const quota = estLimite(`devis-anonyme:${await ipAction()}`, 10, 3_600_000);
+  if (quota.limite) {
+    return {
+      ok: false,
+      message: "Trop de demandes rapprochées, réessayez dans quelques minutes.",
+    };
+  }
+  /* Champ piège anti-robots (invisible à l'écran) : s'il est rempli,
+     c'est un robot → succès silencieux, rien n'est enregistré. */
+  if (String(formData.get("site_web") ?? "").trim() !== "") {
+    return { ok: true };
+  }
+
   if (!hasSupabaseConfig()) {
     return { ok: false, message: "Base de données non configurée." };
   }
@@ -116,6 +131,20 @@ type AnalysisObjective = keyof typeof ANALYSIS_OBJECTIVES;
 export async function createAnalysisRequest(
   formData: FormData,
 ): Promise<AnonymousInsertResult> {
+  /* Anti-abus : 10 demandes / heure / IP (un humain n'en fait jamais plus). */
+  const quota = estLimite(`analyse-anonyme:${await ipAction()}`, 10, 3_600_000);
+  if (quota.limite) {
+    return {
+      ok: false,
+      message: "Trop de demandes rapprochées, réessayez dans quelques minutes.",
+    };
+  }
+  /* Champ piège anti-robots (invisible à l'écran) : s'il est rempli,
+     c'est un robot → succès silencieux, rien n'est enregistré. */
+  if (String(formData.get("site_web") ?? "").trim() !== "") {
+    return { ok: true };
+  }
+
   if (!hasSupabaseConfig()) {
     return { ok: false, message: "Base de données non configurée." };
   }

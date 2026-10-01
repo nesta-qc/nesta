@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
+import { estLimite, ipAction } from "@/lib/rate-limit";
 import { assertAdmin } from "@/lib/admin";
 import {
   WAITLIST_PROFESSIONS,
@@ -28,6 +29,20 @@ export interface ProWaitlistEntry {
 export async function submitProWaitlist(
   formData: FormData,
 ): Promise<{ ok: boolean; message: string }> {
+  /* Anti-abus : 10 inscriptions / heure / IP. */
+  const quota = estLimite(`waitlist-pro:${await ipAction()}`, 10, 3_600_000);
+  if (quota.limite) {
+    return {
+      ok: false,
+      message: "Trop de tentatives rapprochées, réessayez dans quelques minutes.",
+    };
+  }
+  /* Champ piège anti-robots (invisible à l'écran) : s'il est rempli,
+     c'est un robot → succès silencieux, rien n'est enregistré. */
+  if (String(formData.get("site_web") ?? "").trim() !== "") {
+    return { ok: true, message: "C'est noté. On vous écrit dès l'ouverture de l'espace pros." };
+  }
+
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const profession = String(formData.get("profession") ?? "").trim();
 
