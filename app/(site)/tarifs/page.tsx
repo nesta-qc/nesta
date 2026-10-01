@@ -262,7 +262,7 @@ export default function TarifsPage() {
             Forfaits vendeur
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-charcoal/55">
-            Un seul paiement. Pas de commission en %, pas de pari payé
+            Un seul paiement. Pas de commission en %, pas de prix payé
             d'avance, pas de surprise.
           </p>
         </div>
