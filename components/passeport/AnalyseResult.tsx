@@ -28,6 +28,26 @@ function fmtDevise(lang: "fr" | "en") {
   });
 }
 
+/** "2026-10" → "oct. 2026" / "Oct 2026". */
+function libelleMoisLocal(mois: string, lang: "fr" | "en"): string {
+  const NOMS =
+    lang === "fr"
+      ? ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
+      : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const [a, m] = mois.split("-").map(Number);
+  if (!a || !m || m < 1 || m > 12) return mois;
+  return `${NOMS[m - 1]} ${a}`;
+}
+
+function confianceLabel(
+  confiance: "haute" | "moyenne" | "faible",
+  lang: "fr" | "en",
+): string {
+  if (lang === "en")
+    return confiance === "haute" ? "high" : confiance === "moyenne" ? "medium" : "low";
+  return confiance;
+}
+
 /**
  * Résultat complet d'analyse : fiche du bien, valeur, verdicts
  * Acheter/Vendre/Investir, horizon temporel et courbe historique.
@@ -192,6 +212,18 @@ export function AnalyseResult({ result: r, lang }: Props) {
           <p className="mt-2 leading-relaxed text-charcoal/65">
             {t.methodeTexte.replace("{reference}", r.referenceMarche)}
           </p>
+          <p className="mt-4 font-medium text-charcoal">{t.dossierTitre}</p>
+          <p className="mt-1 leading-relaxed text-charcoal/65">
+            {t.dossierMarche
+              .replace("{mois}", libelleMoisLocal(r.moisPrix, lang))
+              .replace("{confiance}", confianceLabel(r.confiance, lang))
+              .replace("{n}", String(r.nbComparables))}
+          </p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 leading-relaxed text-charcoal/65">
+            {r.methodePrix.map((etape, i) => (
+              <li key={i}>{etape}</li>
+            ))}
+          </ul>
         </details>
         <p className="mt-4 rounded-xl bg-champagne/25 p-4 text-[13px] leading-relaxed text-charcoal/70">
           {t.avertissement}

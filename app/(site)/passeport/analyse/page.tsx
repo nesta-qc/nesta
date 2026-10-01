@@ -50,7 +50,7 @@ export default async function AnalysePage({
     );
   }
 
-  const resultat = estimate({ ville, adresse, projectionAnnees: 5 });
+  const resultat = estimate({ ville, adresse, projectionAnnees: 5, langue: lang });
 
   // Adresse ambiguë (ex. orientation E/O non précisée) : proposer les options.
   if (!resultat.found && resultat.reason === "adresse_ambigue" && resultat.options?.length) {

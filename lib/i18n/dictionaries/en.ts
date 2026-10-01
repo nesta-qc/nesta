@@ -313,6 +313,8 @@ export const en = {
       "Indicative estimate computed from the property assessment roll and median market sale prices. It is not a certified appraisal and does not replace the advice of a certified appraiser.",
     sources:
       "Sources: MAMH — Quebec property assessment roll (Données Québec, CC-BY 4.0), APCIQ median sale prices.",
+    dossierMarche:
+      "Price set at market conditions of {mois} · {confiance} confidence · {n} comparables.",
     orientationEst: "East",
     orientationOuest: "West",
     orientationNord: "North",
@@ -400,6 +402,9 @@ export const en = {
     methodeTitre: "Our method",
     methodeTexte:
       "Assessment roll data (MAMH / City of Montreal, CC-BY 4.0 licence), adjusted to median sold prices from the APCIQ barometer (reference {reference}). Prices used are sold prices, never asking prices.",
+    dossierTitre: "Valuation report — NESTA Market System",
+    dossierMarche:
+      "Price set at market conditions of {mois} · {confiance} confidence · {n} comparables.",
     avertissement:
       "Indicative estimate: not a certified appraisal and not a substitute for professional advice.",
     introuvableTitre: "Address not found",

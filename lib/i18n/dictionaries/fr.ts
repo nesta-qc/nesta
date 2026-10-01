@@ -313,6 +313,8 @@ export const fr = {
       "Estimation indicative calculée à partir du rôle d'évaluation foncière et des prix de vente médians du marché. Elle ne constitue pas une évaluation agréée et ne remplace pas l'avis d'un évaluateur agréé.",
     sources:
       "Sources : MAMH — Rôle d'évaluation foncière du Québec (Données Québec, CC-BY 4.0), prix de vente médians APCIQ.",
+    dossierMarche:
+      "Prix établi aux conditions du marché de {mois} · confiance {confiance} · {n} comparables.",
     orientationEst: "Est",
     orientationOuest: "Ouest",
     orientationNord: "Nord",
@@ -400,6 +402,9 @@ export const fr = {
     methodeTitre: "Notre méthode",
     methodeTexte:
       "Données du rôle d'évaluation foncière (MAMH / Ville de Montréal, licence CC-BY 4.0), ajustées aux prix de vente médians du baromètre APCIQ (référence {reference}). Les prix utilisés sont des prix vendus, jamais des prix demandés.",
+    dossierTitre: "Dossier d'évaluation — Système Marché NESTA",
+    dossierMarche:
+      "Prix établi aux conditions du marché de {mois} · confiance {confiance} · {n} comparables.",
     avertissement:
       "Estimation indicative : ne constitue pas une évaluation agréée et ne remplace pas l'avis d'un professionnel.",
     introuvableTitre: "Adresse introuvable",

@@ -9,10 +9,13 @@
  *   const r = estimate({ ville: "montreal", adresse: "2219 rue Duvernay" });
  *   if (r.found) console.log(r.estimation, r.fourchetteBasse, r.fourchetteHaute);
  *
- * Méthode (identique au prototype validé par Merouane) :
- *   estimation  = valeur au rôle × facteur de marché (calibré APCIQ)
- *   fourchette  = ±12 % autour de la valeur centrale
- *   condo < 150 m² → facteur condo, sinon facteur maison
+ * Le calcul du prix est délégué au Système Marché
+ * (@/lib/marche/moteur → prixMarche), le « courtier
+ * algorithmique » de NESTA :
+ *   prix = valeur au rôle × facteur calibré (secteur, type de bien)
+ *          × ajustement au mois courant (indice mensuel FCIQ/APCIQ)
+ *   fourchette resserrée/élargie selon la convergence de
+ *   comparables au rôle + score de confiance.
  *
  * Données : rôles d'évaluation foncière officiels (MAMH, Données Québec,
  * CC-BY 4.0), index compressés dans data/estimation/. Chaque index de
@@ -23,9 +26,6 @@
  * cas une évaluation agréée (OEAQ).
  * ============================================================ */
 
-import { gunzipSync } from "node:zlib";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import {
   estTypeVoie,
   normalizeAddress,
@@ -37,39 +37,19 @@ import {
   variantesOrdinaux,
 } from "./normalize";
 import { getVille, VILLES, type VilleSlug } from "./villes";
+import {
+  chargerIndexVille,
+  getFacteur,
+  loadFactors,
+  TYPES,
+  type CategorieBien,
+  type IndexRecord,
+} from "../marche/donnees";
+import { prixMarche, type LangueMarche } from "../marche/moteur";
 
 /* ---------- Types ---------- */
 
-/**
- * Fiche d'index : [b_idx, t_idx, supT, supB, annee, nblog, val, flags, civfin]
- *  b_idx : indice d'arrondissement (Montréal ; 0 ailleurs)
- *  t_idx : 0=terrain 1=maison 2=multi 3=plex 4=commercial
- *  supT  : superficie du terrain (m²)
- *  supB  : superficie du bâtiment (m²)
- *  val   : valeur de l'immeuble au rôle ($)
- *  flags : bit 1 = condo
- */
-export type IndexRecord = [
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-  number,
-];
-
-const TYPES = ["terrain", "maison", "multi", "plex", "commercial"] as const;
-
-export type CategorieBien =
-  | "terrain"
-  | "maison"
-  | "condo"
-  | "plex"
-  | "multi"
-  | "commercial";
+export type { CategorieBien, IndexRecord };
 
 /** Portée d'une estimation de plex : tout l'immeuble ou un seul logement. */
 export type PorteePlex = "immeuble" | "logement";
@@ -105,6 +85,11 @@ export interface EstimateInput {
    * calibration). Sans horizon, seule la valeur actuelle est calculée.
    */
   projectionAnnees?: number;
+  /**
+   * Langue du dossier d'évaluation généré par le Système Marché
+   * (étapes de la méthode). Défaut : "fr".
+   */
+  langue?: LangueMarche;
 }
 
 export interface EstimateSuccess {
@@ -123,6 +108,19 @@ export interface EstimateSuccess {
   estimation: number;
   fourchetteBasse: number;
   fourchetteHaute: number;
+  /* --- Système Marché : traçabilité du prix façon courtier --- */
+  /** Score de confiance issu de la convergence des comparables. */
+  confiance: "haute" | "moyenne" | "faible";
+  /** Ajustement marché appliqué vs la calibration (%, ex. +2,4). */
+  ajustementMarchePct: number;
+  /** Mois auquel le prix est établi ("2026-10"). */
+  moisPrix: string;
+  /** Version du modèle (registre data/marche/registre.json). */
+  versionModele: string;
+  /** Nombre de comparables retenus pour le garde-fou. */
+  nbComparables: number;
+  /** Déroulé de la méthode, lisible par le client. */
+  methodePrix: string[];
   superficieTerrainM2: number;
   superficieBatimentM2: number;
   anneeConstruction: number;
@@ -173,121 +171,10 @@ export interface EstimateNotFound {
 
 export type EstimateResult = EstimateSuccess | EstimateNotFound;
 
-/* ---------- Chargement des données ---------- */
-
-const DATA_DIR = join(process.cwd(), "data", "estimation");
-
-interface FactorsFile {
-  version: string;
-  /** Référence de marché de la calibration, ex. "T2 2026" (APCIQ). */
-  reference_marche: string;
-  fourchette_pct: number;
-  seuil_condo_m2: number;
-  /**
-   * Plafond du taux annuel utilisé pour les projections (+3/+5 ans).
-   * Le taux implicite de la calibration mesure le rattrapage entre la
-   * date de référence du rôle (2022-2024 selon la ville) et le marché
-   * T2 2026 — une période de forte croissance qu'il serait
-   * irresponsable de prolonger telle quelle. La projection compose
-   * donc avec min(taux implicite, plafond), un scénario tendanciel
-   * amorti.
-   */
-  plafond_taux_projection: number;
-  villes: Record<
-    string,
-    {
-      nom: string;
-      millesime_role: string;
-      date_reference_marche_role: string;
-      granularite_facteurs: "arrondissement" | "ville";
-      facteurs?: Record<CategorieBien, number>;
-      facteurs_par_arrondissement?: Record<string, Record<CategorieBien, number>>;
-      boroughs_bidx?: string[];
-    }
-  >;
-}
-
-let factorsCache: FactorsFile | null = null;
-
-function loadFactors(): FactorsFile {
-  if (!factorsCache) {
-    const raw = readFileSync(join(DATA_DIR, "factors.json"), "utf-8");
-    factorsCache = JSON.parse(raw) as FactorsFile;
-  }
-  return factorsCache;
-}
-
-interface CityIndex {
-  map: Record<string, IndexRecord[]>;
-  sortedKeys: string[];
-  /** Noms de rues normalisés triés ("R SAINT-DENIS"), pour la recherche sans numéro civique. */
-  streets: string[];
-  /** rue normalisée → indices dans sortedKeys (toutes les adresses de la rue). */
-  streetKeys: Map<string, number[]>;
-}
-
-const indexCache = new Map<VilleSlug, CityIndex>();
-
-function loadIndex(ville: VilleSlug): CityIndex {
-  const cached = indexCache.get(ville);
-  if (cached) return cached;
-  const gz = readFileSync(join(DATA_DIR, `index-${ville}.json.gz`));
-  const map = JSON.parse(gunzipSync(gz).toString("utf-8")) as Record<
-    string,
-    IndexRecord[]
-  >;
-  const sortedKeys = Object.keys(map).sort();
-  // Index des rues : nom normalisé → adresses. Dérivé des clés, sans
-  // toucher aux fichiers d'index. Sert la recherche par nom de rue
-  // ("saint-denis") quand l'utilisateur tape sans numéro civique.
-  const streetKeys = new Map<string, number[]>();
-  for (let i = 0; i < sortedKeys.length; i++) {
-    const key = sortedKeys[i];
-    const base = key.includes("|") ? key.slice(0, key.indexOf("|")) : key;
-    const sp = base.indexOf(" ");
-    if (sp < 0) continue;
-    const street = base.slice(sp + 1);
-    const arr = streetKeys.get(street);
-    if (arr) arr.push(i);
-    else streetKeys.set(street, [i]);
-  }
-  const idx: CityIndex = {
-    map,
-    sortedKeys,
-    streets: [...streetKeys.keys()].sort(),
-    streetKeys,
-  };
-  indexCache.set(ville, idx);
-  return idx;
-}
-
-/* ---------- Moteur ---------- */
+/* ---------- Appariement d'adresses ---------- */
 
 const AVERTISSEMENT =
   "Estimation indicative calculée à partir du rôle d'évaluation foncière et des prix de vente médians du marché. Elle ne constitue pas une évaluation agréée et ne remplace pas l'avis d'un évaluateur agréé.";
-
-function getFacteur(
-  factors: FactorsFile,
-  ville: VilleSlug,
-  bIdx: number,
-  categorie: CategorieBien,
-): number {
-  const v = factors.villes[ville];
-  if (!v) throw new Error(`Facteurs manquants pour la ville : ${ville}`);
-  if (v.granularite_facteurs === "arrondissement") {
-    const borough = v.boroughs_bidx?.[bIdx];
-    const f = borough
-      ? v.facteurs_par_arrondissement?.[borough]?.[categorie]
-      : undefined;
-    if (typeof f !== "number")
-      throw new Error(`Facteur manquant : ${borough ?? "?"} / ${categorie}`);
-    return f;
-  }
-  const f = v.facteurs?.[categorie];
-  if (typeof f !== "number")
-    throw new Error(`Facteur manquant : ${ville} / ${categorie}`);
-  return f;
-}
 
 /**
  * Apparie une adresse à une fiche du rôle d'évaluation, puis calcule
@@ -297,7 +184,7 @@ function getFacteur(
 export function estimate(input: EstimateInput): EstimateResult {
   const factors = loadFactors();
   const ville = getVille(input.ville);
-  const { map } = loadIndex(input.ville);
+  const { map } = chargerIndexVille(input.ville);
 
   const baseKey = normalizeAddress(input.adresse);
   if (!baseKey) return { found: false, reason: "adresse_invalide" };
@@ -505,12 +392,25 @@ export function estimate(input: EstimateInput): EstimateResult {
     valCalculee = val / nblog;
   }
 
-  const estimationBase = Math.round(valCalculee * facteur);
+  // Prix de marché façon courtier (Système Marché NESTA) :
+  //   base rôle × facteur → datation au mois courant (indice) →
+  //   convergence par comparables → fourchette + confiance.
   // Note : aucun ajustement lié à la superficie du terrain n'est
   // appliqué — la valeur au rôle d'évaluation l'intègre déjà
   // (un petit terrain est déjà évalué moins cher qu'un grand).
   // La superficie reste affichée à titre informatif.
-  const estimation = estimationBase;
+  const prix = prixMarche(
+    {
+      ville: input.ville,
+      bIdx,
+      categorie,
+      valeurAuRole: valCalculee,
+      superficieBatimentM2: supB,
+      cleAdresse: cleAppariee ?? undefined,
+    },
+    input.langue ?? "fr",
+  );
+  const estimation = prix.prix;
 
   // Projection indicative à l'horizon demandé (optionnelle).
   // Scénario tendanciel amorti : le taux implicite de la calibration
@@ -557,8 +457,15 @@ export function estimate(input: EstimateInput): EstimateResult {
     facteur,
     valeurAuRole: Math.round(valCalculee),
     estimation,
-    fourchetteBasse: Math.round(estimation * (1 - pct)),
-    fourchetteHaute: Math.round(estimation * (1 + pct)),
+    fourchetteBasse: prix.bas,
+    fourchetteHaute: prix.haut,
+    // Traçabilité du Système Marché (prix façon courtier).
+    confiance: prix.confiance,
+    ajustementMarchePct: prix.ajustementMarchePct,
+    moisPrix: prix.moisPrix,
+    versionModele: prix.versionModele,
+    nbComparables: prix.nbComparables,
+    methodePrix: prix.methode,
     ...(projection ? { projection } : {}),
     superficieTerrainM2: supT,
     superficieBatimentM2: supB,
@@ -647,7 +554,7 @@ export function suggestAddresses(
   };
   for (const v of variantesOrdinaux(firstPrefix)) addPrefix(v);
   for (const p of [...prefixes]) addPrefix(varianteOrdreType(p));
-  const { sortedKeys } = loadIndex(ville);
+  const { sortedKeys } = chargerIndexVille(ville);
   for (const prefix of prefixes) {
     const out = searchPrefix(sortedKeys, prefix);
     if (out.length > 0) return rankSuggestions(prefix, out).slice(0, limit);
@@ -737,7 +644,7 @@ function suggestByStreet(
   civicDigits: string | null,
   limit: number,
 ): string[] {
-  const { streets, streetKeys, sortedKeys } = loadIndex(ville);
+  const { streets, streetKeys, sortedKeys } = chargerIndexVille(ville);
   // Tolérances : ordinaux ("5E BOUL" → "5 IEME BOUL") et ordre du
   // type de voie ("BOUL 5 IEME" ↔ "5 IEME BOUL").
   const streetPrefixes = [streetNorm];
