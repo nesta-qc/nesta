@@ -387,13 +387,16 @@ export const en = {
     horizon5ans: "In 5 years",
     courbeTitre: "The property's value, year by year",
     courbeNote:
-      "Indicative reconstruction: what the property would be worth had it tracked the Quebec market price index (APCIQ). Not its actual transaction history.",
+      "Indicative reconstruction: what the property would be worth had it tracked the annual Quebec market price index (FCIQ/APCIQ, 2010–2026). Not its actual transaction history.",
     courbeTronquee:
-      "Index available since 2019: the curve starts on that date.",
+      "Index available since 2010: the curve starts on that date.",
     courbeLegendePasse: "Reconstructed",
     courbeLegendeActuel: "Today",
     courbeLegendeScenario: "Scenario",
     courbeDetails: "See year-by-year values",
+    courbeInfobulleScenario: "Hypothetical scenario",
+    courbeVariationAnnee: "year over year",
+    courbeConsigne: "Hover or tap a point to see each year's value.",
     methodeTitre: "Our method",
     methodeTexte:
       "Assessment roll data (MAMH / City of Montreal, CC-BY 4.0 licence), adjusted to median sold prices from the APCIQ barometer (reference {reference}). Prices used are sold prices, never asking prices.",

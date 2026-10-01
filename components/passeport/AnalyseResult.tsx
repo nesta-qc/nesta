@@ -178,6 +178,9 @@ export function AnalyseResult({ result: r, lang }: Props) {
             detailsLabel={t.courbeDetails}
             anneeLabel={lang === "fr" ? "Année" : "Year"}
             valeurLabel={t.ficheValeurEstimee}
+            infobulleScenario={t.courbeInfobulleScenario}
+            variationAnnee={t.courbeVariationAnnee}
+            consigneSurvol={t.courbeConsigne}
           />
         </div>
       </section>

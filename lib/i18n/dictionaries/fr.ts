@@ -387,13 +387,16 @@ export const fr = {
     horizon5ans: "Dans 5 ans",
     courbeTitre: "La valeur du bien, année par année",
     courbeNote:
-      "Reconstitution indicative : ce que vaudrait le bien s'il avait suivi l'indice des prix du marché québécois (APCIQ). Pas l'historique réel de ses transactions.",
+      "Reconstitution indicative : ce que vaudrait le bien s'il avait suivi l'indice annuel des prix du marché québécois (FCIQ/APCIQ, 2010-2026). Pas l'historique réel de ses transactions.",
     courbeTronquee:
-      "Indice disponible depuis 2019 : la courbe commence à cette date.",
+      "Indice disponible depuis 2010 : la courbe commence à cette date.",
     courbeLegendePasse: "Reconstitué",
     courbeLegendeActuel: "Aujourd'hui",
     courbeLegendeScenario: "Scénario",
     courbeDetails: "Voir les valeurs année par année",
+    courbeInfobulleScenario: "Scénario hypothétique",
+    courbeVariationAnnee: "sur un an",
+    courbeConsigne: "Survolez ou touchez un point pour voir la valeur de chaque année.",
     methodeTitre: "Notre méthode",
     methodeTexte:
       "Données du rôle d'évaluation foncière (MAMH / Ville de Montréal, licence CC-BY 4.0), ajustées aux prix de vente médians du baromètre APCIQ (référence {reference}). Les prix utilisés sont des prix vendus, jamais des prix demandés.",

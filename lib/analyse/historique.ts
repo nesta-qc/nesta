@@ -7,23 +7,39 @@
  * l'historique réel des transactions de CE bien (données non publiques).
  *
  * Indice : variation annuelle du prix médian unifamiliale, province de
- * Québec, d'après les bilans APCIQ (prix VENDUS Centris) :
+ * Québec, d'après les bilans FCIQ puis APCIQ (prix VENDUS Centris),
+ * vérifiées le 1er octobre 2026 :
+ *  - 2010 : +7 % / 2011 : +4 % (Baromètre FCIQ T4 2011, province)
+ *  - 2012 : +3 % (FCIQ, bilan 2012)
+ *  - 2013 : ~0 % (déduit des médianes publiées 2012 et 2014 — marché stable)
+ *  - 2014 : +1 % (FCIQ, bilan 2014)
+ *  - 2015 : +1 % (FCIQ, stats cumulées déc. 2015, province)
+ *  - 2016 : +2 % / 2017 : +4 % / 2018 : +3 % (FCIQ, prévisions 2018)
  *  - 2019 : +4 % (cumul 2019, mensuel APCIQ mai 2019)
  *  - 2020 : +13 % / 2021 : +24 % / 2022 : +14 % (bilan annuel APCIQ)
  *  - 2023 : 0 % (bilan annuel APCIQ)
  *  - 2024 : +8 % (bilan annuel APCIQ)
  *  - 2025 : +8 % (cumul jan–oct 2025, mensuel APCIQ oct. 2025)
  *  - 2026 : +6 % (prévision APCIQ, janv. 2026)
- * Avant 2019 : pas d'indice homogène sous la main → la courbe commence
- * en 2019 avec une note explicite. Après 2026 : scénario tendanciel
+ * Avant 2010 : pas de série annuelle homogène publiée retrouvée → la courbe
+ * commence en 2010 avec une note explicite. Après 2026 : scénario tendanciel
  * (taux de la calibration, plafonné à 5 %/an — même règle que le moteur).
  */
 
-export const ANNEE_INDICE_MIN = 2019;
+export const ANNEE_INDICE_MIN = 2010;
 export const ANNEE_COURANTE = 2026;
 
 /** Variation annuelle de l'indice (ex. 2021 → +24 %). */
 const TAUX_ANNUELS: Record<number, number> = {
+  2010: 0.07,
+  2011: 0.04,
+  2012: 0.03,
+  2013: 0.0,
+  2014: 0.01,
+  2015: 0.01,
+  2016: 0.02,
+  2017: 0.04,
+  2018: 0.03,
   2019: 0.04,
   2020: 0.13,
   2021: 0.24,
@@ -45,14 +61,14 @@ export interface PointCourbe {
 
 export interface CourbeValeur {
   points: PointCourbe[];
-  /** Année de début effective (2019 si construction antérieure). */
+  /** Année de début effective (2010 si construction antérieure). */
   anneeDebut: number;
   /** true si la construction est antérieure à l'indice. */
   tronquee: boolean;
 }
 
 /**
- * Construit la courbe : passé reconstitué (2019→2026) + scénario
+ * Construit la courbe : passé reconstitué (2010→2026) + scénario
  * futur (+1 à +5 ans au taux tendanciel plafonné).
  */
 export function construireCourbe(
