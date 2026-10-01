@@ -13,6 +13,9 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       "Valeur au rôle médiane et nombre de profils par arrondissement ou secteur du Passeport Nesta, triables. Données ouvertes (Ville de Montréal et MAMH, Données Québec).",
     path: "/statistiques/arrondissements",
+    titleEn: "Statistics by borough",
+    descriptionEn:
+      "Median assessment value and profile counts by Nesta Passport borough or sector, sortable. Open data (City of Montreal and MAMH, Données Québec).",
   });
 }
 

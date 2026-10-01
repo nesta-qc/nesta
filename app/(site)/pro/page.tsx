@@ -10,6 +10,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Nesta Pro",
     description: "L'espace des professionnels de l'immobilier : promoteurs, courtiers, notaires, estimateurs.",
     path: "/pro",
+    titleEn: "Nesta Pro",
+    descriptionEn: "The space for real estate professionals: developers, brokers, notaries, estimators.",
   });
 }
 

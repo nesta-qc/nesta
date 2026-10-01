@@ -16,6 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Rechercher",
     description: "Recherchez une propriété à vendre ou à louer au Québec.",
     path: "/search",
+    titleEn: "Search",
+    descriptionEn: "Search properties for sale or rent in Quebec.",
     noIndex: true,
   });
 }

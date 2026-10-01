@@ -81,6 +81,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Badge variant="muted">{STATUS_LABELS[dev.status] ?? dev.status}</Badge>
+        {dev.is_pro ? <Badge variant="forest">Projet Pro</Badge> : null}
         {dev.completion_date ? (
           <span className="text-sm text-charcoal/55">
             Livraison{" "}

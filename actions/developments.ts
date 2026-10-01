@@ -25,6 +25,7 @@ export interface DevelopmentRow {
   description: string | null;
   completion_date: string | null;
   status: string;
+  is_pro: boolean;
   units: DevelopmentUnitSummary;
 }
 
@@ -33,11 +34,22 @@ export async function getDevelopments(): Promise<DevelopmentRow[]> {
   if (!hasSupabaseConfig()) return [];
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const baseSelect =
+    "id, name, address, city, description, completion_date, status";
+  // `is_pro` vient de la migration 000026 ; repli sans elle si pas appliquée.
+  let res = await supabase
     .from("developments")
-    .select("id, name, address, city, description, completion_date, status")
+    .select(`${baseSelect}, is_pro`)
     .order("created_at", { ascending: false })
     .limit(50);
+  if (res.error && /is_pro/i.test(res.error.message)) {
+    res = (await supabase
+      .from("developments")
+      .select(baseSelect)
+      .order("created_at", { ascending: false })
+      .limit(50)) as typeof res;
+  }
+  const { data, error } = res;
   if (error) return [];
 
   const devs = (data ?? []) as Omit<DevelopmentRow, "units">[];
@@ -336,6 +348,7 @@ export interface DevelopmentDetail {
   description: string | null;
   completion_date: string | null;
   status: string;
+  is_pro: boolean;
   sales_contact_name: string | null;
   sales_contact_email: string | null;
   sales_contact_phone: string | null;
@@ -380,13 +393,22 @@ export async function getDevelopmentById(
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   const supabase = await createClient();
 
-  const { data: dev, error } = await supabase
+  const baseSelect =
+    "id, name, address, city, description, completion_date, status, location";
+  // `is_pro` vient de la migration 000026 ; repli sans elle si pas appliquée.
+  let devRes = await supabase
     .from("developments")
-    .select(
-      "id, name, address, city, description, completion_date, status, location",
-    )
+    .select(`${baseSelect}, is_pro`)
     .eq("id", id)
     .single();
+  if (devRes.error && /is_pro/i.test(devRes.error.message)) {
+    devRes = (await supabase
+      .from("developments")
+      .select(baseSelect)
+      .eq("id", id)
+      .single()) as typeof devRes;
+  }
+  const { data: dev, error } = devRes;
   if (error || !dev) return null;
   const d = dev as Record<string, unknown>;
 
@@ -443,6 +465,7 @@ export async function getDevelopmentById(
     description: (d.description as string | null) ?? null,
     completion_date: (d.completion_date as string | null) ?? null,
     status: (d.status as string) ?? "planned",
+    is_pro: (d.is_pro as boolean) ?? false,
     ...sales,
     latitude,
     longitude,

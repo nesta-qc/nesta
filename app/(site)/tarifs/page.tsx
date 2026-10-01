@@ -11,6 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Tarifs",
     description: "Comparez Nesta Free et Nesta Pro, découvrez nos services et nos forfaits vendeur. Des prix clairs, sans surprise.",
     path: "/tarifs",
+    titleEn: "Pricing",
+    descriptionEn: "Compare Nesta Free and Nesta Pro, our services and seller plans. Clear pricing, no surprises.",
   });
 }
 

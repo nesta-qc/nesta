@@ -18,6 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Passeport Nesta",
     description: "Une fiche honnête pour chaque adresse : caractéristiques, données sourcées, hypothèses affichées. Analyse d'une propriété sans créer de compte.",
     path: "/passeport",
+    titleEn: "Nesta Passport",
+    descriptionEn: "An honest fact sheet for every address: features, sourced data, stated assumptions. Analyze a property with no account needed.",
   });
 }
 

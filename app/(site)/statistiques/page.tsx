@@ -5,6 +5,7 @@ import { Card, EmptyState } from "@/components/ui";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { getMarketStats } from "@/actions/property-profiles";
+import { localizeCategory } from "@/lib/i18n/property-categories";
 import { formatPrice } from "@/lib/format";
 import { StatsNav } from "./StatsNav";
 import { BoroughRow } from "./BoroughRow";
@@ -15,6 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       "Agrégats honnêtes calculés sur les profils du Passeport Nesta : répartition par ville et arrondissement, valeur au rôle médiane, catégories — issus des données ouvertes (Ville de Montréal et MAMH, Données Québec).",
     path: "/statistiques",
+    titleEn: "Market statistics",
+    descriptionEn:
+      "Honest aggregates computed from Nesta Passport profiles: breakdown by city and borough, median assessment value, categories — from open data (City of Montreal and MAMH, Données Québec).",
   });
 }
 
@@ -155,7 +159,7 @@ export default async function StatistiquesPage() {
               key={c.category}
               className="flex items-baseline justify-between gap-3 border-b border-border/60 pb-3 last:border-0 last:pb-0"
             >
-              <p className="text-sm text-charcoal/80">{c.category}</p>
+              <p className="text-sm text-charcoal/80">{localizeCategory(c.category, lang)}</p>
               <p className="text-sm font-semibold text-charcoal">
                 {c.count}
               </p>

@@ -11,6 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Investir",
     description: "Analysez des immeubles publiés sur Nesta et des comparables du marché vérifiés : prix, taxes, superficies, année.",
     path: "/investir",
+    titleEn: "Invest",
+    descriptionEn: "Analyze buildings listed on Nesta and verified market comparables: price, taxes, areas, year built.",
   });
 }
 

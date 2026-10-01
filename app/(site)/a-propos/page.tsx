@@ -8,6 +8,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "À propos",
     description: "Nesta : la plateforme immobilière québécoise, simple et transparente.",
     path: "/a-propos",
+    titleEn: "About",
+    descriptionEn: "Nesta: the Quebec real estate platform, simple and transparent.",
   });
 }
 

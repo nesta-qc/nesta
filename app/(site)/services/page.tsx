@@ -10,6 +10,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Services",
     description: "Estimation de construction, dessin Revit et modélisation 3D. Demandez un devis.",
     path: "/services",
+    titleEn: "Services",
+    descriptionEn: "Construction estimating, Revit drafting and 3D modelling. Request a quote.",
   });
 }
 

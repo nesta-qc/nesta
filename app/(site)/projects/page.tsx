@@ -14,6 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Projets",
     description: "Découvrez les projets immobiliers neufs publiés sur Nesta.",
     path: "/projects",
+    titleEn: "Projects",
+    descriptionEn: "Discover new real estate developments listed on Nesta.",
   });
 }
 
@@ -78,9 +80,14 @@ export default async function ProjectsPage() {
             >
             <Card className="flex w-full flex-col p-7 transition-shadow group-hover:shadow-md">
               <div className="flex items-center justify-between gap-2">
-                <Badge variant="muted">
-                  {STATUS_LABELS[d.status] ?? d.status}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="muted">
+                    {STATUS_LABELS[d.status] ?? d.status}
+                  </Badge>
+                  {d.is_pro ? (
+                    <Badge variant="forest">Projet Pro</Badge>
+                  ) : null}
+                </div>
                 {d.completion_date ? (
                   <span className="text-xs text-charcoal/50">
                     Livraison{" "}

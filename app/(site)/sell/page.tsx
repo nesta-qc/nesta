@@ -9,6 +9,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Vendre",
     description: "Vendez votre propriété à votre façon : seul, accompagné ou avec un courtier.",
     path: "/sell",
+    titleEn: "Sell",
+    descriptionEn: "Sell your property your way: on your own, assisted, or with a broker.",
   });
 }
 

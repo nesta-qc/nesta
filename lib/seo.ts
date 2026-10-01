@@ -22,6 +22,10 @@ interface PageSeoOptions {
   noIndex?: boolean;
   /** true pour forcer le titre tel quel, sans le template "%s | Nesta" (ex. accueil). */
   absoluteTitle?: boolean;
+  /** Version anglaise (optionnelle) : utilisée sur /en/*. Sans elle, repli français. */
+  titleEn?: string;
+  /** Version anglaise (optionnelle) : utilisée sur /en/*. Sans elle, repli français. */
+  descriptionEn?: string;
 }
 
 /**
@@ -42,6 +46,8 @@ export async function pageMetadata({
   path,
   noIndex,
   absoluteTitle,
+  titleEn,
+  descriptionEn,
 }: PageSeoOptions): Promise<Metadata> {
   let lang: Lang = DEFAULT_LANG;
   try {
@@ -50,6 +56,9 @@ export async function pageMetadata({
   } catch {
     /* hors contexte de requête : français par défaut */
   }
+  const isEn = lang === "en";
+  const finalTitle = isEn && titleEn ? titleEn : title;
+  const finalDescription = isEn && descriptionEn ? descriptionEn : description;
   const enPath = path === "/" ? "/en" : `/en${path}`;
   const frUrl = `${SITE_URL}${path}`;
   const enUrl = `${SITE_URL}${enPath}`;
@@ -59,12 +68,12 @@ export async function pageMetadata({
       url: DEFAULT_OG_IMAGE,
       width: 1200,
       height: 630,
-      alt: `Nesta — ${title}`,
+      alt: `Nesta — ${finalTitle}`,
     },
   ];
   return {
-    title: absoluteTitle ? { absolute: title } : title,
-    description,
+    title: absoluteTitle ? { absolute: finalTitle } : finalTitle,
+    description: finalDescription,
     alternates: {
       canonical,
       languages: {
@@ -78,15 +87,15 @@ export async function pageMetadata({
       locale: lang === "en" ? "en_CA" : "fr_CA",
       alternateLocale: lang === "en" ? ["fr_CA"] : ["en_CA"],
       siteName: "Nesta",
-      title,
-      description,
+      title: finalTitle,
+      description: finalDescription,
       url: canonical,
       images,
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
+      title: finalTitle,
+      description: finalDescription,
       images: [DEFAULT_OG_IMAGE],
     },
     ...(noIndex ? { robots: { index: false, follow: true } as const } : {}),

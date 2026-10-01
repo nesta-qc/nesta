@@ -27,6 +27,9 @@ export async function generateMetadata(): Promise<Metadata> {
       "Nesta, la plateforme immobilière québécoise : recherchez une propriété, vendez sans commission en pourcentage, estimez et investissez en toute transparence.",
     path: "/",
     absoluteTitle: true,
+    titleEn: "Nesta — Real estate, your way",
+    descriptionEn:
+      "Nesta, the Quebec real estate platform: search properties, sell without percentage commissions, estimate and invest with full transparency.",
   });
 }
 
