@@ -201,6 +201,46 @@ export async function searchExplorerProfiles(
   return { profiles: rows.slice(0, EXPLORER_SEARCH_LIMIT), limited };
 }
 
+/**
+ * Profils similaires à une fiche : même arrondissement (ou même ville),
+ * même catégorie quand elle est connue. UNE seule requête, colonnes
+ * légères — sert le maillage interne entre les 532k fiches.
+ */
+export async function getSimilarProfiles(
+  profile: Pick<ExplorerProfile, "id" | "borough" | "city" | "property_category">,
+  limit = 6,
+): Promise<ExplorerProfile[]> {
+  if (!hasSupabaseConfig()) return [];
+  const supabase = await createClient();
+  let req = supabase
+    .from("property_profiles")
+    .select("id, address, borough, city, assessment_total, property_category")
+    .neq("id", profile.id)
+    .order("address", { ascending: true })
+    .limit(limit);
+  if (profile.borough) req = req.eq("borough", profile.borough);
+  else if (profile.city) req = req.eq("city", profile.city);
+  if (profile.property_category) req = req.eq("property_category", profile.property_category);
+
+  const { data, error } = await req;
+  if (error || !data) return [];
+  return (data as Record<string, unknown>[])
+    .map((raw) => {
+      const id = toText(raw.id);
+      const address = toText(raw.address);
+      if (!id || !address) return null;
+      return {
+        id,
+        address,
+        borough: toText(raw.borough),
+        city: toText(raw.city) ?? "Montréal",
+        assessment_total: toNumber(raw.assessment_total),
+        property_category: toText(raw.property_category),
+      } satisfies ExplorerProfile;
+    })
+    .filter((r): r is ExplorerProfile => r !== null);
+}
+
 /** Suggestions d'adresses pour l'autocomplétion (ilike, triées, limitées). */
 export async function searchPropertyProfiles(
   query: string,

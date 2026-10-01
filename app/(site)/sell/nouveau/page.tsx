@@ -8,12 +8,15 @@ import { getViewerContext } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Nouvelle annonce",
-  description: "Créez votre annonce de vente ou de location sur Nesta.",
-  path: "/sell/nouveau",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Nouvelle annonce",
+    description: "Créez votre annonce de vente ou de location sur Nesta.",
+    path: "/sell/nouveau",
+    noIndex: true,
+  });
+}
+
 
 /** Page de création d'annonce — rôle vendeur requis. */
 export default async function NewListingPage() {

@@ -7,12 +7,15 @@ import { getMarketStats } from "@/actions/property-profiles";
 import { StatsNav } from "../StatsNav";
 import { ArrondissementsClient } from "./ArrondissementsClient";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Statistiques par arrondissement",
-  description:
-    "Valeur au rôle médiane et nombre de profils par arrondissement ou secteur du Passeport Nesta, triables. Données ouvertes (Ville de Montréal et MAMH, Données Québec).",
-  path: "/statistiques/arrondissements",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Statistiques par arrondissement",
+    description:
+      "Valeur au rôle médiane et nombre de profils par arrondissement ou secteur du Passeport Nesta, triables. Données ouvertes (Ville de Montréal et MAMH, Données Québec).",
+    path: "/statistiques/arrondissements",
+  });
+}
+
 
 export const dynamic = "force-dynamic";
 

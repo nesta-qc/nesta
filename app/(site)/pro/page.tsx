@@ -4,11 +4,14 @@ import Link from "next/link";
 import { Card } from "@/components/ui";
 import { ProWaitlistForm } from "@/components/pro/ProWaitlistForm";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Nesta Pro",
-  description: "L'espace des professionnels de l'immobilier : promoteurs, courtiers, notaires, estimateurs.",
-  path: "/pro",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Nesta Pro",
+    description: "L'espace des professionnels de l'immobilier : promoteurs, courtiers, notaires, estimateurs.",
+    path: "/pro",
+  });
+}
+
 
 /** Nesta Pro — carrefour des professionnels. */
 export default function ProPage() {

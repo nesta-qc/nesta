@@ -15,12 +15,15 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Mes annonces",
-  description: "Gérez vos annonces publiées sur Nesta.",
-  path: "/sell/annonces",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Mes annonces",
+    description: "Gérez vos annonces publiées sur Nesta.",
+    path: "/sell/annonces",
+    noIndex: true,
+  });
+}
+
 
 /**
  * Tableau de bord vendeur : une propriété dominante par carte,

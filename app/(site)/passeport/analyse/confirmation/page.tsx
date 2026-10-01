@@ -3,12 +3,15 @@ import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Button, Card } from "@/components/ui";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Demande reçue",
-  description: "Votre demande d'analyse a bien été enregistrée.",
-  path: "/passeport/analyse/confirmation",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Demande reçue",
+    description: "Votre demande d'analyse a bien été enregistrée.",
+    path: "/passeport/analyse/confirmation",
+    noIndex: true,
+  });
+}
+
 
 /** Confirmation sobre d'une demande d'analyse (sans délai inventé). */
 export default function AnalyseConfirmationPage() {

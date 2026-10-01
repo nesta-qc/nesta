@@ -56,6 +56,23 @@ export function LanguageProvider({
         /* stockage indisponible : la langue reste en mémoire */
       }
       document.documentElement.lang = l;
+      /* Les URL /en/* sont la version anglaise découvrable (hreflang) :
+         on bascule de préfixe plutôt que de rester sur une URL incohérente. */
+      try {
+        const pathname = window.location.pathname;
+        const search = window.location.search;
+        if (l === "en" && !pathname.startsWith("/en")) {
+          router.push(pathname === "/" ? `/en${search}` : `/en${pathname}${search}`);
+          return;
+        }
+        if (l === "fr" && pathname.startsWith("/en")) {
+          const rest = pathname === "/en" ? "/" : pathname.slice(3);
+          router.push(`${rest}${search}`);
+          return;
+        }
+      } catch {
+        /* navigation indisponible : repli sur le rafraîchissement */
+      }
       router.refresh();
     },
     [lang, router],

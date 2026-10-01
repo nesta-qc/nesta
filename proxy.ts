@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/env";
+import { LANG_COOKIE } from "@/lib/i18n/constants";
 
 /*
  * Proxy racine (Next.js 16 : la convention `middleware.ts` est dépréciée
@@ -77,6 +78,43 @@ function redirectTo(request: NextRequest, pathname: string): NextResponse {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const siteMode = process.env.SITE_MODE;
+
+  /* ============ Version anglaise découvrable (/en/*) ============
+   * Sans préfixe d'URL, l'anglais n'existait que via cookie — invisible
+   * pour Google. /en/* est réécrit vers la page correspondante, avec
+   * l'en-tête `x-nesta-lang: en` qui force l'anglais pour la requête
+   * (prioritaire dans getLang(), lu par pageMetadata() pour les
+   * hreflang fr-CA/en-CA + canonical auto-référencé par langue).
+   * Le rafraîchissement de session Supabase est préservé : on le fait
+   * d'abord, puis on recopie ses cookies/en-têtes sur la réécriture.
+   * Inactif sur le site d'administration (français uniquement). */
+  const isEnglishPath = pathname === "/en" || pathname.startsWith("/en/");
+  const englishRest = pathname === "/en" ? "/" : pathname.slice("/en".length);
+  const englishIsAdminPath =
+    englishRest === "/admin" || englishRest.startsWith("/admin/");
+  if (siteMode !== "admin" && isEnglishPath && !englishIsAdminPath) {
+    request.headers.set("x-nesta-lang", "en");
+    const sessionRes = await updateSession(request);
+    const url = request.nextUrl.clone();
+    url.pathname = englishRest;
+    const res = NextResponse.rewrite(url, {
+      request: { headers: request.headers },
+    });
+    sessionRes.headers.forEach((value, key) => {
+      res.headers.set(key, value);
+    });
+    sessionRes.cookies.getAll().forEach((c) => {
+      res.cookies.set(c.name, c.value, c);
+    });
+    if (request.cookies.get(LANG_COOKIE)?.value !== "en") {
+      res.cookies.set(LANG_COOKIE, "en", {
+        path: "/",
+        maxAge: 31536000,
+        sameSite: "lax",
+      });
+    }
+    return res;
+  }
 
   const isAdminPath = pathname === "/admin" || pathname.startsWith("/admin/");
   const isAdminLogin =

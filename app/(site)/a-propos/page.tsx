@@ -3,11 +3,14 @@ import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Button } from "@/components/ui";
 
-export const metadata: Metadata = pageMetadata({
-  title: "À propos",
-  description: "Nesta : la plateforme immobilière québécoise, simple et transparente.",
-  path: "/a-propos",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "À propos",
+    description: "Nesta : la plateforme immobilière québécoise, simple et transparente.",
+    path: "/a-propos",
+  });
+}
+
 
 /** À propos : institutionnel, honnête, sans récit inventé. */
 export default function AboutPage() {

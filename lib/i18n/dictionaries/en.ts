@@ -24,6 +24,13 @@ export const en = {
     profilAria: "My profile",
     langueAria: "Choose language",
   },
+  notFound: {
+    titre: "Page not found",
+    texte:
+      "This address doesn't exist or has been moved. Try searching by address to find the property you're looking for.",
+    ctaPasseport: "Explore Passport",
+    ctaAccueil: "Back to home",
+  },
   investir: {
     exempleBadge: "Example",
   },

@@ -21,14 +21,14 @@ export async function generateMetadata({
   const { id } = await params;
   const result = await getPublicProperty(id);
   if (!result) {
-    return pageMetadata({
+    return await pageMetadata({
       title: "Annonce introuvable",
       description: "Cette annonce n'existe pas ou n'est plus publiée sur Nesta.",
       path: "/search",
     });
   }
   const { property } = result;
-  return pageMetadata({
+  return await pageMetadata({
     title: `${property.address}, ${property.city}`,
     description:
       property.description?.slice(0, 160) ??

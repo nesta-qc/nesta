@@ -9,12 +9,15 @@ import { ServiceRequestList } from "@/components/services/ServiceRequestList";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Suivi de mes demandes",
-  description: "Suivez l'avancement de vos demandes de services.",
-  path: "/services/suivi",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Suivi de mes demandes",
+    description: "Suivez l'avancement de vos demandes de services.",
+    path: "/services/suivi",
+    noIndex: true,
+  });
+}
+
 
 /** Suivi des demandes de services : statuts réels uniquement. */
 export default async function ServiceTrackingPage({

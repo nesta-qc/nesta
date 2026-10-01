@@ -4,11 +4,14 @@ import Link from "next/link";
 import { Button, Card } from "@/components/ui";
 import { SELLER_PLANS, formatPlanPrice } from "@/lib/pricing";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Vendre",
-  description: "Vendez votre propriété à votre façon : seul, accompagné ou avec un courtier.",
-  path: "/sell",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Vendre",
+    description: "Vendez votre propriété à votre façon : seul, accompagné ou avec un courtier.",
+    path: "/sell",
+  });
+}
+
 
 const OPTIONS = [
   {

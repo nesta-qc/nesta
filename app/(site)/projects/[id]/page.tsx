@@ -32,13 +32,13 @@ export async function generateMetadata({
   const { id } = await params;
   const dev = await getDevelopmentById(id);
   if (!dev)
-    return pageMetadata({
+    return await pageMetadata({
       title: "Projet introuvable",
       description: "Ce projet immobilier n'existe pas ou n'est plus publié sur Nesta.",
       path: "/projects",
     });
   const where = dev.city ? ` — ${dev.city}` : "";
-  return pageMetadata({
+  return await pageMetadata({
     title: `${dev.name}${where}`,
     description: dev.description ?? `Projet immobilier neuf : ${dev.name}.`,
     path: `/projects/${id}`,

@@ -6,12 +6,15 @@ import { hasSupabaseConfig } from "@/lib/env";
 import { AuthUnavailable } from "@/components/auth/AuthUnavailable";
 import { LoginForm } from "@/components/auth/LoginForm";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Connexion",
-  description: "Connecte-toi à ton compte Nesta.",
-  path: "/connexion",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Connexion",
+    description: "Connecte-toi à ton compte Nesta.",
+    path: "/connexion",
+    noIndex: true,
+  });
+}
+
 
 interface ConnexionPageProps {
   searchParams: Promise<{ erreur?: string }>;

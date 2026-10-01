@@ -6,12 +6,15 @@ import { hasSupabaseConfig } from "@/lib/env";
 import { AuthUnavailable } from "@/components/auth/AuthUnavailable";
 import { SignupForm } from "@/components/auth/SignupForm";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Inscription",
-  description: "Crée ton compte Nesta gratuitement.",
-  path: "/inscription",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Inscription",
+    description: "Crée ton compte Nesta gratuitement.",
+    path: "/inscription",
+    noIndex: true,
+  });
+}
+
 
 /**
  * Page d'inscription. Déjà connecté → accueil.

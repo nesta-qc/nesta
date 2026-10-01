@@ -14,6 +14,8 @@ const STATIC_ROUTES: Array<{
   { path: "/tarifs", changeFrequency: "weekly", priority: 0.8 },
   { path: "/investir", changeFrequency: "weekly", priority: 0.8 },
   { path: "/statistiques", changeFrequency: "weekly", priority: 0.8 },
+  { path: "/statistiques/villes", changeFrequency: "weekly", priority: 0.7 },
+  { path: "/statistiques/arrondissements", changeFrequency: "weekly", priority: 0.7 },
   { path: "/investir/calculateur", changeFrequency: "monthly", priority: 0.7 },
   { path: "/estimation", changeFrequency: "monthly", priority: 0.7 },
   { path: "/pro", changeFrequency: "weekly", priority: 0.7 },

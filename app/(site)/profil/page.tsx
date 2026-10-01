@@ -10,12 +10,15 @@ import { ProfileForm } from "@/components/auth/ProfileForm";
 import { PasswordChangeForm } from "@/components/auth/PasswordChangeForm";
 import { Badge, Card, Container } from "@/components/ui";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Mon profil",
-  description: "Consulte et mets à jour ton profil Nesta.",
-  path: "/profil",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Mon profil",
+    description: "Consulte et mets à jour ton profil Nesta.",
+    path: "/profil",
+    noIndex: true,
+  });
+}
+
 
 /**
  * Page de profil (protégée) : nom affiché, courriel (lecture seule),

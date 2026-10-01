@@ -6,12 +6,15 @@ import { hasSupabaseConfig } from "@/lib/env";
 import { AuthUnavailable } from "@/components/auth/AuthUnavailable";
 import { OnboardingForm } from "@/components/auth/OnboardingForm";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Bienvenue",
-  description: "Complète ton profil d'arrivée sur Nesta.",
-  path: "/onboarding",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Bienvenue",
+    description: "Complète ton profil d'arrivée sur Nesta.",
+    path: "/onboarding",
+    noIndex: true,
+  });
+}
+
 
 /**
  * Page d'onboarding (protégée) : questionnaire d'arrivée sobre.

@@ -7,7 +7,7 @@ import { EstimationForm } from "./EstimationForm";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = dictionaries[await getLang()].estimation;
-  return pageMetadata({
+  return await pageMetadata({
     title: t.metaTitre,
     description: t.metaDescription,
     path: "/estimation",

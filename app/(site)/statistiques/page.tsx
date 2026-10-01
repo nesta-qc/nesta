@@ -9,12 +9,15 @@ import { formatPrice } from "@/lib/format";
 import { StatsNav } from "./StatsNav";
 import { BoroughRow } from "./BoroughRow";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Statistiques du marché",
-  description:
-    "Agrégats honnêtes calculés sur les profils du Passeport Nesta : répartition par ville et arrondissement, valeur au rôle médiane, catégories — issus des données ouvertes (Ville de Montréal et MAMH, Données Québec).",
-  path: "/statistiques",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Statistiques du marché",
+    description:
+      "Agrégats honnêtes calculés sur les profils du Passeport Nesta : répartition par ville et arrondissement, valeur au rôle médiane, catégories — issus des données ouvertes (Ville de Montréal et MAMH, Données Québec).",
+    path: "/statistiques",
+  });
+}
+
 
 /* Agrégats recalculés à chaque visite : les profils évoluent via les données ouvertes. */
 export const dynamic = "force-dynamic";

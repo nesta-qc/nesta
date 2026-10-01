@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: DEFAULT_OG_IMAGE,
-        width: 1254,
-        height: 1254,
+        width: 1200,
+        height: 630,
         alt: "Nesta — L'immobilier, à votre façon",
       },
     ],

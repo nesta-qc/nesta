@@ -19,14 +19,17 @@ import { FinalCTA } from "@/components/home/FinalCTA";
  * sections éditoriales photographiques. Aucune statistique inventée,
  * aucune fausse annonce, aucun faux témoignage.
  */
-export const metadata: Metadata = pageMetadata({
-  // Titre absolu : l'accueil garde l'intitulé de marque sans le suffixe du template.
-  title: "Nesta — L'immobilier, à votre façon",
-  description:
-    "Nesta, la plateforme immobilière québécoise : recherchez une propriété, vendez sans commission en pourcentage, estimez et investissez en toute transparence.",
-  path: "/",
-  absoluteTitle: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    // Titre absolu : l'accueil garde l'intitulé de marque sans le suffixe du template.
+    title: "Nesta — L'immobilier, à votre façon",
+    description:
+      "Nesta, la plateforme immobilière québécoise : recherchez une propriété, vendez sans commission en pourcentage, estimez et investissez en toute transparence.",
+    path: "/",
+    absoluteTitle: true,
+  });
+}
+
 export default async function Home() {
   const t = dictionaries[await getLang()].accueil;
   return (

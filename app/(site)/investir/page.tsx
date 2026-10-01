@@ -6,11 +6,14 @@ import { getInvestmentProperties, getMarketComparables } from "@/actions/propert
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Investir",
-  description: "Analysez des immeubles publiés sur Nesta et des comparables du marché vérifiés : prix, taxes, superficies, année.",
-  path: "/investir",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Investir",
+    description: "Analysez des immeubles publiés sur Nesta et des comparables du marché vérifiés : prix, taxes, superficies, année.",
+    path: "/investir",
+  });
+}
+
 
 /** Espace investisseurs : annonces Nesta + comparables du marché vérifiés. */
 export default async function InvestirPage() {

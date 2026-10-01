@@ -9,12 +9,15 @@ import { getViewerContext } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Mes favoris",
-  description: "Retrouvez les propriétés que vous avez sauvegardées.",
-  path: "/favoris",
-  noIndex: true,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Mes favoris",
+    description: "Retrouvez les propriétés que vous avez sauvegardées.",
+    path: "/favoris",
+    noIndex: true,
+  });
+}
+
 
 /** Favoris réels de l'utilisateur connecté. */
 export default async function FavoritesPage() {

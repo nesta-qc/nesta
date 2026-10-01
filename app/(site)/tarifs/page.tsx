@@ -5,11 +5,14 @@ import { Button, Card, Container } from "@/components/ui";
 import { SELLER_PLANS, formatPlanPrice } from "@/lib/pricing";
 import { NESTA_SERVICES } from "@/lib/services";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Tarifs",
-  description: "Comparez Nesta Free et Nesta Pro, découvrez nos services et nos forfaits vendeur. Des prix clairs, sans surprise.",
-  path: "/tarifs",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Tarifs",
+    description: "Comparez Nesta Free et Nesta Pro, découvrez nos services et nos forfaits vendeur. Des prix clairs, sans surprise.",
+    path: "/tarifs",
+  });
+}
+
 
 const FREE_FEATURES = [
   "Passeport : fiches honnêtes par adresse",

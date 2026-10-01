@@ -13,11 +13,14 @@ import {
   searchExplorerProfiles,
 } from "@/actions/property-profiles";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Passeport Nesta",
-  description: "Une fiche honnête pour chaque adresse : caractéristiques, données sourcées, hypothèses affichées. Analyse d'une propriété sans créer de compte.",
-  path: "/passeport",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Passeport Nesta",
+    description: "Une fiche honnête pour chaque adresse : caractéristiques, données sourcées, hypothèses affichées. Analyse d'une propriété sans créer de compte.",
+    path: "/passeport",
+  });
+}
+
 
 /* Compteur calculé en live : les profils arrivent via les données
    ouvertes (migration 000013 + seeds). */

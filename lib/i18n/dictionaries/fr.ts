@@ -24,6 +24,13 @@ export const fr = {
     profilAria: "Mon profil",
     langueAria: "Choisir la langue",
   },
+  notFound: {
+    titre: "Page introuvable",
+    texte:
+      "Cette adresse n'existe pas ou a été déplacée. Essayez une recherche par adresse pour trouver la propriété que vous cherchez.",
+    ctaPasseport: "Explorer le Passeport",
+    ctaAccueil: "Retour à l'accueil",
+  },
   investir: {
     exempleBadge: "Exemple",
   },

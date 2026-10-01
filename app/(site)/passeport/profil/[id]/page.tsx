@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPropertyProfile } from "@/actions/property-profiles";
+import { getPropertyProfile, getSimilarProfiles } from "@/actions/property-profiles";
 import { Badge } from "@/components/ui";
 import { PropertyMap } from "@/components/properties/PropertyMap";
 import {
@@ -15,6 +15,8 @@ import {
 import { formatDate, formatNumber, formatPrice } from "@/lib/format";
 import { profileIdSchema } from "@/lib/validation";
 import { pageMetadata } from "@/lib/seo";
+import { getLang } from "@/lib/i18n/lang";
+import type { Lang } from "@/lib/i18n/dictionaries";
 
 export const dynamic = "force-dynamic";
 
@@ -28,13 +30,13 @@ export async function generateMetadata({
   const { id } = await params;
   const profile = await getPropertyProfile(id);
   if (!profile) {
-    return pageMetadata({
+    return await pageMetadata({
       title: "Passeport Nesta",
       description: "Fiche Passeport Nesta : caractéristiques et données sourcées d'une propriété.",
       path: "/passeport",
     });
   }
-  return pageMetadata({
+  return await pageMetadata({
     title: `Passeport Nesta — ${profile.address}`,
     description: `Profil issu des données publiques pour ${profile.address}, ${profile.borough ?? profile.city} : valeur au rôle, caractéristiques, points à confirmer.`,
     path: `/passeport/profil/${id}`,
@@ -42,12 +44,102 @@ export async function generateMetadata({
 }
 
 /**
+ * Mention de source adaptée au vrai jeu de données du profil.
+ * (Le libellé générique « Ville de Montréal » était affiché à tort
+ * sur les profils Montérégie issus du MAMH.)
+ */
+function sourceIntro(dataSource: string | null, lang: Lang): string {
+  const s = dataSource ?? "";
+  if (/MAMH/i.test(s)) {
+    return lang === "en"
+      ? "Data from the MAMH via Données Québec (property assessment roll). Each value comes from the dataset; a missing field is marked as to be confirmed, never filled in."
+      : "Données issues du MAMH via Données Québec (rôle d'évaluation foncière). Chaque valeur vient du jeu de données ; un champ absent est marqué « À confirmer », jamais complété.";
+  }
+  if (/Montréal/i.test(s)) {
+    return lang === "en"
+      ? "Data from the City of Montréal's open data. Each value comes from the dataset; a missing field is marked as to be confirmed, never filled in."
+      : "Données issues des Données ouvertes de la Ville de Montréal. Chaque valeur vient du jeu de données ; un champ absent est marqué « À confirmer », jamais complété.";
+  }
+  return lang === "en"
+    ? "Data from public sources. Each value comes from the dataset; a missing field is marked as to be confirmed, never filled in."
+    : "Données issues de sources publiques. Chaque valeur vient du jeu de données ; un champ absent est marqué « À confirmer », jamais complété.";
+}
+
+/**
+ * « à » + arrondissement avec la contraction qui convient
+ * (« au Plateau-Mont-Royal », « à la Cité »…). Les noms sans
+ * article initial restent tels quels (« à Granby »).
+ */
+function avecContraction(borough: string): string {
+  if (/^le\s/i.test(borough)) return `au ${borough.replace(/^le\s/i, "")}`;
+  if (/^la\s/i.test(borough)) return `à la ${borough.replace(/^la\s/i, "")}`;
+  if (/^les\s/i.test(borough)) return `aux ${borough.replace(/^les\s/i, "")}`;
+  if (/^l['’]/i.test(borough)) return `à ${borough}`;
+  return `à ${borough}`;
+}
+
+/**
+ * Résumé unique par fiche, assemblé uniquement depuis ses données
+ * réelles (anti thin content : chaque fiche a son texte propre).
+ * Aucune donnée inventée — seules les clauses aux champs non nuls
+ * sont incluses.
+ */
+function buildProfileSummary(
+  p: {
+    address: string;
+    borough: string | null;
+    city: string;
+    property_category: string | null;
+    assessment_total: number | null;
+    assessment_year: number | null;
+    construction_year: number | null;
+    lot_area_sqm: number | null;
+  },
+  lang: Lang,
+): string {
+  const lieu =
+    lang === "fr"
+      ? p.borough
+        ? `${avecContraction(p.borough)}, ${p.city}`
+        : `à ${p.city}`
+      : p.borough
+        ? `in ${p.borough}, ${p.city}`
+        : `in ${p.city}`;
+  const head =
+    lang === "en"
+      ? `${p.address} — property ${lieu}${p.property_category ? ` (category: ${p.property_category})` : ""}.`
+      : `${p.address} — ${p.property_category ? `bien de catégorie ${p.property_category}` : "bien immobilier"} ${lieu}.`;
+  const facts: string[] = [];
+  if (p.assessment_total != null) {
+    facts.push(
+      lang === "en"
+        ? `Total assessed value: ${formatPrice(p.assessment_total, lang)}${p.assessment_year != null ? ` (${p.assessment_year} roll)` : ""}`
+        : `Valeur au rôle totale : ${formatPrice(p.assessment_total, lang)}${p.assessment_year != null ? ` (rôle ${p.assessment_year})` : ""}`,
+    );
+  }
+  if (p.construction_year != null) {
+    facts.push(
+      lang === "en"
+        ? `Built in ${p.construction_year}`
+        : `Construction datant de ${p.construction_year}`,
+    );
+  }
+  if (p.lot_area_sqm != null) {
+    facts.push(
+      lang === "en"
+        ? `Lot area of ${formatNumber(p.lot_area_sqm)} sq m`
+        : `Terrain de ${formatNumber(p.lot_area_sqm)} m²`,
+    );
+  }
+  if (facts.length === 0) return head;
+  return `${head} ${facts.map((f) => `${f}.`).join(" ")}`;
+}
+
+/**
  * Passeport d'un profil public : fiche honnête d'une propriété issue
- * des Données ouvertes de la Ville de Montréal. Ce N'EST PAS une
- * annonce — rien ici n'est « à vendre », et toute donnée manquante
- * affiche « À confirmer » (jamais inventée). Aucune possibilité de
- * construction ou de changement d'usage n'est présentée comme une
- * autorisation.
+ * de données ouvertes (Ville de Montréal ou MAMH/Données Québec).
+ * Ce N'EST PAS une annonce — rien ici n'est « à vendre », et toute
+ * donnée manquante affiche « À confirmer » (jamais inventée).
  */
 export default async function ProfilePassportPage({ params }: PageProps) {
   const { id } = await params;
@@ -60,6 +152,15 @@ export default async function ProfilePassportPage({ params }: PageProps) {
   if (!p) {
     notFound();
   }
+
+  const lang = await getLang();
+  const similar = await getSimilarProfiles({
+    id: p.id,
+    borough: p.borough,
+    city: p.city,
+    property_category: p.property_category,
+  });
+  const summary = buildProfileSummary(p, lang);
 
   /* ---------- Champs manquants ---------- */
   const missingFields: string[] = [];
@@ -141,6 +242,9 @@ export default async function ProfilePassportPage({ params }: PageProps) {
             annonce. La valeur au rôle est une évaluation foncière à des fins
             de taxation, pas une valeur marchande.
           </p>
+          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-charcoal/75">
+            {summary}
+          </p>
         </div>
       </header>
 
@@ -162,7 +266,7 @@ export default async function ProfilePassportPage({ params }: PageProps) {
         {/* ---------- 3. Caractéristiques (données ouvertes) ---------- */}
         <PassportSectionCard
           title="Caractéristiques"
-          intro="Données issues des Données ouvertes de la Ville de Montréal. Chaque valeur vient du jeu de données ; un champ absent est marqué « À confirmer », jamais complété."
+          intro={sourceIntro(p.data_source, lang)}
         >
           <SpecsGrid specs={specs} />
         </PassportSectionCard>
@@ -253,7 +357,40 @@ export default async function ProfilePassportPage({ params }: PageProps) {
           <p className="text-[15px] italic text-charcoal/45">À confirmer</p>
         </PassportSectionCard>
 
-        {/* ---------- 9. CTA ---------- */}
+        {/* ---------- 9. Profils similaires (maillage interne) ---------- */}
+        {similar.length > 0 ? (
+          <PassportSectionCard
+            title={lang === "en" ? "Similar profiles" : "Profils similaires"}
+            intro={
+              lang === "en"
+                ? "Other properties in the same area and category."
+                : "D'autres biens du même secteur et de même catégorie."
+            }
+          >
+            <div className="grid gap-3 sm:grid-cols-2">
+              {similar.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/passeport/profil/${s.id}`}
+                  className="group rounded-xl border border-border bg-white p-4 transition-colors duration-200 hover:border-forest/40 hover:bg-cream"
+                >
+                  <p className="text-sm font-semibold text-charcoal group-hover:text-forest">
+                    {s.address}
+                  </p>
+                  <p className="mt-0.5 text-xs text-charcoal/55">
+                    {s.borough ? `${s.borough}, ` : ""}
+                    {s.city}
+                    {s.assessment_total != null
+                      ? ` — ${formatPrice(s.assessment_total, lang)}`
+                      : ""}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </PassportSectionCard>
+        ) : null}
+
+        {/* ---------- 10. CTA ---------- */}
         <ProfileAnalysisCta address={p.address} />
       </div>
     </div>

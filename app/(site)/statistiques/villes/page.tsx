@@ -7,12 +7,15 @@ import { getMarketStats } from "@/actions/property-profiles";
 import { StatsNav } from "../StatsNav";
 import { VillesClient } from "./VillesClient";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Statistiques par ville",
-  description:
-    "Répartition des profils du Passeport Nesta par municipalité : recherche, tri croissant/décroissant, valeur au rôle médiane. Données ouvertes (Ville de Montréal et MAMH, Données Québec).",
-  path: "/statistiques/villes",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return await pageMetadata({
+    title: "Statistiques par ville",
+    description:
+      "Répartition des profils du Passeport Nesta par municipalité : recherche, tri croissant/décroissant, valeur au rôle médiane. Données ouvertes (Ville de Montréal et MAMH, Données Québec).",
+    path: "/statistiques/villes",
+  });
+}
+
 
 export const dynamic = "force-dynamic";
 
