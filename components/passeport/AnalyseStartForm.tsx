@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { VILLES } from "@/lib/estimation/villes";
+import { VILLES, isVilleSlug, type VilleSlug } from "@/lib/estimation/villes";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { AdresseAutocomplete } from "@/components/estimation/AdresseAutocomplete";
 
 interface Props {
   initialAdresse?: string;
@@ -17,7 +18,9 @@ export function AnalyseStartForm({ initialAdresse = "", initialVille = "montreal
   const t = dictionaries[lang].analyse;
   const router = useRouter();
   const [adresse, setAdresse] = useState(initialAdresse);
-  const [ville, setVille] = useState(initialVille);
+  const [ville, setVille] = useState<VilleSlug>(
+    isVilleSlug(initialVille) ? initialVille : "montreal",
+  );
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,10 +34,12 @@ export function AnalyseStartForm({ initialAdresse = "", initialVille = "montreal
       <div className="grid gap-4 sm:grid-cols-[1fr_220px]">
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-charcoal/70">{t.champAdresse}</span>
-          <input
-            type="text"
+          <AdresseAutocomplete
+            id="analyse-adresse"
             value={adresse}
-            onChange={(e) => setAdresse(e.target.value)}
+            onChange={setAdresse}
+            ville={ville}
+            lang={lang}
             placeholder={t.champAdressePlaceholder}
             className="w-full rounded-xl border border-charcoal/15 bg-ivory px-4 py-3 text-[15px] text-charcoal outline-none placeholder:text-charcoal/35 focus:border-forest"
           />

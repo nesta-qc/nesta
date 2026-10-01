@@ -1,5 +1,6 @@
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
+import { ValeurAdresseChamp } from "./ValeurAdresseChamp";
 
 /**
  * NESTA — Valeur de propriété.
@@ -11,7 +12,8 @@ import { dictionaries } from "@/lib/i18n/dictionaries";
  * d'identité visuelle).
  */
 export async function PropertyValueSection() {
-  const t = dictionaries[await getLang()].accueil;
+  const lang = await getLang();
+  const t = dictionaries[lang].accueil;
   return (
     <section className="bg-ivory" aria-labelledby="valeur-propriete-titre">
       <div className="mx-auto w-full max-w-3xl px-5 py-20 text-center sm:px-8 sm:py-28">
@@ -34,17 +36,11 @@ export async function PropertyValueSection() {
           aria-label={t.valeurTitre}
           className="mx-auto mt-8 flex w-full max-w-xl flex-col gap-2 sm:flex-row"
         >
-          <label htmlFor="valeur-adresse" className="sr-only">
-            {t.valeurAdresseAria}
-          </label>
-          <input
-            id="valeur-adresse"
-            name="adresse"
-            type="text"
-            required
-            autoComplete="street-address"
-            placeholder={t.valeurAdressePlaceholder}
-            className="w-full flex-1 rounded-full border border-charcoal/10 bg-white px-6 py-4 text-[15px] text-charcoal shadow-sm placeholder:text-charcoal/35 focus:outline-none focus:ring-2 focus:ring-forest/30"
+          <ValeurAdresseChamp
+            lang={lang}
+            placeholderAdresse={t.valeurAdressePlaceholder}
+            ariaAdresse={t.valeurAdresseAria}
+            ariaVille={t.valeurVilleAria}
           />
           <button
             type="submit"

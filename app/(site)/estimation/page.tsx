@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
+import { isVilleSlug } from "@/lib/estimation/villes";
 import { pageMetadata, SITE_URL } from "@/lib/seo";
 import { EstimationForm } from "./EstimationForm";
 
@@ -18,10 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function EstimationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ adresse?: string }>;
+  searchParams: Promise<{ adresse?: string; ville?: string }>;
 }) {
   const t = dictionaries[await getLang()].estimation;
-  const { adresse } = await searchParams;
+  const { adresse, ville } = await searchParams;
+  const villeInitiale = isVilleSlug(ville ?? "") ? ville : "montreal";
   return (
     <Container className="pb-20 pt-14 sm:pt-20">
       <div className="max-w-2xl">
@@ -39,7 +41,10 @@ export default async function EstimationPage({
       </div>
 
       <div className="mt-10 max-w-2xl">
-        <EstimationForm initialAdresse={typeof adresse === "string" ? adresse : ""} />
+        <EstimationForm
+          initialAdresse={typeof adresse === "string" ? adresse : ""}
+          initialVille={villeInitiale}
+        />
       </div>
     </Container>
   );

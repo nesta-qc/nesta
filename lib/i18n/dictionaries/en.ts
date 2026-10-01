@@ -174,6 +174,7 @@ export const en = {
     valeurCta: "Estimate my property",
     valeurAdressePlaceholder: "E.g. 4215 Sherbrooke St W, Montreal",
     valeurAdresseAria: "Address of the property to value",
+    valeurVilleAria: "City of the property",
     vendreSurTitre: "Sell",
     vendreTitre: "Sell your way.",
     vendreTexte:

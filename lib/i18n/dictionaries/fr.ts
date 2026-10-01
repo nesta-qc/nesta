@@ -174,6 +174,7 @@ export const fr = {
     valeurCta: "Estimer ma propriété",
     valeurAdressePlaceholder: "Ex. 4215, rue Sherbrooke Ouest, Montréal",
     valeurAdresseAria: "Adresse de la propriété à estimer",
+    valeurVilleAria: "Ville de la propriété",
     vendreSurTitre: "Vendre",
     vendreTitre: "Vendez à votre façon.",
     vendreTexte:
