@@ -355,4 +355,24 @@ export const fr = {
       commercial: "Commercial",
     } as Record<string, string>,
   },
+  checkout: {
+    notReady:
+      "Le paiement en ligne arrive très bientôt. En attendant, écrivez-nous et nous activerons votre forfait manuellement.",
+    succesTitre: "Paiement confirmé",
+    succesTexte:
+      "Merci ! Votre paiement a bien été reçu. Voici la suite :",
+    succesEtapes: [
+      "Vous recevrez votre reçu par courriel dans quelques minutes.",
+      "Notre équipe active votre forfait sous 24 h ouvrables.",
+      "Pour un forfait vendeur : préparez vos photos, nous vous guidons pour la mise en ligne.",
+      "Pour Nesta Projets : nous vous contactons pour créer votre page projet.",
+    ],
+    succesCtaAccueil: "Retour à l'accueil",
+    succesCtaTarifs: "Voir les tarifs",
+    annuleTitre: "Paiement annulé",
+    annuleTexte:
+      "Aucun montant n'a été débité. Votre panier est conservé : vous pouvez reprendre votre paiement quand vous voulez.",
+    annuleCtaTarifs: "Retour aux tarifs",
+    annuleCtaContact: "Nous contacter",
+  },
 };

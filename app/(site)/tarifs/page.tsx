@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button, Card, Container } from "@/components/ui";
 import { SELLER_PLANS, formatPlanPrice } from "@/lib/pricing";
 import { NESTA_SERVICES } from "@/lib/services";
+import { CheckoutButton } from "@/components/checkout/CheckoutButton";
 
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
@@ -284,14 +285,16 @@ export default function TarifsPage() {
                 {formatPlanPrice(plan.price)}
               </p>
               <p className="mt-1 text-sm text-charcoal/55">{plan.tagline}</p>
-              <Link href="/sell/nouveau" className="mt-auto pt-6">
-                <Button
+              {/* Paiement Stripe Checkout (inactif tant que Stripe n'est pas configuré). */}
+              <div className="mt-auto pt-6">
+                <CheckoutButton
+                  kind="plan"
+                  value={plan.id}
+                  label={plan.cta}
+                  notReadyLabel="Le paiement en ligne arrive très bientôt."
                   variant={plan.highlighted ? "primary" : "secondary"}
-                  className="w-full"
-                >
-                  {plan.cta}
-                </Button>
-              </Link>
+                />
+              </div>
             </Card>
           ))}
         </div>

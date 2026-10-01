@@ -3,6 +3,7 @@ import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Card } from "@/components/ui";
 import { ProWaitlistForm } from "@/components/pro/ProWaitlistForm";
+import { ProjetsSubscribe } from "@/components/checkout/ProjetsSubscribe";
 
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
@@ -57,7 +58,9 @@ export default function ProPage() {
               </li>
             ))}
           </ul>
-          <Link href="/projects#pro" className="mt-auto pt-8">
+          {/* Paiement Stripe Checkout : pilote gratuit 3 mois (inactif tant que Stripe n'est pas configuré). */}
+          <ProjetsSubscribe />
+          <Link href="/projects#pro" className="mt-4 block">
             <span className="inline-flex items-center rounded-full bg-white px-8 py-3.5 text-[15px] font-semibold text-forest transition-colors hover:bg-ivory">
               Découvrir l&apos;offre
               <span aria-hidden="true" className="ml-2">

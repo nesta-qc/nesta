@@ -355,4 +355,23 @@ export const en = {
       commercial: "Commercial",
     } as Record<string, string>,
   },
+  checkout: {
+    notReady:
+      "Online payment is coming very soon. In the meantime, write to us and we will activate your plan manually.",
+    succesTitre: "Payment confirmed",
+    succesTexte: "Thank you! Your payment went through. Here is what happens next:",
+    succesEtapes: [
+      "You will receive your receipt by email within a few minutes.",
+      "Our team activates your plan within 24 business hours.",
+      "For a seller plan: get your photos ready, we will guide you through publishing.",
+      "For Nesta Projets: we will contact you to create your project page.",
+    ],
+    succesCtaAccueil: "Back to home",
+    succesCtaTarifs: "See pricing",
+    annuleTitre: "Payment cancelled",
+    annuleTexte:
+      "No amount was charged. Your cart is saved: you can resume your payment whenever you like.",
+    annuleCtaTarifs: "Back to pricing",
+    annuleCtaContact: "Contact us",
+  },
 };
