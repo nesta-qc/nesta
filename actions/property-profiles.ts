@@ -224,6 +224,7 @@ export interface BoroughStat {
 export interface CityStat {
   city: string;
   count: number;
+  medianAssessment: number | null;
   boroughs: BoroughStat[];
 }
 
@@ -287,7 +288,12 @@ function toCityStat(raw: unknown): CityStat | null {
   const boroughs = Array.isArray(r.boroughs)
     ? r.boroughs.map(toBoroughStat).filter((b): b is BoroughStat => b !== null)
     : [];
-  return { city, count, boroughs };
+  return {
+    city,
+    count,
+    medianAssessment: toNumber(r.medianAssessment),
+    boroughs,
+  };
 }
 
 export async function getMarketStats(): Promise<MarketStats | null> {

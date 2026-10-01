@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { pageMetadata } from "@/lib/seo";
 import { Card, EmptyState } from "@/components/ui";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { getMarketStats } from "@/actions/property-profiles";
-import type { BoroughStat } from "@/actions/property-profiles";
 import { formatPrice } from "@/lib/format";
+import { StatsNav } from "./StatsNav";
+import { BoroughRow } from "./BoroughRow";
 
 export const metadata: Metadata = pageMetadata({
   title: "Statistiques du marché",
@@ -17,58 +19,12 @@ export const metadata: Metadata = pageMetadata({
 /* Agrégats recalculés à chaque visite : les profils évoluent via les données ouvertes. */
 export const dynamic = "force-dynamic";
 
-type StatsDict = (typeof dictionaries)["fr"]["statistiques"];
-
-/** Ligne « arrondissement » (médiane + barre), réutilisée en mono et multi-ville. */
-function BoroughRow({
-  borough: b,
-  maxMedian,
-  t,
-}: {
-  borough: BoroughStat;
-  maxMedian: number;
-  t: StatsDict;
-}) {
-  return (
-    <li>
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="text-sm font-semibold text-charcoal">{b.borough}</p>
-        <p className="text-sm text-charcoal/60">
-          {b.count} {t.profils} ·{" "}
-          <span className="font-semibold text-forest">
-            {b.medianAssessment != null
-              ? formatPrice(b.medianAssessment)
-              : "—"}
-          </span>
-        </p>
-      </div>
-      <div
-        className="mt-2 h-2.5 overflow-hidden rounded-full bg-cream"
-        role="img"
-        aria-label={`${b.borough} : ${t.valeurMedianeColonne} ${b.medianAssessment != null ? formatPrice(b.medianAssessment) : "—"}`}
-      >
-        <div
-          className="h-full rounded-full bg-forest/80"
-          style={{
-            width: `${
-              maxMedian > 0 && b.medianAssessment != null
-                ? Math.max(
-                    2,
-                    Math.round((b.medianAssessment / maxMedian) * 100),
-                  )
-                : 0
-            }%`,
-          }}
-        />
-      </div>
-    </li>
-  );
-}
-
 /**
- * Hub /statistiques : que des agrégats calculés depuis les vrais profils
- * Passeport (property_profiles). Aucun chiffre inventé ; la méthodologie
- * dit exactement ce que l'échantillon vaut — et ce qu'il ne vaut pas.
+ * Hub /statistiques — page « Aperçu » : que des agrégats calculés depuis les
+ * vrais profils Passeport (property_profiles). Aucun chiffre inventé ; la
+ * méthodologie dit exactement ce que l'échantillon vaut — et ce qu'il ne vaut pas.
+ * Les listes complètes vivent sur /statistiques/villes et
+ * /statistiques/arrondissements (recherche + tri) pour garder le DOM léger.
  */
 export default async function StatistiquesPage() {
   const lang = await getLang();
@@ -93,23 +49,18 @@ export default async function StatistiquesPage() {
   const roleYears = stats.assessmentYears.map((y) => String(y.year)).join(", ");
   const nbCities = stats.cities.length;
   const nbBoroughs = stats.boroughs.length;
-  const multiCity = nbCities > 1;
   const avgPerBorough =
     nbBoroughs > 0 ? Math.round(stats.total / nbBoroughs) : 0;
-  const methodoEchantillon = multiCity
-    ? t.methodoEchantillonMulti
-        .replace("{n}", String(stats.total))
-        .replace("{nv}", String(nbCities))
-        .replace("{nb}", String(nbBoroughs))
-        .replace("{par}", String(avgPerBorough))
-    : t.methodoEchantillon
-        .replace("{n}", String(stats.total))
-        .replace("{nb}", String(nbBoroughs))
-        .replace("{par}", String(avgPerBorough));
+  const methodoEchantillon = t.methodoEchantillonMulti
+    .replace("{n}", String(stats.total))
+    .replace("{nv}", String(nbCities))
+    .replace("{nb}", String(nbBoroughs))
+    .replace("{par}", String(avgPerBorough));
   const computedOn = new Date().toLocaleDateString(
     lang === "fr" ? "fr-CA" : "en-CA",
     { day: "numeric", month: "long", year: "numeric" },
   );
+  const topBoroughs = stats.boroughs.slice(0, 10);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-8 sm:py-14">
@@ -122,6 +73,14 @@ export default async function StatistiquesPage() {
       <p className="mt-4 max-w-2xl text-base leading-relaxed text-charcoal/70">
         {t.intro.replace("{n}", String(stats.total))}
       </p>
+
+      <StatsNav
+        labels={{
+          apercu: t.ongletApercu,
+          villes: t.ongletVilles,
+          arrondissements: t.ongletArrondissements,
+        }}
+      />
 
       {/* ---------- Vue d'ensemble ---------- */}
       <h2 className="mt-10 font-display text-2xl text-charcoal">
@@ -156,48 +115,30 @@ export default async function StatistiquesPage() {
         </Card>
       </div>
 
-      {/* ---------- Par arrondissement ---------- */}
-      <h2 className="mt-10 font-display text-2xl text-charcoal">
-        {multiCity ? t.parVilleArrondissement : t.parArrondissement}
-      </h2>
+      {/* ---------- Top arrondissements ---------- */}
+      <div className="mt-10 flex items-baseline justify-between gap-3">
+        <h2 className="font-display text-2xl text-charcoal">
+          {t.topArrondissements}
+        </h2>
+        <Link
+          href="/statistiques/arrondissements"
+          className="text-sm font-medium text-forest underline-offset-4 hover:underline"
+        >
+          {t.voirTout}
+        </Link>
+      </div>
       <Card className="mt-4 p-5 sm:p-6">
-        {multiCity ? (
-          <div className="flex flex-col gap-8">
-            {stats.cities.map((c) => (
-              <section key={c.city} aria-label={c.city}>
-                <div className="flex items-baseline justify-between gap-3">
-                  <h3 className="font-display text-lg text-charcoal">
-                    {c.city}
-                  </h3>
-                  <p className="text-sm text-charcoal/55">
-                    {c.count} {t.profils}
-                  </p>
-                </div>
-                <ul className="mt-4 flex flex-col gap-5">
-                  {c.boroughs.map((b) => (
-                    <BoroughRow
-                      key={`${c.city}||${b.borough}`}
-                      borough={b}
-                      maxMedian={maxMedian}
-                      t={t}
-                    />
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </div>
-        ) : (
-          <ul className="flex flex-col gap-5">
-            {stats.boroughs.map((b) => (
-              <BoroughRow
-                key={b.borough}
-                borough={b}
-                maxMedian={maxMedian}
-                t={t}
-              />
-            ))}
-          </ul>
-        )}
+        <ul className="flex flex-col gap-5">
+          {topBoroughs.map((b) => (
+            <BoroughRow
+              key={b.borough}
+              borough={b}
+              maxMedian={maxMedian}
+              profilsLabel={t.profils}
+              valeurMedianeLabel={t.valeurMedianeColonne}
+            />
+          ))}
+        </ul>
       </Card>
 
       {/* ---------- Catégories ---------- */}

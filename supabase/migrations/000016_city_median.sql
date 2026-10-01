@@ -1,3 +1,7 @@
+-- NESTA — migration 000016 : médiane par ville dans market_stats().
+-- La fonction en production lit actuellement le cache (000015) : on restaure
+-- la version complète (avec by_city), on rafraîchit la vue matérialisée, puis
+-- on rebascule la fonction sur le cache. Lecture seule, aucune donnée modifiée.
 -- NESTA — agrégats de la page /statistiques calculés côté Postgres.
 -- Remplace le balayage applicatif des 532k+ lignes (533 requêtes paginées,
 -- timeout garanti) par UNE seule requête d'agrégation (~1 s).
@@ -109,6 +113,20 @@ AS $$
       FROM by_role_year
     )
   );
+$$;
+
+-- Rafraîchit le cache avec la nouvelle version (médiane par ville incluse).
+REFRESH MATERIALIZED VIEW public.market_stats_mv;
+
+-- Rebascule la fonction sur le cache (lecture instantanée via l'API).
+CREATE OR REPLACE FUNCTION public.market_stats()
+RETURNS jsonb
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT stats FROM public.market_stats_mv
 $$;
 
 GRANT EXECUTE ON FUNCTION public.market_stats() TO anon, authenticated;
