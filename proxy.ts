@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { updateSession } from "@/lib/supabase/middleware";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/env";
 import { LANG_COOKIE } from "@/lib/i18n/constants";
+import { GATE_COOKIE, isGateEnabled, verifyToken } from "@/lib/site-gate";
 
 /*
  * Proxy racine (Next.js 16 : la convention `middleware.ts` est dépréciée
@@ -75,8 +76,63 @@ function redirectTo(request: NextRequest, pathname: string): NextResponse {
   return NextResponse.redirect(url);
 }
 
+/**
+ * Sas d'accès : retourne une réponse (redirection ou 403) quand le
+ * visiteur n'a pas de session valide, `null` pour laisser passer.
+ */
+function appliquerSasAcces(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl;
+  /* /en/* → on raisonne sur le chemin sans préfixe de langue. */
+  const sansLangue =
+    pathname === "/en" || pathname.startsWith("/en/")
+      ? pathname.slice(3) || "/"
+      : pathname;
+
+  /* Toujours accessibles sans session : le sas lui-même, ses API,
+   * et les webhooks Stripe (appels serveur-à-serveur signés). */
+  if (
+    sansLangue === "/acces" ||
+    sansLangue.startsWith("/acces/") ||
+    sansLangue.startsWith("/api/gate/") ||
+    sansLangue.startsWith("/api/stripe/webhook") ||
+    sansLangue.startsWith("/api/webhook")
+  ) {
+    return null;
+  }
+
+  const session = request.cookies.get(GATE_COOKIE)?.value;
+  if (verifyToken(session, "session")) return null;
+
+  /* API : 403 JSON plutôt qu'une redirection HTML. */
+  if (sansLangue.startsWith("/api/")) {
+    return NextResponse.json({ error: "Accès restreint." }, { status: 403 });
+  }
+
+  /* Pages : redirection vers le sas, avec retour après validation. */
+  const url = request.nextUrl.clone();
+  url.pathname = "/acces";
+  url.search = "";
+  if (pathname !== "/") {
+    url.searchParams.set("next", pathname + request.nextUrl.search);
+  }
+  return NextResponse.redirect(url);
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  /* ============ Sas d'accès au site (code + double vérification) ============
+   * Actif uniquement quand les variables SITE_GATE_* sont définies
+   * (opt-in par environnement). Le site d'administration garde sa
+   * propre connexion et n'est pas concerné.
+   * Sans cookie de session valide → /acces (pages) ou 403 (API).
+   * Toujours publics : /acces, /api/gate/*, les webhooks Stripe et
+   * les fichiers statiques/sitemap (exclus par le matcher). */
+  if (isGateEnabled() && process.env.SITE_MODE !== "admin") {
+    const gateRes = appliquerSasAcces(request);
+    if (gateRes) return gateRes;
+  }
+
   const siteMode = process.env.SITE_MODE;
 
   /* ============ Version anglaise découvrable (/en/*) ============

@@ -1,0 +1,26 @@
+import type { Metadata } from "next";
+import AccesForm from "./AccesForm";
+
+/* Page hors index : le sas d'accès n'a rien à faire dans Google. */
+export const metadata: Metadata = {
+  title: "Accès protégé | Nesta",
+  robots: { index: false, follow: false },
+};
+
+/*
+ * Sas d'accès au site : étape 1 = code d'accès,
+ * étape 2 = double vérification (application d'authentification).
+ * Après validation, redirection vers la page demandée (?next=…).
+ */
+export default async function AccesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const params = await searchParams;
+  const next =
+    typeof params.next === "string" && params.next.startsWith("/")
+      ? params.next
+      : "/";
+  return <AccesForm next={next} />;
+}
