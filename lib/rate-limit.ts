@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 
 /* ============================================================
- * NESTA — limitation de débit (rate limiting) par IP.
+ * VEYLA — limitation de débit (rate limiting) par IP.
  *
  * Fenêtre glissante en mémoire : protège les routes API publiques
  * contre le pilonnage (bots, spammeurs, abus du moteur

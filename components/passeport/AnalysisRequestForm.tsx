@@ -8,7 +8,7 @@ import { AddressAutocomplete } from "@/components/passeport/AddressAutocomplete"
 import { createAnalysisRequest } from "@/actions/service-requests";
 
 /* ============================================================
- * NESTA — Passeport : formulaire « Demander l'analyse de cette
+ * VEYLA — Passeport : formulaire « Demander l'analyse de cette
  * propriété », SANS création de compte. En cas d'échec d'insert
  * (migration 000012 pas encore appliquée, réseau…), un message
  * d'erreur honnête s'affiche — jamais de fausse confirmation.
@@ -149,10 +149,10 @@ export function AnalysisRequestForm({ initialAddress }: { initialAddress: string
         </Button>
         <p className="mt-3 text-xs text-charcoal/45">
           Sans compte et sans engagement : la réponse vous parvient par
-          courriel. Le suivi en ligne est réservé aux comptes Nesta.
+          courriel. Le suivi en ligne est réservé aux comptes Veyla.
         </p>
         <p className="mt-2 text-xs text-charcoal/45">
-          En envoyant ce formulaire, vous consentez à ce que Nesta utilise
+          En envoyant ce formulaire, vous consentez à ce que Veyla utilise
           votre courriel uniquement pour vous transmettre l&apos;analyse
           demandée. Voir notre{" "}
           <Link

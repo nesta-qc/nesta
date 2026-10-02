@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Nouvelle annonce",
-    description: "Créez votre annonce de vente ou de location sur Nesta.",
+    description: "Créez votre annonce de vente ou de location sur Veyla.",
     path: "/sell/nouveau",
     noIndex: true,
   });
@@ -31,7 +31,7 @@ export default async function NewListingPage() {
       <Container className="py-12 sm:py-16">
         <EmptyState
           title="Compte vendeur requis"
-          description="Crée ton compte vendeur via l'onboarding pour publier une annonce sur Nesta."
+          description="Crée ton compte vendeur via l'onboarding pour publier une annonce sur Veyla."
           action={
             <Link href="/sell">
               <Button variant="secondary">Retour à l’espace vendeur</Button>

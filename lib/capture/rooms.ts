@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA Capture — pièces photographiables et quotas conseillés.
+ * VEYLA Capture — pièces photographiables et quotas conseillés.
  * ============================================================ */
 
 export interface RoomDef {

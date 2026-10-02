@@ -17,7 +17,7 @@ import {
 } from "@/actions/developments";
 
 /* ============================================================
- * NESTA Admin — création d'un projet (pilote promoteurs).
+ * VEYLA Admin — création d'un projet (pilote promoteurs).
  * Formulaire : infos projet + unités (saisie manuelle et/ou
  * import CSV). Le statut « Brouillon » garde le projet invisible
  * du public jusqu'à validation (RLS).

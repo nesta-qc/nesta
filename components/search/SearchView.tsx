@@ -31,7 +31,7 @@ interface SearchViewProps {
 }
 
 /**
- * Vue de recherche NESTA : liste (40 %) + carte dominante (60 %).
+ * Vue de recherche VEYLA : liste (40 %) + carte dominante (60 %).
  * Survol synchronisé carte ↔ liste, sélection mise en évidence.
  * Mobile : toggle Carte | Liste, aperçu en bottom sheet.
  */

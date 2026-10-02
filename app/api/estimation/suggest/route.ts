@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { isVilleSlug, suggestAddresses } from "@/lib/estimation";
 
 /* ============================================================
- * NESTA — API d'autocomplétion d'adresses pour l'estimation.
+ * VEYLA — API d'autocomplétion d'adresses pour l'estimation.
  *
  * GET /api/estimation/suggest?ville=montreal&q=2219+rue+duv
  *   → ["2219 R DUVERNAY", …] (max 8, clés normalisées du rôle)

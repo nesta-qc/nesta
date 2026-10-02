@@ -19,7 +19,7 @@ import {
 } from "../capture/NestaCapture";
 
 /* ============================================================
- * NESTA — formulaire d'annonce (création + modification).
+ * VEYLA — formulaire d'annonce (création + modification).
  *
  * Mode "create" : après la création en brouillon, le formulaire
  * bascule vers l'étape photos + publication (l'upload nécessite
@@ -117,7 +117,7 @@ export function PropertyForm(props: Props) {
                 size="lg"
                 onClick={() => setCaptureOpen(true)}
               >
-                Prendre mes photos avec NESTA
+                Prendre mes photos avec VEYLA
               </Button>
               <p className="mt-2 text-sm text-charcoal/55">
                 Photos guidées depuis votre téléphone : netteté, luminosité

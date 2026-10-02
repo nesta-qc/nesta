@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — formatage et libellés d'affichage (français).
+ * VEYLA — formatage et libellés d'affichage (français).
  * Aucune donnée fictive : que du formatage de valeurs réelles.
  * ============================================================ */
 

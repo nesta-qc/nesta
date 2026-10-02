@@ -18,7 +18,7 @@ export const en = {
     deconnexion: "Log out",
     menu: "Menu",
     fermerMenu: "Close menu",
-    accueilAria: "Nesta — home",
+    accueilAria: "Veyla — home",
     navPrincipaleAria: "Main navigation",
     navMobileAria: "Mobile navigation",
     favorisAria: "My favorites",
@@ -63,7 +63,7 @@ export const en = {
     eyebrow: "Market statistics",
     titre: "The market, in honest numbers",
     intro:
-      "Aggregates computed from the {n} Nesta Passport profiles, sourced from the City of Montréal's open data. No invented numbers: what we don't know, we don't show.",
+      "Aggregates computed from the {n} Veyla Passport profiles, sourced from the City of Montréal's open data. No invented numbers: what we don't know, we don't show.",
     vueEnsemble: "Overview",
     profilsAnalyses: "Profiles analyzed",
     valeurMediane: "Median assessed value",
@@ -109,7 +109,7 @@ export const en = {
     tagline: "Real estate, your way.",
     colonnes: [
       {
-        titre: "Nesta",
+        titre: "Veyla",
         liens: [
           { href: "/a-propos", label: "About" },
           { href: "/tarifs", label: "Pricing" },
@@ -138,7 +138,7 @@ export const en = {
       },
       {
         titre: "Professionals",
-        liens: [{ href: "/pro", label: "Nesta Pro" }],
+        liens: [{ href: "/pro", label: "Veyla Pro" }],
       },
       {
         titre: "Legal",
@@ -148,18 +148,18 @@ export const en = {
         ],
       },
     ],
-    droits: "© 2026 Nesta — Quebec real estate platform. All rights reserved.",
+    droits: "© 2026 Veyla — Quebec real estate platform. All rights reserved.",
     avertissement:
       "Displayed valuations are indicative only and do not constitute mortgage approval.",
   },
   accueil: {
-    heroSurTitre: "Nesta",
+    heroSurTitre: "Veyla",
     heroTitre1: "See the potential",
     heroTitre2: "behind every property",
     heroSousTitre:
       "Before buying, renovating or investing, understand what a property could become — no promises, no jargon.",
     ctaRecherche: "Search properties",
-    ctaVendre: "Sell with Nesta",
+    ctaVendre: "Sell with Veyla",
     ctaEstimer: "Estimate my property",
     ouExplorer: "Or browse listings",
     analyseTitre: "Analyze an address",
@@ -212,12 +212,12 @@ export const en = {
     vendreSurTitre: "Sell",
     vendreTitre: "Sell your way.",
     vendreTexte:
-      "Create your listing in minutes. Choose the level of support that suits you — Nesta stays your tool, not your middleman.",
+      "Create your listing in minutes. Choose the level of support that suits you — Veyla stays your tool, not your middleman.",
     vendreOptions: [
       {
         titre: "Without a broker",
         texte:
-          "You list, you host the visits, you negotiate. Nesta gives you the tools.",
+          "You list, you host the visits, you negotiate. Veyla gives you the tools.",
       },
       {
         titre: "With à-la-carte support",
@@ -230,11 +230,11 @@ export const en = {
           "Prefer to delegate? Work with the broker of your choice.",
       },
     ],
-    vendreCta: "Sell with Nesta",
+    vendreCta: "Sell with Veyla",
     investirSurTitre: "Invest",
     investirTitre: "Understand the asset, not just the photo.",
     investirTexte:
-      "Enter a building's numbers: Nesta computes the cap rate, cash flow and return on down payment. Your assumptions, shown clearly.",
+      "Enter a building's numbers: Veyla computes the cap rate, cash flow and return on down payment. Your assumptions, shown clearly.",
     investirCta: "Analyze a building",
     comparableLegende: "Real comparable — DuProprio",
     comparableAdresse: "48 Charlevoix Street, Kirkland",
@@ -243,7 +243,7 @@ export const en = {
     comparableChambres: "Bedrooms",
     comparableAnnee: "Year built",
     comparableVerifie: "Data verified Sept. 28, 2026",
-    estimateSurTitre: "Nesta Estimate",
+    estimateSurTitre: "Veyla Estimate",
     estimateTitre: "From plans to budget.",
     estimateTexte:
       "Upload your plans and get a structured estimate of your construction project — line by line, with assumptions shown clearly.",
@@ -253,14 +253,14 @@ export const en = {
       "Ideal before buying land or renovating",
     ],
     estimateCta: "Request an estimate",
-    pourquoiSurTitre: "Why Nesta",
+    pourquoiSurTitre: "Why Veyla",
     pourquoiTitre1: "What others charge you for,",
     pourquoiTitre2: "we spare you.",
     confiance: [
       {
         titre: "$25,000 or $699?",
         texte:
-          "Example: a 5% commission (negotiable rate, for illustration only) on a $500,000 sale = $25,000 + taxes. The Nesta SELL plan: $699, one-time payment.",
+          "Example: a 5% commission (negotiable rate, for illustration only) on a $500,000 sale = $25,000 + taxes. The Veyla SELL plan: $699, one-time payment.",
       },
       {
         titre: "Real prices, finally readable",
@@ -275,7 +275,7 @@ export const en = {
       {
         titre: "Zero solicitation",
         texte:
-          "Your contact details are never sold or shared. Listing on Nesta attracts no canvassing.",
+          "Your contact details are never sold or shared. Listing on Veyla attracts no canvassing.",
       },
     ],
     finalTitre: "Your next project starts here.",
@@ -372,7 +372,7 @@ export const en = {
       "You will receive your receipt by email within a few minutes.",
       "Our team activates your plan within 24 business hours.",
       "For a seller plan: get your photos ready, we will guide you through publishing.",
-      "For Nesta Projets: we will contact you to create your project page.",
+      "For Veyla Projets: we will contact you to create your project page.",
     ],
     succesCtaAccueil: "Back to home",
     succesCtaTarifs: "See pricing",
@@ -383,7 +383,7 @@ export const en = {
     annuleCtaContact: "Contact us",
   },
   analyse: {
-    demarrerSurTitre: "Nesta Passport",
+    demarrerSurTitre: "Veyla Passport",
     demarrerTitre: "Analyze a property",
     demarrerTexte:
       "Address, value, buy, sell or invest potential: the full analysis of a property in seconds, from official data.",
@@ -456,7 +456,7 @@ export const en = {
     methodeTitre: "Our method",
     methodeTexte:
       "Assessment roll data (MAMH / City of Montreal, CC-BY 4.0 licence), adjusted to median sold prices from the APCIQ barometer (reference {reference}). Prices used are sold prices, never asking prices.",
-    dossierTitre: "Valuation report — NESTA Market System",
+    dossierTitre: "Valuation report — VEYLA Market System",
     dossierMarche:
       "Price set at market conditions of {mois} · {confiance} confidence · {n} comparables.",
     avertissement:

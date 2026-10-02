@@ -5,9 +5,9 @@ import { hasSupabaseConfig } from "@/lib/env";
 import { assertAdmin } from "@/lib/admin";
 
 /* ============================================================
- * NESTA — demandes entrantes NESTA Pro (section /projects).
+ * VEYLA — demandes entrantes VEYLA Pro (section /projects).
  * Le formulaire public remplace le mailto : pas de courriel
- * de contact Nesta pour l'instant. Lecture réservée aux admins.
+ * de contact Veyla pour l'instant. Lecture réservée aux admins.
  * ============================================================ */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,7 +21,7 @@ export interface ProLead {
   created_at: string;
 }
 
-/** Envoi public d'une demande NESTA Pro. */
+/** Envoi public d'une demande VEYLA Pro. */
 export async function submitProLead(
   formData: FormData,
 ): Promise<{ ok: boolean; message: string }> {

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
 
 /* ============================================================
- * NESTA — contexte d'authentification côté serveur.
+ * VEYLA — contexte d'authentification côté serveur.
  *
  * Utilisé par les pages et les Server Actions pour gater
  * l'accès. Défense en profondeur : les policies RLS restent

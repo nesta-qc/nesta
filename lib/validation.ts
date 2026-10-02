@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /* ============================================================
- * NESTA — schémas de validation (zod).
+ * VEYLA — schémas de validation (zod).
  *
  * Toute écriture (Server Actions) est validée ici avant
  * d'atteindre Supabase. Les formulaires HTML transmettent des

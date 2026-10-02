@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CheckoutButton } from "./CheckoutButton";
 
 /* ============================================================
- * CTA d'abonnement NESTA Projets (promoteurs) : choix annuel /
+ * CTA d'abonnement VEYLA Projets (promoteurs) : choix annuel /
  * mensuel + bouton Stripe Checkout. Pilote gratuit de 3 mois
  * (trial_period_days côté serveur) : la carte est collectée,
  * le premier prélèvement a lieu après l'essai.

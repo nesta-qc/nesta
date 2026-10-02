@@ -18,7 +18,7 @@ export const fr = {
     deconnexion: "Déconnexion",
     menu: "Menu",
     fermerMenu: "Fermer le menu",
-    accueilAria: "Nesta — accueil",
+    accueilAria: "Veyla — accueil",
     navPrincipaleAria: "Navigation principale",
     navMobileAria: "Navigation mobile",
     favorisAria: "Mes favoris",
@@ -63,7 +63,7 @@ export const fr = {
     eyebrow: "Statistiques du marché",
     titre: "Le marché, en chiffres honnêtes",
     intro:
-      "Des agrégats calculés à partir des {n} profils du Passeport Nesta, issus des données ouvertes : Ville de Montréal et MAMH (Données Québec). Aucun chiffre inventé : ce que nous ne savons pas, nous ne l'affichons pas.",
+      "Des agrégats calculés à partir des {n} profils du Passeport Veyla, issus des données ouvertes : Ville de Montréal et MAMH (Données Québec). Aucun chiffre inventé : ce que nous ne savons pas, nous ne l'affichons pas.",
     vueEnsemble: "Vue d'ensemble",
     profilsAnalyses: "Profils analysés",
     valeurMediane: "Valeur au rôle médiane",
@@ -109,7 +109,7 @@ export const fr = {
     tagline: "L'immobilier, à votre façon.",
     colonnes: [
       {
-        titre: "Nesta",
+        titre: "Veyla",
         liens: [
           { href: "/a-propos", label: "À propos" },
           { href: "/tarifs", label: "Tarifs" },
@@ -138,7 +138,7 @@ export const fr = {
       },
       {
         titre: "Professionnels",
-        liens: [{ href: "/pro", label: "Nesta Pro" }],
+        liens: [{ href: "/pro", label: "Veyla Pro" }],
       },
       {
         titre: "Légal",
@@ -148,18 +148,18 @@ export const fr = {
         ],
       },
     ],
-    droits: "© 2026 Nesta — Plateforme immobilière québécoise. Tous droits réservés.",
+    droits: "© 2026 Veyla — Plateforme immobilière québécoise. Tous droits réservés.",
     avertissement:
       "Les estimations affichées sont indicatives et ne constituent pas une approbation hypothécaire.",
   },
   accueil: {
-    heroSurTitre: "Nesta",
+    heroSurTitre: "Veyla",
     heroTitre1: "Voyez le potentiel",
     heroTitre2: "derrière chaque propriété",
     heroSousTitre:
       "Avant d'acheter, de rénover ou d'investir, comprenez ce qu'une propriété peut devenir — sans promesse, sans jargon.",
     ctaRecherche: "Rechercher une propriété",
-    ctaVendre: "Vendre avec Nesta",
+    ctaVendre: "Vendre avec Veyla",
     ctaEstimer: "Estimer ma propriété",
     ouExplorer: "Ou explorez les annonces",
     analyseTitre: "Analyser une adresse",
@@ -212,12 +212,12 @@ export const fr = {
     vendreSurTitre: "Vendre",
     vendreTitre: "Vendez à votre façon.",
     vendreTexte:
-      "Créez votre annonce en quelques minutes. Choisissez le niveau d'accompagnement qui vous convient — Nesta reste votre outil, pas votre intermédiaire.",
+      "Créez votre annonce en quelques minutes. Choisissez le niveau d'accompagnement qui vous convient — Veyla reste votre outil, pas votre intermédiaire.",
     vendreOptions: [
       {
         titre: "Sans courtier",
         texte:
-          "Vous publiez, vous gérez les visites, vous négociez. Nesta vous donne les outils.",
+          "Vous publiez, vous gérez les visites, vous négociez. Veyla vous donne les outils.",
       },
       {
         titre: "Avec accompagnement à la carte",
@@ -230,11 +230,11 @@ export const fr = {
           "Vous préférez déléguer ? Travaillez avec un courtier de votre choix.",
       },
     ],
-    vendreCta: "Vendre avec Nesta",
+    vendreCta: "Vendre avec Veyla",
     investirSurTitre: "Investir",
     investirTitre: "Comprenez l'actif, pas juste la photo.",
     investirTexte:
-      "Saisissez les chiffres d'un immeuble : Nesta calcule le taux de capitalisation, le cash-flow et le rendement sur mise de fonds. Vos hypothèses, affichées clairement.",
+      "Saisissez les chiffres d'un immeuble : Veyla calcule le taux de capitalisation, le cash-flow et le rendement sur mise de fonds. Vos hypothèses, affichées clairement.",
     investirCta: "Analyser un immeuble",
     comparableLegende: "Comparable réel — DuProprio",
     comparableAdresse: "48, rue Charlevoix, Kirkland",
@@ -243,7 +243,7 @@ export const fr = {
     comparableChambres: "Chambres",
     comparableAnnee: "Année",
     comparableVerifie: "Données vérifiées le 28 sept. 2026",
-    estimateSurTitre: "Nesta Estimate",
+    estimateSurTitre: "Veyla Estimate",
     estimateTitre: "Des plans au budget.",
     estimateTexte:
       "Téléversez vos plans et obtenez une estimation structurée de votre projet de construction — poste par poste, avec les hypothèses affichées clairement.",
@@ -253,14 +253,14 @@ export const fr = {
       "Idéal avant d'acheter un terrain ou de rénover",
     ],
     estimateCta: "Demander une estimation",
-    pourquoiSurTitre: "Pourquoi Nesta",
+    pourquoiSurTitre: "Pourquoi Veyla",
     pourquoiTitre1: "Ce que les autres vous facturent,",
     pourquoiTitre2: "on vous l'épargne.",
     confiance: [
       {
         titre: "25 000 $ ou 699 $ ?",
         texte:
-          "Exemple : 5 % de commission (taux négociable, à titre indicatif) sur une vente de 500 000 $ = 25 000 $ + taxes. Le forfait Nesta SELL : 699 $, paiement unique.",
+          "Exemple : 5 % de commission (taux négociable, à titre indicatif) sur une vente de 500 000 $ = 25 000 $ + taxes. Le forfait Veyla SELL : 699 $, paiement unique.",
       },
       {
         titre: "Les prix réels, enfin lisibles",
@@ -275,7 +275,7 @@ export const fr = {
       {
         titre: "Zéro sollicitation",
         texte:
-          "Vos coordonnées ne sont jamais revendues ni partagées. Publier sur Nesta n'attire aucun démarchage.",
+          "Vos coordonnées ne sont jamais revendues ni partagées. Publier sur Veyla n'attire aucun démarchage.",
       },
     ],
     finalTitre: "Votre prochain projet commence ici.",
@@ -373,7 +373,7 @@ export const fr = {
       "Vous recevrez votre reçu par courriel dans quelques minutes.",
       "Notre équipe active votre forfait sous 24 h ouvrables.",
       "Pour un forfait vendeur : préparez vos photos, nous vous guidons pour la mise en ligne.",
-      "Pour Nesta Projets : nous vous contactons pour créer votre page projet.",
+      "Pour Veyla Projets : nous vous contactons pour créer votre page projet.",
     ],
     succesCtaAccueil: "Retour à l'accueil",
     succesCtaTarifs: "Voir les tarifs",
@@ -384,7 +384,7 @@ export const fr = {
     annuleCtaContact: "Nous contacter",
   },
   analyse: {
-    demarrerSurTitre: "Passeport Nesta",
+    demarrerSurTitre: "Passeport Veyla",
     demarrerTitre: "Analyser une propriété",
     demarrerTexte:
       "Adresse, valeur, potentiel d'achat, de vente ou d'investissement : l'analyse complète d'un bien, en quelques secondes, à partir des données officielles.",
@@ -457,7 +457,7 @@ export const fr = {
     methodeTitre: "Notre méthode",
     methodeTexte:
       "Données du rôle d'évaluation foncière (MAMH / Ville de Montréal, licence CC-BY 4.0), ajustées aux prix de vente médians du baromètre APCIQ (référence {reference}). Les prix utilisés sont des prix vendus, jamais des prix demandés.",
-    dossierTitre: "Dossier d'évaluation — Système Marché NESTA",
+    dossierTitre: "Dossier d'évaluation — Système Marché VEYLA",
     dossierMarche:
       "Prix établi aux conditions du marché de {mois} · confiance {confiance} · {n} comparables.",
     avertissement:

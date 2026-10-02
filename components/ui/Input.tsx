@@ -3,7 +3,7 @@ import type { InputHTMLAttributes } from "react";
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {}
 
 /**
- * Champ de saisie texte du design system NESTA.
+ * Champ de saisie texte du design system VEYLA.
  * À combiner avec <Field> pour le libellé et le message d'erreur.
  */
 export function Input({ className = "", ...props }: InputProps) {

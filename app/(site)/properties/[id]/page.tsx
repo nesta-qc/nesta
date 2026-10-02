@@ -23,7 +23,7 @@ export async function generateMetadata({
   if (!result) {
     return await pageMetadata({
       title: "Annonce introuvable",
-      description: "Cette annonce n'existe pas ou n'est plus publiée sur Nesta.",
+      description: "Cette annonce n'existe pas ou n'est plus publiée sur Veyla.",
       path: "/search",
     });
   }

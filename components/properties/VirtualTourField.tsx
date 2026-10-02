@@ -10,7 +10,7 @@ import {
 } from "@/lib/virtual-tours";
 
 /* ============================================================
- * NESTA — section « Visite virtuelle » du formulaire vendeur.
+ * VEYLA — section « Visite virtuelle » du formulaire vendeur.
  *
  * Choix : aucune / Matterport / autre lien. L'URL est validée
  * côté client pour un retour immédiat, mais la validation

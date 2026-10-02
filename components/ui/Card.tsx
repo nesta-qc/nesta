@@ -6,7 +6,7 @@ interface CardProps {
 }
 
 /**
- * Carte de contenu du design system NESTA : fond blanc, bordure subtile,
+ * Carte de contenu du design system VEYLA : fond blanc, bordure subtile,
  * coins arrondis généreux. Aucun effet de verre, aucune ombre agressive.
  */
 export function Card({ children, className = "" }: CardProps) {

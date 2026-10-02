@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Modal } from "@/components/ui";
 
 /* ============================================================
- * NESTA — galerie éditoriale : mosaïque desktop, bandeau mobile,
+ * VEYLA — galerie éditoriale : mosaïque desktop, bandeau mobile,
  * visionneuse plein écran. Aucune donnée fictive : si aucune
  * photo, un emplacement sobre l'indique.
  * ============================================================ */

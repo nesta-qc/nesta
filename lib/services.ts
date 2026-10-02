@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — catalogue de services professionnels.
+ * VEYLA — catalogue de services professionnels.
  * Les prix sont « sur devis » tant que Gabriel ne les a pas
  * fixés : aucun tarif n'est inventé ici.
  * ============================================================ */

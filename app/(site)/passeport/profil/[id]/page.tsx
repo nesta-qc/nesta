@@ -31,13 +31,13 @@ export async function generateMetadata({
   const profile = await getPropertyProfile(id);
   if (!profile) {
     return await pageMetadata({
-      title: "Passeport Nesta",
-      description: "Fiche Passeport Nesta : caractéristiques et données sourcées d'une propriété.",
+      title: "Passeport Veyla",
+      description: "Fiche Passeport Veyla : caractéristiques et données sourcées d'une propriété.",
       path: "/passeport",
     });
   }
   return await pageMetadata({
-    title: `Passeport Nesta — ${profile.address}`,
+    title: `Passeport Veyla — ${profile.address}`,
     description: `Profil issu des données publiques pour ${profile.address}, ${profile.borough ?? profile.city} : valeur au rôle, caractéristiques, points à confirmer.`,
     path: `/passeport/profil/${id}`,
   });
@@ -219,7 +219,7 @@ export default async function ProfilePassportPage({ params }: PageProps) {
       {/* ---------- 1. En-tête ---------- */}
       <header className="mt-6">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="forest">Passeport Nesta</Badge>
+          <Badge variant="forest">Passeport Veyla</Badge>
           <Badge variant="gold">Profil — données publiques</Badge>
           {p.borough ? <Badge>{p.borough}</Badge> : null}
         </div>
@@ -345,7 +345,7 @@ export default async function ProfilePassportPage({ params }: PageProps) {
             Demander une estimation
           </Link>
           <p className="mt-3 text-xs text-charcoal/45">
-            Sans compte requis — un professionnel Nesta vous répond.
+            Sans compte requis — un professionnel Veyla vous répond.
           </p>
         </PassportSectionCard>
 

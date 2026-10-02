@@ -3,7 +3,7 @@ import type { SelectHTMLAttributes } from "react";
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {}
 
 /**
- * Liste déroulante native stylisée du design system NESTA.
+ * Liste déroulante native stylisée du design system VEYLA.
  * À combiner avec <Field> pour le libellé et le message d'erreur.
  */
 export function Select({ className = "", children, ...props }: SelectProps) {

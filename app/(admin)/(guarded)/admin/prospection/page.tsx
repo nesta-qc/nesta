@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Prospection",
-  description: "CRM de prospection Nesta : pipeline, relances, modèles d’emails et lots d’envoi.",
+  description: "CRM de prospection Veyla : pipeline, relances, modèles d’emails et lots d’envoi.",
 };
 
 /**
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
  * - KPIs + graphique du pipeline (valeur pondérée par probabilité) ;
  * - tableau / kanban des prospects avec filtres, tri, actions groupées ;
  * - import CSV, modèles d’emails, lots d’envoi à approbation manuelle ;
- * - demandes NESTA Pro et liste d’attente pros (sections existantes).
+ * - demandes VEYLA Pro et liste d’attente pros (sections existantes).
  */
 export default async function AdminProspectionPage() {
   const [overview, proLeads, waitlist] = await Promise.all([
@@ -34,7 +34,7 @@ export default async function AdminProspectionPage() {
     return (
       <div>
         <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-          NESTA Admin
+          VEYLA Admin
         </p>
         <h1 className="mt-1 font-display text-3xl text-charcoal">Prospection</h1>
         <p className="mt-4 text-sm text-charcoal/60">
@@ -53,7 +53,7 @@ export default async function AdminProspectionPage() {
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-        NESTA Admin
+        VEYLA Admin
       </p>
       <div className="mt-1 flex flex-wrap items-baseline justify-between gap-2">
         <h1 className="font-display text-3xl text-charcoal">Prospection</h1>
@@ -104,7 +104,7 @@ export default async function AdminProspectionPage() {
       <section id="modeles" aria-label="Modèles d’emails" className="mt-8 scroll-mt-6">
         <h2 className="font-display text-xl text-charcoal">Modèles d’emails</h2>
         <p className="mt-1 text-sm text-charcoal/60">
-          Séquence de prospection NESTA Projets : pilote gratuit 3 mois, puis
+          Séquence de prospection VEYLA Projets : pilote gratuit 3 mois, puis
           4 800 $/an par projet, sans commission en pourcentage.
         </p>
         <div className="mt-3">
@@ -127,7 +127,7 @@ export default async function AdminProspectionPage() {
       {proLeads.length > 0 ? (
         <section className="mt-8">
           <h2 className="font-display text-xl text-charcoal">
-            Demandes NESTA Pro ({proLeads.length})
+            Demandes VEYLA Pro ({proLeads.length})
           </h2>
           <p className="mt-1 text-sm text-charcoal/60">
             Promoteurs arrivés via le formulaire du site — à recontacter sous

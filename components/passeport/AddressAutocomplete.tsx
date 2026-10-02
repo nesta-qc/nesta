@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { AddressSuggestion } from "@/actions/property-profiles";
 
 /* ============================================================
- * NESTA — Autocomplétion d'adresses réelles (données ouvertes).
+ * VEYLA — Autocomplétion d'adresses réelles (données ouvertes).
  *
  * Rend un <input> standard (name transmis tel quel) : en saisie
  * libre, le formulaire parent se comporte exactement comme avant.

@@ -3,7 +3,7 @@ import type { TextareaHTMLAttributes } from "react";
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 /**
- * Zone de texte multiligne du design system NESTA.
+ * Zone de texte multiligne du design system VEYLA.
  * À combiner avec <Field> pour le libellé et le message d'erreur.
  */
 export function Textarea({ className = "", rows = 4, ...props }: TextareaProps) {

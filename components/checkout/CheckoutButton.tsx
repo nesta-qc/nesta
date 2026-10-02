@@ -11,7 +11,7 @@ import {
  * Bouton de paiement Stripe Checkout.
  *
  * - kind="plan"    : forfait vendeur (list | sell | signature)
- * - kind="projets" : abonnement NESTA Projets (annuel | mensuel)
+ * - kind="projets" : abonnement VEYLA Projets (annuel | mensuel)
  *
  * Si Stripe n'est pas configuré côté serveur, le clic affiche
  * un message clair (« paiement bientôt disponible ») au lieu

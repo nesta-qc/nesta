@@ -3,7 +3,7 @@ import { dictionaries } from "@/lib/i18n/dictionaries";
 import { ValeurAdresseChamp } from "./ValeurAdresseChamp";
 
 /**
- * NESTA — Valeur de propriété.
+ * VEYLA — Valeur de propriété.
  * Section d'accueil qui mène vers /estimation : l'estimé instantané
  * de la valeur d'une propriété à partir du rôle d'évaluation foncière,
  * ajusté aux prix du marché. L'adresse saisie est transmise en GET

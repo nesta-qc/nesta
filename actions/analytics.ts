@@ -6,7 +6,7 @@ import { hasSupabaseConfig } from "@/lib/env";
 import { estLimite, ipAction } from "@/lib/rate-limit";
 
 /* ============================================================
- * NESTA — compteur de visites (récap mensuel de Gabriel).
+ * VEYLA — compteur de visites (récap mensuel de Gabriel).
  * Enregistre une ligne par page vue, sans IP ni identifiant.
  * Les robots évidents sont exclus ; les chiffres restent
  * approximatifs et présentés comme tels.

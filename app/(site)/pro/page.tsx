@@ -7,29 +7,29 @@ import { ProjetsSubscribe } from "@/components/checkout/ProjetsSubscribe";
 
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
-    title: "Nesta Pro",
+    title: "Veyla Pro",
     description: "L'espace des professionnels de l'immobilier : promoteurs, courtiers, notaires, estimateurs.",
     path: "/pro",
-    titleEn: "Nesta Pro",
+    titleEn: "Veyla Pro",
     descriptionEn: "The space for real estate professionals: developers, brokers, notaries, estimators.",
   });
 }
 
 
-/** Nesta Pro — carrefour des professionnels. */
+/** Veyla Pro — carrefour des professionnels. */
 export default function ProPage() {
   return (
     <div className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
       <div className="max-w-2xl">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-forest">
-          Nesta Pro
+          Veyla Pro
         </p>
         <h1 className="mt-2 font-display text-3xl text-charcoal sm:text-4xl">
           L&apos;espace des professionnels
         </h1>
         <p className="mt-3 text-[15px] leading-relaxed text-charcoal/60">
           Promoteurs, courtiers, notaires, estimateurs : développez votre
-          activité avec Nesta.
+          activité avec Veyla.
         </p>
       </div>
 

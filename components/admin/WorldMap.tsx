@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 import type { MapPoint } from "@/actions/admin";
 
 /* ============================================================
- * NESTA Admin — Carte du monde des biens + repère « vous ».
+ * VEYLA Admin — Carte du monde des biens + repère « vous ».
  *
  * Carte Leaflet (imagerie satellite Esri assombrie, assortie au thème) :
  * - point champagne plein = coordonnées réelles en base (précis)

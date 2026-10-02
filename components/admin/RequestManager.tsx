@@ -9,7 +9,7 @@ import {
 import { SERVICE_REQUEST_STATUSES, serviceStatusLabel } from "@/lib/services";
 
 /* ============================================================
- * NESTA — gestion d'une demande de service (admin) :
+ * VEYLA — gestion d'une demande de service (admin) :
  * changement de statut + note interne.
  * ============================================================ */
 

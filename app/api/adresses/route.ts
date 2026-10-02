@@ -3,7 +3,7 @@ import { searchPropertyProfiles } from "@/actions/property-profiles";
 import { estLimite, ipCliente } from "@/lib/rate-limit";
 
 /* ============================================================
- * NESTA — API : autocomplétion d'adresses réelles.
+ * VEYLA — API : autocomplétion d'adresses réelles.
  *
  * GET /api/adresses?q=…
  * → [{ id, address, borough }] (max 8, triés par adresse)

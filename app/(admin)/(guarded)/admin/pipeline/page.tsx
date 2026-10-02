@@ -20,7 +20,7 @@ export default async function AdminPipelinePage() {
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-        NESTA Admin
+        VEYLA Admin
       </p>
       <h1 className="mt-1 font-display text-3xl text-charcoal">
         Pipeline des devis

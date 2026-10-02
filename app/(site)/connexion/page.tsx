@@ -10,7 +10,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Connexion",
-    description: "Connecte-toi à ton compte Nesta.",
+    description: "Connecte-toi à ton compte Veyla.",
     path: "/connexion",
     noIndex: true,
   });

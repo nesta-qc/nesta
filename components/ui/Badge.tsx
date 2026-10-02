@@ -19,7 +19,7 @@ const variantClasses: Record<BadgeVariant, string> = {
 };
 
 /**
- * Petite étiquette de statut du design system NESTA.
+ * Petite étiquette de statut du design system VEYLA.
  */
 export function Badge({
   variant = "muted",

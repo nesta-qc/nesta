@@ -5,7 +5,7 @@ import { propertyIdSchema } from "@/lib/validation";
 import { estLimite, ipCliente } from "@/lib/rate-limit";
 
 /* ============================================================
- * NESTA — API : événements de visite 3D (analytics).
+ * VEYLA — API : événements de visite 3D (analytics).
  *
  * POST /api/virtual-tour-events
  * Body : { propertyId: string, eventType: "opened" | "fullscreen" }

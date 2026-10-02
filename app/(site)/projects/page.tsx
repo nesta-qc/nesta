@@ -12,10 +12,10 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Projets",
-    description: "Découvrez les projets immobiliers neufs publiés sur Nesta.",
+    description: "Découvrez les projets immobiliers neufs publiés sur Veyla.",
     path: "/projects",
     titleEn: "Projects",
-    descriptionEn: "Discover new real estate developments listed on Nesta.",
+    descriptionEn: "Discover new real estate developments listed on Veyla.",
   });
 }
 
@@ -43,7 +43,7 @@ export default async function ProjectsPage() {
           Projets immobiliers
         </h1>
         <p className="mt-3 text-[15px] leading-relaxed text-charcoal/60">
-          Les développements neufs publiés sur Nesta : condos, maisons de
+          Les développements neufs publiés sur Veyla : condos, maisons de
           ville et immeubles en pré-construction.
         </p>
       </div>
@@ -135,18 +135,18 @@ export default async function ProjectsPage() {
           ))}
         </div>
       )}
-      {/* NESTA Pro — offre promoteurs */}
+      {/* VEYLA Pro — offre promoteurs */}
       <section id="pro" className="mt-16 scroll-mt-24 overflow-hidden rounded-2xl bg-forest text-ivory">
         <div className="grid gap-10 p-8 sm:p-12 lg:grid-cols-[1.2fr_1fr] lg:items-center">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-champagne">
-              NESTA Pro
+              VEYLA Pro
             </p>
             <h2 className="mt-2 font-display text-3xl sm:text-4xl">
               Vous êtes promoteur ?
             </h2>
             <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ivory/70">
-              Publiez vos projets neufs sur Nesta et présentez-les à des
+              Publiez vos projets neufs sur Veyla et présentez-les à des
               acheteurs qui comprennent déjà le potentiel avant de visiter.
             </p>
             <ul className="mt-6 flex flex-col gap-2.5 text-sm text-ivory/85">

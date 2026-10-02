@@ -32,7 +32,7 @@ function priceIcon(price: number | null, active: boolean): L.DivIcon {
 const DEFAULT_CENTER: [number, number] = [46.8, -71.2]; // Québec
 
 /**
- * Carte interactive NESTA (Leaflet + OpenStreetMap) : marqueurs de prix,
+ * Carte interactive VEYLA (Leaflet + OpenStreetMap) : marqueurs de prix,
  * survol synchronisé avec la liste, sélection mise en évidence.
  */
 export function SearchMap({

@@ -1,4 +1,4 @@
-/* Point d'entrée unique des composants UI du design system NESTA. */
+/* Point d'entrée unique des composants UI du design system VEYLA. */
 export { Button } from "./Button";
 export { Input } from "./Input";
 export { Textarea } from "./Textarea";

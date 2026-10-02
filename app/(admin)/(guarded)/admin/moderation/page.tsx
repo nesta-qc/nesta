@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Modération",
-  description: "File d'annonces à modérer sur NESTA.",
+  description: "File d'annonces à modérer sur VEYLA.",
 };
 
 const TABS = [
@@ -51,7 +51,7 @@ export default async function AdminModerationPage({
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-        NESTA Admin
+        VEYLA Admin
       </p>
       <h1 className="mt-1 font-display text-3xl text-charcoal">Modération</h1>
       <p className="mt-1 text-sm text-charcoal/60">{active.hint}</p>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { moderateProperty, type PropertyDecision } from "@/actions/admin";
 
 /* ============================================================
- * NESTA — boutons de modération d'une annonce (admin).
+ * VEYLA — boutons de modération d'une annonce (admin).
  * Les actions destructrices (suspendre, archiver) demandent
  * une confirmation. Toute décision est journalisée côté serveur.
  * ============================================================ */

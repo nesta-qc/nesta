@@ -1,7 +1,7 @@
 import type { CategorieBien } from "@/lib/estimation/engine";
 
 /**
- * NESTA — Verdicts Acheter / Vendre / Investir.
+ * VEYLA — Verdicts Acheter / Vendre / Investir.
  *
  * Lecture qualitative et CONSERVATRICE du marché pour UN bien précis,
  * à partir de données officielles uniquement :

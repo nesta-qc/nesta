@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 
-/** Pied de page institutionnel NESTA. */
+/** Pied de page institutionnel Groupe Veyla. */
 export async function SiteFooter() {
   const t = dictionaries[await getLang()].footer;
   return (
@@ -10,7 +10,7 @@ export async function SiteFooter() {
       <div className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
           <div className="lg:col-span-1">
-            <p className="font-display text-2xl text-forest">Nesta</p>
+            <p className="font-display text-2xl text-forest">Veyla</p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-charcoal/55">
               {t.tagline}
             </p>

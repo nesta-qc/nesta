@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — Système Marché : accès aux données de référence.
+ * VEYLA — Système Marché : accès aux données de référence.
  *
  * Regroupe les primitives de lecture partagées par le moteur
  * d'estimation (lib/estimation) et le moteur de prix de marché

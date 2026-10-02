@@ -1,7 +1,7 @@
 import "server-only";
 
 /* ============================================================
- * NESTA — courriels transactionnels (Resend, offre gratuite).
+ * VEYLA — courriels transactionnels (Resend, offre gratuite).
  *
  * - Gratuit : Resend offre 3 000 courriels/mois sans carte.
  * - Tant que `EMAIL_FROM` n'est pas défini (domaine groupenesta.ca
@@ -19,7 +19,7 @@ export function isEmailConfigured(): boolean {
 
 function fromAddress(): string {
   return (
-    process.env.EMAIL_FROM || "Nesta <onboarding@resend.dev>"
+    process.env.EMAIL_FROM || "Veyla <onboarding@resend.dev>"
   );
 }
 
@@ -28,15 +28,15 @@ const PLAN_LABELS: Record<EmailLang, Record<string, string>> = {
     list: "Forfait vendeur LIST (299 $)",
     sell: "Forfait vendeur SELL (699 $)",
     signature: "Forfait vendeur SIGNATURE (1 299 $)",
-    annuel: "NESTA Projets — annuel (4 800 $/an)",
-    mensuel: "NESTA Projets — mensuel (490 $/mois)",
+    annuel: "VEYLA Projets — annuel (4 800 $/an)",
+    mensuel: "VEYLA Projets — mensuel (490 $/mois)",
   },
   en: {
     list: "LIST seller plan ($299)",
     sell: "SELL seller plan ($699)",
     signature: "SIGNATURE seller plan ($1,299)",
-    annuel: "NESTA Projets — yearly ($4,800/yr)",
-    mensuel: "NESTA Projets — monthly ($490/mo)",
+    annuel: "VEYLA Projets — yearly ($4,800/yr)",
+    mensuel: "VEYLA Projets — monthly ($490/mo)",
   },
 };
 
@@ -57,8 +57,8 @@ export function buildWelcomeEmail(
   if (lang === "en") {
     const subject =
       kind === "seller_plan"
-        ? `Your Nesta order is confirmed — ${planLabel}`
-        : `Welcome to NESTA Projets — your 90-day pilot has started`;
+        ? `Your Veyla order is confirmed — ${planLabel}`
+        : `Welcome to VEYLA Projets — your 90-day pilot has started`;
     const nextSteps =
       kind === "seller_plan"
         ? `<li>Prepare your property photos — sharp, bright, decluttered.</li>
@@ -71,20 +71,20 @@ export function buildWelcomeEmail(
       <h1 style="font-size:22px">Thank you — ${planLabel}</h1>
       <p>Your payment went through. Here is what happens next:</p>
       <ol>${nextSteps}</ol>
-      <p style="color:#666;font-size:13px">Questions? Just reply to this email.<br/>— The Nesta team</p>
+      <p style="color:#666;font-size:13px">Questions? Just reply to this email.<br/>— The Veyla team</p>
     </div>`;
     const text = `Thank you — ${planLabel}\n\nYour payment went through.\n\n${
       kind === "seller_plan"
         ? "1. Prepare your property photos.\n2. Create your listing: https://nesta-drab.vercel.app/sell/nouveau\n3. Our team activates your plan within 1 business day."
         : "1. Your 90-day free pilot has started.\n2. Reply with your project name, city and contact: we create your project page.\n3. Cancel anytime, even during the trial."
-    }\n\n— The Nesta team`;
+    }\n\n— The Veyla team`;
     return { subject, html, text };
   }
 
   const subject =
     kind === "seller_plan"
-      ? `Votre commande Nesta est confirmée — ${planLabel}`
-      : `Bienvenue sur NESTA Projets — votre pilote gratuit de 90 jours a commencé`;
+      ? `Votre commande Veyla est confirmée — ${planLabel}`
+      : `Bienvenue sur VEYLA Projets — votre pilote gratuit de 90 jours a commencé`;
   const nextSteps =
     kind === "seller_plan"
       ? `<li>Préparez vos photos : nettes, lumineuses, pièces dégagées.</li>
@@ -97,13 +97,13 @@ export function buildWelcomeEmail(
     <h1 style="font-size:22px">Merci — ${planLabel}</h1>
     <p>Votre paiement a bien été reçu. Voici la suite :</p>
     <ol>${nextSteps}</ol>
-    <p style="color:#666;font-size:13px">Une question ? Répondez simplement à ce courriel.<br/>— L'équipe Nesta</p>
+    <p style="color:#666;font-size:13px">Une question ? Répondez simplement à ce courriel.<br/>— L'équipe Veyla</p>
   </div>`;
   const text = `Merci — ${planLabel}\n\nVotre paiement a bien été reçu.\n\n${
     kind === "seller_plan"
       ? "1. Préparez vos photos.\n2. Créez votre annonce : https://nesta-drab.vercel.app/sell/nouveau\n3. Notre équipe active votre forfait sous 24 h ouvrables."
       : "1. Votre pilote gratuit de 90 jours a commencé.\n2. Répondez avec le nom du projet, la ville et un contact : nous créons votre page projet.\n3. Résiliable à tout moment, même pendant l'essai."
-  }\n\n— L'équipe Nesta`;
+  }\n\n— L'équipe Veyla`;
   return { subject, html, text };
 }
 

@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — formulaire du sas d'accès (client).
+ * VEYLA — formulaire du sas d'accès (client).
  * Une seule étape : code d'accès du site → POST /api/gate/code
  * → redirection vers ?next (?next=…).
  * ============================================================ */
@@ -51,7 +51,7 @@ export default function AccesForm({ next }: { next: string }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo-groupe-nesta.png"
-            alt="Groupe Nesta"
+            alt="Groupe Veyla"
             className="mx-auto h-16 w-auto brightness-0 invert"
           />
           <h1 className="mt-4 text-xl font-semibold text-white">

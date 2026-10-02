@@ -11,7 +11,7 @@ const JSON_LD = {
     {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organisation`,
-      name: "Nesta",
+      name: "Groupe Veyla",
       url: SITE_URL,
       logo: `${SITE_URL}${DEFAULT_OG_IMAGE}`,
       description:
@@ -26,14 +26,14 @@ const JSON_LD = {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#site`,
       url: SITE_URL,
-      name: "Nesta",
+      name: "Groupe Veyla",
       publisher: { "@id": `${SITE_URL}/#organisation` },
       inLanguage: "fr-CA",
     },
   ],
 };
 
-/* Habillage du site public NESTA (groupe de routes (site)). */
+/* Habillage du site public VEYLA (groupe de routes (site)). */
 export default function SiteLayout({
   children,
 }: {

@@ -20,7 +20,7 @@ import {
 } from "@/lib/validation";
 
 /* ============================================================
- * NESTA — Server Actions : annonces (rôle SELLER) + admin.
+ * VEYLA — Server Actions : annonces (rôle SELLER) + admin.
  *
  * Défense en profondeur : chaque écriture vérifie
  *  1. la configuration Supabase (erreur propre, jamais de crash),
@@ -994,7 +994,7 @@ const MARKET_COMPARABLE_COLUMNS =
 /**
  * Comparables du marché : faits publics vérifiés (adresse, prix demandé,
  * caractéristiques) relevés sur des annonces DuProprio actives, avec URL
- * source et date de vérification. Ce NE SONT PAS des annonces Nesta.
+ * source et date de vérification. Ce NE SONT PAS des annonces Veyla.
  * Les lignes marquées is_example sont illustratives (badge « Exemple »).
  */
 export async function getMarketComparables(

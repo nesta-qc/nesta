@@ -4,7 +4,7 @@ import { pageMetadata } from "@/lib/seo";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Confidentialité",
-    description: "Comment Nesta collecte et protège vos renseignements personnels.",
+    description: "Comment Veyla collecte et protège vos renseignements personnels.",
     path: "/confidentialite",
   });
 }
@@ -25,7 +25,7 @@ export default function ConfidentialitePage() {
         <section>
           <h2 className="font-display text-xl text-charcoal">Données collectées</h2>
           <p className="mt-2">
-            Nesta collecte uniquement les renseignements nécessaires à son
+            Veyla collecte uniquement les renseignements nécessaires à son
             fonctionnement : votre compte (courriel), vos annonces
             (descriptions, photos, coordonnées publiées), vos favoris et vos
             demandes de services. Aucune donnée n&apos;est revendue.
@@ -50,7 +50,7 @@ export default function ConfidentialitePage() {
         <section>
           <h2 className="font-display text-xl text-charcoal">Témoins</h2>
           <p className="mt-2">
-            Nesta utilise uniquement les témoins nécessaires à la connexion et
+            Veyla utilise uniquement les témoins nécessaires à la connexion et
             à la sécurité. Aucun traçage publicitaire.
           </p>
         </section>

@@ -11,7 +11,7 @@ import { propertyMediaPublicUrl } from "@/lib/media";
 import type { PropertyMediaRow } from "@/lib/validation";
 
 /* ============================================================
- * NESTA — téléversement et gestion des photos d'une annonce.
+ * VEYLA — téléversement et gestion des photos d'une annonce.
  *
  * Les photos ajoutées pendant la session sont suivies en local
  * (identifiant retourné par l'action) pour permettre leur

@@ -1,7 +1,7 @@
 /* ============================================================
- * NESTA — Système Marché : moteur de prix façon courtier.
+ * VEYLA — Système Marché : moteur de prix façon courtier.
  *
- * C'est le « courtier algorithmique » de NESTA : pour un bien, il
+ * C'est le « courtier algorithmique » de VEYLA : pour un bien, il
  * établit un prix d'opinion comme le ferait une firme de courtage —
  * dossier d'évaluation structuré, pas un chiffre sorti d'un
  * chapeau :

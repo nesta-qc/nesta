@@ -26,7 +26,7 @@ const OPTIONS = [
   },
   {
     title: "Je veux un courtier",
-    text: "Confiez la vente à un professionnel vérifié tout en suivant tout depuis Nesta.",
+    text: "Confiez la vente à un professionnel vérifié tout en suivant tout depuis Veyla.",
   },
 ];
 

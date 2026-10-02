@@ -68,8 +68,8 @@ function UserIcon({ className = "" }: { className?: string }) {
 }
 
 /**
- * En-tête NESTA : sticky, se compacte au scroll.
- * Logo simplifié (tuile + NESTA, sans slogan illisible).
+ * En-tête VEYLA : sticky, se compacte au scroll.
+ * Logo simplifié (tuile + VEYLA, sans slogan illisible).
  * Desktop : un seul CTA primaire = Passeport (Connexion/Inscription en liens discrets).
  * Mobile : bouton Inscription compact toujours visible + menu hamburger.
  *
@@ -89,10 +89,10 @@ export async function SiteHeader() {
         aria-label={t.accueilAria}
       >
         <Image
-          src="/logo-groupe-nesta.png"
-          alt="Groupe Nesta"
-          width={800}
-          height={311}
+          src="/logo-groupe-veyla.png"
+          alt="Groupe Veyla"
+          width={576}
+          height={189}
           priority
           className="h-12 w-auto sm:h-16"
         />

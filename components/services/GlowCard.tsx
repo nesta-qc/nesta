@@ -3,12 +3,12 @@
 import { useRef, useState, type MouseEvent, type ReactNode } from "react";
 
 /* ============================================================
- * NESTA — carte avec lueur verte minimaliste qui suit le curseur.
+ * VEYLA — carte avec lueur verte minimaliste qui suit le curseur.
  * La bordure (1px) s'illumine en vert forêt autour du point du
  * curseur + léger halo intérieur. Sans curseur : bordure normale.
  * ============================================================ */
 
-const GREEN = "74, 140, 94"; // vert forêt NESTA
+const GREEN = "74, 140, 94"; // vert forêt VEYLA
 
 export function GlowCard({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);

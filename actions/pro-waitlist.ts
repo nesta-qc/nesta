@@ -10,7 +10,7 @@ import {
 } from "@/lib/pro-waitlist";
 
 /* ============================================================
- * NESTA — liste d'attente des professionnels (/pro).
+ * VEYLA — liste d'attente des professionnels (/pro).
  * Un courtier, notaire, estimateur ou partenaire laisse son
  * courriel pour être prévenu à l'ouverture de l'espace pros.
  * Insertion publique, lecture réservée aux admins.

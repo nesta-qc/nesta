@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — Estimation : normalisation d'adresses.
+ * VEYLA — Estimation : normalisation d'adresses.
  *
  * Port TypeScript strict de normalize_adresse.js, lui-même tenu
  * strictement identique au script Python de construction des index

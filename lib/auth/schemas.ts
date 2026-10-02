@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /*
  * Schémas de validation zod partagés entre le client et le serveur
- * pour tous les formulaires d'authentification NESTA.
+ * pour tous les formulaires d'authentification VEYLA.
  *
  * Les Server Actions ne font JAMAIS confiance au client : elles
  * revalident systématiquement avec ces mêmes schémas.

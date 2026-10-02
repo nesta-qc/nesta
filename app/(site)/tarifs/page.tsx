@@ -9,10 +9,10 @@ import { CheckoutButton } from "@/components/checkout/CheckoutButton";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Tarifs",
-    description: "Comparez Nesta Free et Nesta Pro, découvrez nos services et nos forfaits vendeur. Des prix clairs, sans surprise.",
+    description: "Comparez Veyla Free et Veyla Pro, découvrez nos services et nos forfaits vendeur. Des prix clairs, sans surprise.",
     path: "/tarifs",
     titleEn: "Pricing",
-    descriptionEn: "Compare Nesta Free and Nesta Pro, our services and seller plans. Clear pricing, no surprises.",
+    descriptionEn: "Compare Veyla Free and Veyla Pro, our services and seller plans. Clear pricing, no surprises.",
   });
 }
 
@@ -26,7 +26,7 @@ const FREE_FEATURES = [
 ];
 
 const PRO_FEATURES = [
-  "Tout Nesta Free, pour votre équipe",
+  "Tout Veyla Free, pour votre équipe",
   "Page projet dédiée avec vos visuels",
   "Unités, prix et disponibilités à jour",
   "Contact direct vers votre équipe des ventes",
@@ -55,7 +55,7 @@ const FAQ = [
     a: "Non, les prix affichés sont avant taxes. Le détail est confirmé au moment de l'achat ou de la souscription.",
   },
   {
-    q: "Puis-je publier une annonce avec Nesta Free ?",
+    q: "Puis-je publier une annonce avec Veyla Free ?",
     a: "Oui. La publication d'une annonce individuelle se fait via nos forfaits vendeur (paiement unique à partir de 299 $), accessibles à tout compte vendeur.",
   },
 ];
@@ -84,7 +84,7 @@ export default function TarifsPage() {
             sans surprise.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-charcoal/60">
-            Nesta Free pour comprendre le marché. Nesta Pro pour les
+            Veyla Free pour comprendre le marché. Veyla Pro pour les
             promoteurs. Et pour vendre : des forfaits fixes, affichés
             d'avance — jamais de commission en pourcentage.
           </p>
@@ -103,7 +103,7 @@ export default function TarifsPage() {
           <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-ivory/75">
             Exemple : une commission de 5 % (taux négociable, à titre
             indicatif) sur une vente de 500 000 $ = 25 000 $ + taxes. Le
-            forfait Nesta SELL : 699 $, paiement unique. Le même
+            forfait Veyla SELL : 699 $, paiement unique. Le même
             accompagnement, un prix affiché d'avance, zéro pourcentage prélevé
             sur votre vente.
           </p>
@@ -120,7 +120,7 @@ export default function TarifsPage() {
           {/* Free */}
           <Card className="flex flex-col p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-forest">
-              Nesta Free
+              Veyla Free
             </p>
             <p className="mt-4 font-display text-4xl text-charcoal">0 $</p>
             <p className="mt-2 text-sm text-charcoal/55">
@@ -154,7 +154,7 @@ export default function TarifsPage() {
               Le plus avantageux
             </span>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-champagne">
-              Nesta Pro
+              Veyla Pro
             </p>
             <div className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <p className="font-display text-4xl">4 800 $</p>
@@ -323,7 +323,7 @@ export default function TarifsPage() {
           </div>
           <div className="mt-10">
             <Link href="/projects">
-              <Button size="lg">Découvrir Nesta Pro</Button>
+              <Button size="lg">Découvrir Veyla Pro</Button>
             </Link>
           </div>
         </div>

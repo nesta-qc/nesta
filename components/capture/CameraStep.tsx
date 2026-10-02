@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui";
 
 /* ============================================================
- * NESTA Capture — viseur caméra plein écran.
+ * VEYLA Capture — viseur caméra plein écran.
  *
  * - Caméra arrière via getUserMedia (jamais de flux vers serveur)
  * - Grille des tiers, indicateur de niveau, rappel paysage

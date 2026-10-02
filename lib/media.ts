@@ -1,7 +1,7 @@
 import { getSupabaseUrl } from "@/lib/env";
 
 /* ============================================================
- * NESTA — URL publiques des médias (bucket `property-media`,
+ * VEYLA — URL publiques des médias (bucket `property-media`,
  * public en lecture selon les policies du bucket).
  * ============================================================ */
 

@@ -15,10 +15,10 @@ import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 
 /* ============================================================
- * NESTA — Server Actions : création de sessions Stripe Checkout.
+ * VEYLA — Server Actions : création de sessions Stripe Checkout.
  *
  * - Forfaits vendeur (LIST / SELL / SIGNATURE) : paiement unique.
- * - NESTA Projets (annuel / mensuel) : abonnement avec 90 jours
+ * - VEYLA Projets (annuel / mensuel) : abonnement avec 90 jours
  *   d'essai gratuit (pilote). La carte est collectée au départ,
  *   le premier prélèvement a lieu après l'essai ; résiliable
  *   pendant l'essai sans frais.
@@ -96,7 +96,7 @@ export async function createCheckoutSession(
 }
 
 /**
- * Crée une session Checkout pour NESTA Projets (abonnement).
+ * Crée une session Checkout pour VEYLA Projets (abonnement).
  * `billing` : "annuel" (4 800 $/an) ou "mensuel" (490 $/mois),
  * avec 90 jours d'essai gratuit.
  */

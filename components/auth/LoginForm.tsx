@@ -87,7 +87,7 @@ export function LoginForm({ linkError = false }: { linkError?: boolean }) {
   return (
     <AuthShell
       title="Connexion"
-      subtitle="Ravi de te revoir sur Nesta."
+      subtitle="Ravi de te revoir sur Veyla."
     >
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <Field

@@ -6,7 +6,7 @@ import { assertAdmin } from "@/lib/admin";
 import { hasSupabaseConfig } from "@/lib/env";
 
 /* ============================================================
- * NESTA — développements (projets neufs) : lecture des projets
+ * VEYLA — développements (projets neufs) : lecture des projets
  * réels uniquement + inscription aux alertes nouveaux projets.
  * Aucun projet fictif.
  * ============================================================ */
@@ -113,7 +113,7 @@ export async function subscribeDevelopmentAlert(
 }
 
 /* ============================================================
- * NESTA — création de projets (pilote promoteurs) + fiche
+ * VEYLA — création de projets (pilote promoteurs) + fiche
  * publique détaillée. Réservé ADMIN (assertAdmin + RLS).
  * ============================================================ */
 

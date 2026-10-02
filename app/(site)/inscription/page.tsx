@@ -9,7 +9,7 @@ import { SignupForm } from "@/components/auth/SignupForm";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Inscription",
-    description: "Crée ton compte Nesta gratuitement.",
+    description: "Crée ton compte Veyla gratuitement.",
     path: "/inscription",
     noIndex: true,
   });

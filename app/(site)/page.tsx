@@ -15,21 +15,21 @@ import { EstimateSection } from "@/components/home/EstimateSection";
 import { FinalCTA } from "@/components/home/FinalCTA";
 
 /**
- * Accueil NESTA : hero cinématique plein écran, recherche premium,
+ * Accueil VEYLA : hero cinématique plein écran, recherche premium,
  * sections éditoriales photographiques. Aucune statistique inventée,
  * aucune fausse annonce, aucun faux témoignage.
  */
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     // Titre absolu : l'accueil garde l'intitulé de marque sans le suffixe du template.
-    title: "Nesta — L'immobilier, à votre façon",
+    title: "Veyla — L'immobilier, à votre façon",
     description:
-      "Nesta, la plateforme immobilière québécoise : recherchez une propriété, vendez sans commission en pourcentage, estimez et investissez en toute transparence.",
+      "Veyla, la plateforme immobilière québécoise : recherchez une propriété, vendez sans commission en pourcentage, estimez et investissez en toute transparence.",
     path: "/",
     absoluteTitle: true,
-    titleEn: "Nesta — Real estate, your way",
+    titleEn: "Veyla — Real estate, your way",
     descriptionEn:
-      "Nesta, the Quebec real estate platform: search properties, sell without percentage commissions, estimate and invest with full transparency.",
+      "Veyla, the Quebec real estate platform: search properties, sell without percentage commissions, estimate and invest with full transparency.",
   });
 }
 
@@ -94,7 +94,7 @@ export default async function Home() {
       {/* ---------- Estimation ---------- */}
       <EstimateSection />
 
-      {/* ---------- Pourquoi Nesta : les angles d'attaque ---------- */}
+      {/* ---------- Pourquoi Veyla : les angles d'attaque ---------- */}
       <section className="mx-auto w-full max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
         <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-forest">

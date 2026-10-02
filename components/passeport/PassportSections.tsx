@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Badge, Card } from "@/components/ui";
 
 /* ============================================================
- * NESTA — Passeport : blocs de présentation partagés entre le
+ * VEYLA — Passeport : blocs de présentation partagés entre le
  * Passeport des profils publics (/passeport/profil/[id]) et les
  * autres surfaces Passeport. Aucun chiffre n'est inventé ici :
  * chaque bloc affiche « À confirmer » quand la donnée manque.

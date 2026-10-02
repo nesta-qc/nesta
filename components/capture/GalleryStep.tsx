@@ -4,7 +4,7 @@ import { Button } from "@/components/ui";
 import type { KeptPhoto } from "./NestaCapture";
 
 /* ============================================================
- * NESTA Capture — galerie des photos conservées.
+ * VEYLA Capture — galerie des photos conservées.
  * Ordre = ordre de téléversement (la 1re = photo principale).
  * ============================================================ */
 
@@ -42,7 +42,7 @@ export function GalleryStep({
         >
           <span aria-hidden="true">×</span>
         </button>
-        <p className="font-display text-lg text-charcoal">NESTA Capture</p>
+        <p className="font-display text-lg text-charcoal">VEYLA Capture</p>
         <div className="w-9" aria-hidden="true" />
       </div>
 

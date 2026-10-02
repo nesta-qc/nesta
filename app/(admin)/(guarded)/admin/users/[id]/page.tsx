@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Fiche utilisateur",
-  description: "Détail d'un utilisateur NESTA.",
+  description: "Détail d'un utilisateur VEYLA.",
 };
 
 export default async function AdminUserPage({

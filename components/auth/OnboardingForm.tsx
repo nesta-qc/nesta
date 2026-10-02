@@ -50,7 +50,7 @@ export function OnboardingForm() {
     <Container className="flex flex-1 items-center justify-center py-16 sm:py-24">
       <Card className="w-full max-w-lg p-8">
         <h1 className="font-display text-2xl text-charcoal">
-          Bienvenue sur Nesta
+          Bienvenue sur Veyla
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-charcoal/60">
           Dis-nous ce qui t'amène : nous adapterons ton espace en conséquence.
@@ -83,7 +83,7 @@ export function OnboardingForm() {
 
           <fieldset>
             <legend className="text-sm font-medium text-charcoal">
-              Mes rôles sur Nesta
+              Mes rôles sur Veyla
             </legend>
             <p className="mt-1 text-xs text-charcoal/50">
               Tu peux cocher les deux. Les rôles professionnels sont activés

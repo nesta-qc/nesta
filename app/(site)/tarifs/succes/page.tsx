@@ -8,7 +8,7 @@ export async function generateMetadata() {
   return await pageMetadata({
     title: "Paiement confirmé",
     description:
-      "Votre paiement Nesta a bien été reçu. Prochaines étapes d'activation.",
+      "Votre paiement Veyla a bien été reçu. Prochaines étapes d'activation.",
     path: "/tarifs/succes",
     noIndex: true,
   });

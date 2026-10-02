@@ -3,7 +3,7 @@ import AccesForm from "./AccesForm";
 
 /* Page hors index : le sas d'accès n'a rien à faire dans Google. */
 export const metadata: Metadata = {
-  title: "Accès protégé | Nesta",
+  title: "Accès protégé | Veyla",
   robots: { index: false, follow: false },
 };
 

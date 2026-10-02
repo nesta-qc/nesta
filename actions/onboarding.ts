@@ -11,7 +11,7 @@ import {
 } from "@/lib/auth/schemas";
 
 /*
- * Action serveur de l'onboarding NESTA.
+ * Action serveur de l'onboarding VEYLA.
  * Revalide l'intention et les rôles avec zod, puis insère les rôles
  * self-service (BUYER / SELLER) via la politique RLS dédiée.
  * Les rôles professionnels (courtier, agence, promoteur) ne sont

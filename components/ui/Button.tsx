@@ -29,7 +29,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 };
 
 /**
- * Bouton principal du design system NESTA.
+ * Bouton principal du design system VEYLA.
  * Trois variantes (primary / secondary / ghost), trois tailles.
  */
 export function Button({

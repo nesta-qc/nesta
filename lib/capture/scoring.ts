@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA Capture — analyse technique déterministe d'une photo.
+ * VEYLA Capture — analyse technique déterministe d'une photo.
  *
  * Fonctionne sur un ImageData (canvas) réduit à ~320 px de large :
  * aucune donnée ne quitte l'appareil pour cette analyse.
@@ -258,7 +258,7 @@ export function analyzeTechnically(
   };
 }
 
-/* ---------- Score NESTA /100 ---------- */
+/* ---------- Score VEYLA /100 ---------- */
 
 export interface NestaScore {
   value: number;

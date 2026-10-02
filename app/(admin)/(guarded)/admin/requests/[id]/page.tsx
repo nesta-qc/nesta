@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Détail de la demande",
-  description: "Détail d'une demande de service NESTA.",
+  description: "Détail d'une demande de service VEYLA.",
 };
 
 export default async function AdminRequestPage({

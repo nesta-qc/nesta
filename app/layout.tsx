@@ -24,28 +24,28 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Nesta — L'immobilier, à votre façon",
-    template: "%s | Nesta",
+    default: "Groupe Veyla — L'immobilier, à votre façon",
+    template: "%s | Veyla",
   },
   description:
-    "Nesta, la plateforme immobilière québécoise : recherchez, vendez et gérez vos projets immobiliers en toute transparence.",
+    "Veyla, la plateforme immobilière québécoise : recherchez, vendez et gérez vos projets immobiliers en toute transparence.",
   verification: {
     google: "n9pGQae67DyLFXyZEbm3KGBAypsOKInkTxpuzAC7aE0",
   },
   icons: {
-    icon: "/nesta-icon.png",
-    apple: "/nesta-icon.png",
+    icon: "/veyla-icon.png",
+    apple: "/veyla-apple-touch-icon.png",
   },
   openGraph: {
     type: "website",
     locale: "fr_CA",
-    siteName: "Nesta",
+    siteName: "Veyla",
     images: [
       {
         url: DEFAULT_OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Nesta — L'immobilier, à votre façon",
+        alt: "Groupe Veyla — L'immobilier, à votre façon",
       },
     ],
   },

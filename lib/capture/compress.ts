@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA Capture — compression avant téléversement.
+ * VEYLA Capture — compression avant téléversement.
  * Réduit au max 1920 px sur le grand côté, JPEG qualité 0.85 :
  * invisible à l'œil nu sur une annonce, ~5× plus léger.
  * ============================================================ */

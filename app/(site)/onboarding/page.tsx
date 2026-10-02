@@ -9,7 +9,7 @@ import { OnboardingForm } from "@/components/auth/OnboardingForm";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Bienvenue",
-    description: "Complète ton profil d'arrivée sur Nesta.",
+    description: "Complète ton profil d'arrivée sur Veyla.",
     path: "/onboarding",
     noIndex: true,
   });

@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Utilisateurs",
-  description: "Gestion des utilisateurs NESTA.",
+  description: "Gestion des utilisateurs VEYLA.",
 };
 
 const ROLE_TABS = [
@@ -41,7 +41,7 @@ export default async function AdminUsersPage({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-            NESTA Admin
+            VEYLA Admin
           </p>
           <h1 className="mt-1 font-display text-3xl text-charcoal">Utilisateurs</h1>
           <p className="mt-1 text-sm text-charcoal/60">

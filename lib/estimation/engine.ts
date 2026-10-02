@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — Estimation : moteur centralisé d'évaluation indicative.
+ * VEYLA — Estimation : moteur centralisé d'évaluation indicative.
  *
  * C'est LE point d'entrée unique pour toute évaluation immobilière
  * sur le site, côté vendeur comme côté acheteur :
@@ -11,7 +11,7 @@
  *
  * Le calcul du prix est délégué au Système Marché
  * (@/lib/marche/moteur → prixMarche), le « courtier
- * algorithmique » de NESTA :
+ * algorithmique » de VEYLA :
  *   prix = valeur au rôle × facteur calibré (secteur, type de bien)
  *          × ajustement au mois courant (indice mensuel FCIQ/APCIQ)
  *   fourchette resserrée/élargie selon la convergence de
@@ -392,7 +392,7 @@ export function estimate(input: EstimateInput): EstimateResult {
     valCalculee = val / nblog;
   }
 
-  // Prix de marché façon courtier (Système Marché NESTA) :
+  // Prix de marché façon courtier (Système Marché VEYLA) :
   //   base rôle × facteur → datation au mois courant (indice) →
   //   convergence par comparables → fourchette + confiance.
   // Note : aucun ajustement lié à la superficie du terrain n'est

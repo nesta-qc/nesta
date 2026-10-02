@@ -8,7 +8,7 @@ import { toFrenchAuthError } from "@/lib/auth/errors";
 import { createClient } from "@/lib/supabase/client";
 
 /* ============================================================
- * NESTA Admin — formulaire de connexion du site d'administration
+ * VEYLA Admin — formulaire de connexion du site d'administration
  * dédié. Après signInWithPassword, le rôle ADMIN est vérifié :
  * un compte sans ce rôle est aussitôt déconnecté et refusé.
  * Composant autonome : aucune dépendance au design system du

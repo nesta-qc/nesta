@@ -8,7 +8,7 @@ import { estLimite, ipAction } from "@/lib/rate-limit";
 import { getServiceById } from "@/lib/services";
 
 /* ============================================================
- * NESTA — demandes de services : création, suivi, fichiers.
+ * VEYLA — demandes de services : création, suivi, fichiers.
  * Le statut n'avance que côté admin (politique RLS).
  * ============================================================ */
 

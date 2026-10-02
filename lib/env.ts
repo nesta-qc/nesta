@@ -1,5 +1,5 @@
 /*
- * Lecture centralisée des variables d'environnement NESTA.
+ * Lecture centralisée des variables d'environnement VEYLA.
  *
  * Les fonctions `get*` ne plantent jamais : si une variable est absente,
  * elles retournent une valeur factice inoffensive (utile pour le build et

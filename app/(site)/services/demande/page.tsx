@@ -44,7 +44,7 @@ export default async function ServiceRequestPage({
       {anonymous ? (
         <p className="mt-3 text-sm leading-relaxed text-charcoal/65">
           Aucun compte requis : décrivez votre projet et nous vous répondrons
-          par courriel. Avec un compte Nesta, vous suivez votre demande en
+          par courriel. Avec un compte Veyla, vous suivez votre demande en
           ligne et joignez des plans.
         </p>
       ) : null}

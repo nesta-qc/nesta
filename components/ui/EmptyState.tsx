@@ -7,7 +7,7 @@ interface EmptyStateProps {
 }
 
 /**
- * État vide du design system NESTA : utilisé pour les sections
+ * État vide du design system VEYLA : utilisé pour les sections
  * en construction (« Disponible prochainement ») et les listes sans résultat.
  * Aucune donnée fictive n'est affichée ici.
  */

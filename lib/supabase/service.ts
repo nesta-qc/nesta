@@ -4,7 +4,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseUrl, getSupabaseServiceRoleKey } from "@/lib/env";
 
 /* ============================================================
- * NESTA — client Supabase « service_role » (serveur uniquement).
+ * VEYLA — client Supabase « service_role » (serveur uniquement).
  *
  * Réservé aux traitements de confiance : webhook Stripe, tâches
  * d'administration. Contourne le RLS : à n'utiliser que sur des

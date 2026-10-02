@@ -7,7 +7,7 @@ import { hasSupabaseConfig } from "@/lib/env";
 import { updateProfileSchema, resetPasswordSchema } from "@/lib/auth/schemas";
 
 /*
- * Actions serveur d'authentification NESTA.
+ * Actions serveur d'authentification VEYLA.
  * Chaque action revalide ses entrées avec zod : le client n'est jamais
  * considéré comme fiable.
  */

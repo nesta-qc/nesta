@@ -129,7 +129,7 @@ export default function ServicesPage() {
         <p className="mt-6 text-xs text-charcoal/45">
           Chaque projet est différent : le prix final et le délai sont
           confirmés dans le devis, avant tout engagement. Ces services sont
-          des prestations techniques indépendantes — Nesta ne fait pas de
+          des prestations techniques indépendantes — Veyla ne fait pas de
           courtage immobilier.
         </p>
       </section>

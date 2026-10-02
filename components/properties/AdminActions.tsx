@@ -6,7 +6,7 @@ import { adminSetPropertyStatus } from "@/actions/properties";
 import { Button } from "@/components/ui";
 
 /* ============================================================
- * NESTA — actions d'administration sur une annonce : suspendre
+ * VEYLA — actions d'administration sur une annonce : suspendre
  * ou réactiver (republier). Réservé au rôle ADMIN (vérifié
  * côté serveur dans l'action).
  * ============================================================ */

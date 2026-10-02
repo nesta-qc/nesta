@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { SITE_URL } from "./seo";
 
 /* ============================================================
- * NESTA — client Stripe (serveur uniquement).
+ * VEYLA — client Stripe (serveur uniquement).
  *
  * INACTIF par défaut : tant que `STRIPE_SECRET_KEY` n'est pas
  * définie, `isStripeConfigured()` retourne false et tout le
@@ -56,19 +56,19 @@ export async function getBaseUrl(): Promise<string> {
 export const STRIPE_CURRENCY = "cad";
 
 export const SELLER_CHECKOUT_PRICES = {
-  list: { amount: 29900, name: "Nesta — Forfait vendeur LIST" },
-  sell: { amount: 69900, name: "Nesta — Forfait vendeur SELL" },
-  signature: { amount: 129900, name: "Nesta — Forfait vendeur SIGNATURE" },
+  list: { amount: 29900, name: "Veyla — Forfait vendeur LIST" },
+  sell: { amount: 69900, name: "Veyla — Forfait vendeur SELL" },
+  signature: { amount: 129900, name: "Veyla — Forfait vendeur SIGNATURE" },
 } as const;
 
 export type SellerPlanId = keyof typeof SELLER_CHECKOUT_PRICES;
 
 export const PROJETS_PRICES = {
-  annuel: { amount: 480000, interval: "year" as const, name: "Nesta Projets — annuel" },
-  mensuel: { amount: 49000, interval: "month" as const, name: "Nesta Projets — mensuel" },
+  annuel: { amount: 480000, interval: "year" as const, name: "Veyla Projets — annuel" },
+  mensuel: { amount: 49000, interval: "month" as const, name: "Veyla Projets — mensuel" },
 } as const;
 
 export type ProjetsBilling = keyof typeof PROJETS_PRICES;
 
-/** 3 mois d'essai gratuit pour le pilote NESTA Projets. */
+/** 3 mois d'essai gratuit pour le pilote VEYLA Projets. */
 export const PROJETS_TRIAL_DAYS = 90;

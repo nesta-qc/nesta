@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
  * les profils sont découpés en sitemaps de 40 000 URL.
  */
 
-const BASE_URL = "https://nesta-drab.vercel.app";
+const BASE_URL = "https://nesta-gabriel56785s-projects.vercel.app";
 const PER_SITEMAP = 40_000;
 
 /*

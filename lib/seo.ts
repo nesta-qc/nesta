@@ -8,10 +8,10 @@ import { DEFAULT_LANG } from "./i18n/constants";
  * Utilisée pour metadataBase, les canonicals et le JSON-LD.
  * (Ne pas confondre avec l'app admin, déployée séparément via SITE_MODE.)
  */
-export const SITE_URL = "https://nesta-drab.vercel.app";
+export const SITE_URL = "https://nesta-gabriel56785s-projects.vercel.app";
 
 /** Image de partage par défaut : 1200×630 aux couleurs de la marque. */
-export const DEFAULT_OG_IMAGE = "/og-nesta.png";
+export const DEFAULT_OG_IMAGE = "/og-veyla.png";
 
 interface PageSeoOptions {
   title: string;
@@ -20,7 +20,7 @@ interface PageSeoOptions {
   path: string;
   /** true pour les pages privées/formulaires/confirmations : pas d'indexation. */
   noIndex?: boolean;
-  /** true pour forcer le titre tel quel, sans le template "%s | Nesta" (ex. accueil). */
+  /** true pour forcer le titre tel quel, sans le template "%s | Veyla" (ex. accueil). */
   absoluteTitle?: boolean;
   /** Version anglaise (optionnelle) : utilisée sur /en/*. Sans elle, repli français. */
   titleEn?: string;
@@ -68,7 +68,7 @@ export async function pageMetadata({
       url: DEFAULT_OG_IMAGE,
       width: 1200,
       height: 630,
-      alt: `Nesta — ${finalTitle}`,
+      alt: `Veyla — ${finalTitle}`,
     },
   ];
   return {
@@ -86,7 +86,7 @@ export async function pageMetadata({
       type: "website",
       locale: lang === "en" ? "en_CA" : "fr_CA",
       alternateLocale: lang === "en" ? ["fr_CA"] : ["en_CA"],
-      siteName: "Nesta",
+      siteName: "Veyla",
       title: finalTitle,
       description: finalDescription,
       url: canonical,

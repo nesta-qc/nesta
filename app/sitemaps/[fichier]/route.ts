@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
  * URL : /sitemaps/profils-1.xml, /sitemaps/profils-2.xml, …
  */
 
-const BASE_URL = "https://nesta-drab.vercel.app";
+const BASE_URL = "https://nesta-gabriel56785s-projects.vercel.app";
 const PER_SITEMAP = 40_000;
 
 /*

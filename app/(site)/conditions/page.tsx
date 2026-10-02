@@ -4,7 +4,7 @@ import { pageMetadata } from "@/lib/seo";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Conditions d'utilisation",
-    description: "Les règles d'utilisation de la plateforme Nesta.",
+    description: "Les règles d'utilisation de la plateforme Veyla.",
     path: "/conditions",
   });
 }
@@ -23,10 +23,10 @@ export default function ConditionsPage() {
 
       <div className="mt-8 flex flex-col gap-6 text-[15px] leading-relaxed text-charcoal/70">
         <section>
-          <h2 className="font-display text-xl text-charcoal">Le rôle de Nesta</h2>
+          <h2 className="font-display text-xl text-charcoal">Le rôle de Veyla</h2>
           <p className="mt-2">
-            Nesta est un outil technologique : elle diffuse vos annonces et
-            facilite la mise en relation. Nesta n&apos;est pas courtier
+            Veyla est un outil technologique : elle diffuse vos annonces et
+            facilite la mise en relation. Veyla n&apos;est pas courtier
             immobilier, ne négocie pas à votre place et ne transmet pas
             d&apos;offres d&apos;achat.
           </p>
@@ -59,7 +59,7 @@ export default function ConditionsPage() {
         <section>
           <h2 className="font-display text-xl text-charcoal">Résiliation</h2>
           <p className="mt-2">
-            Vous pouvez supprimer votre compte à tout moment. Nesta peut
+            Vous pouvez supprimer votre compte à tout moment. Veyla peut
             suspendre un compte en cas d&apos;utilisation abusive ou
             frauduleuse de la plateforme.
           </p>

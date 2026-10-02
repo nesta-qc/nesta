@@ -6,7 +6,7 @@ import { EditorialImage } from "./EditorialImage";
 
 /**
  * « Vendez à votre façon. » — composition éditoriale texte/image.
- * Nesta n'est pas contre les courtiers : trois options neutres.
+ * Veyla n'est pas contre les courtiers : trois options neutres.
  */
 export async function SellSection() {
   const t = dictionaries[await getLang()].accueil;

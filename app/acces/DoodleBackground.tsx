@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — fond quadrillé interactif du sas d'accès.
+ * VEYLA — fond quadrillé interactif du sas d'accès.
  * Papier millimétré subtil + griffonnage au crayon (souris/tactile).
  * Purement décoratif : aucun impact sur la sécurité du sas.
  * ============================================================ */

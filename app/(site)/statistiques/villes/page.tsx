@@ -11,11 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Statistiques par ville",
     description:
-      "Répartition des profils du Passeport Nesta par municipalité : recherche, tri croissant/décroissant, valeur au rôle médiane. Données ouvertes (Ville de Montréal et MAMH, Données Québec).",
+      "Répartition des profils du Passeport Veyla par municipalité : recherche, tri croissant/décroissant, valeur au rôle médiane. Données ouvertes (Ville de Montréal et MAMH, Données Québec).",
     path: "/statistiques/villes",
     titleEn: "Statistics by city",
     descriptionEn:
-      "Nesta Passport profiles by municipality: search, ascending/descending sort, median assessment value. Open data (City of Montreal and MAMH, Données Québec).",
+      "Veyla Passport profiles by municipality: search, ascending/descending sort, median assessment value. Open data (City of Montreal and MAMH, Données Québec).",
   });
 }
 

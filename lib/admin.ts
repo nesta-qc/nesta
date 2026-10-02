@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getViewerContext, type ViewerContext } from "@/lib/auth";
 
 /* ============================================================
- * NESTA — helpers serveur pour le centre de contrôle (/admin).
+ * VEYLA — helpers serveur pour le centre de contrôle (/admin).
  *
  * Sécurité (défense en profondeur) :
  *  1. requireAdmin() : vérifie la session + le rôle ADMIN côté

@@ -10,15 +10,15 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: {
-    default: "NESTA Admin",
-    template: "%s — NESTA Admin",
+    default: "VEYLA Admin",
+    template: "%s — VEYLA Admin",
   },
-  description: "Centre de contrôle interne de la plateforme NESTA.",
+  description: "Centre de contrôle interne de la plateforme VEYLA.",
   robots: { index: false, follow: false },
 };
 
 /* ============================================================
- * NESTA — coquille protégée du centre de contrôle interne.
+ * VEYLA — coquille protégée du centre de contrôle interne.
  *
  * SÉCURITÉ : requireAdmin() s'exécute côté serveur AVANT tout
  * rendu. Sans session ADMIN, redirection vers "/" — l'interface
@@ -38,7 +38,7 @@ function BrandMark() {
         N
       </span>
       <span className="leading-tight">
-        <span className="block font-display text-base text-charcoal">NESTA</span>
+        <span className="block font-display text-base text-charcoal">VEYLA</span>
         <span className="block text-[11px] font-semibold uppercase tracking-widest text-champagne">
           Admin
         </span>

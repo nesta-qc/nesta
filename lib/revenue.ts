@@ -1,5 +1,5 @@
 /*
- * Catégories de revenus NESTA — partagé entre serveur et client.
+ * Catégories de revenus VEYLA — partagé entre serveur et client.
  * (Ne pas mettre "use server" ici : importé par des composants client.)
  */
 

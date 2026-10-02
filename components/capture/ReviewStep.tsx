@@ -4,7 +4,7 @@ import { Button } from "@/components/ui";
 import type { PhotoCheck, NestaScore } from "@/lib/capture/scoring";
 
 /* ============================================================
- * NESTA Capture — révision d'une photo après analyse.
+ * VEYLA Capture — révision d'une photo après analyse.
  * Score /100, constats techniques, recommandations, choix
  * garder / reprendre.
  * ============================================================ */
@@ -38,7 +38,7 @@ export function ReviewStep({
   return (
     <div className="fixed inset-0 z-[70] flex flex-col bg-ivory">
       <div className="flex items-center justify-between px-4 py-3">
-        <p className="text-sm font-medium text-charcoal/70">NESTA Capture</p>
+        <p className="text-sm font-medium text-charcoal/70">VEYLA Capture</p>
         <p className="text-sm font-medium text-charcoal">{roomLabel}</p>
         <div className="w-[88px]" aria-hidden="true" />
       </div>

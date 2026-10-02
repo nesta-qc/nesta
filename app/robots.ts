@@ -20,6 +20,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin"],
       },
     ],
-    sitemap: "https://nesta-drab.vercel.app/sitemap.xml",
+    sitemap: "https://nesta-gabriel56785s-projects.vercel.app/sitemap.xml",
   };
 }

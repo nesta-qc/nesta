@@ -23,7 +23,7 @@ export const STAGE_PROBABILITY: Record<ProspectStatus, number> = {
   refuse: 0,
 };
 
-/** Valeur d'un deal NESTA Projets : 4 800 $/an par projet, en cents. */
+/** Valeur d'un deal VEYLA Projets : 4 800 $/an par projet, en cents. */
 export const DEAL_VALUE_PER_PROJECT_CENTS = 480000;
 
 export interface PipelineProspect {

@@ -19,7 +19,7 @@ import {
 import type { ProspectRow } from "@/actions/prospects";
 
 /*
- * NESTA — Server Actions du CRM de prospection (/admin/prospection).
+ * VEYLA — Server Actions du CRM de prospection (/admin/prospection).
  * Toutes les fonctions exigent le rôle ADMIN (assertAdmin).
  * La RLS (policies *_admin_*, migrations 000017 et 000023) reste la
  * barrière principale côté base de données.

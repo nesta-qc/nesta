@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — Système Marché : registre des versions du modèle.
+ * VEYLA — Système Marché : registre des versions du modèle.
  *
  * Chaque calibration du moteur de prix est versionnée : mois de
  * référence du marché, métriques de validation (biais, couverture),

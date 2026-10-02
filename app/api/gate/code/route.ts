@@ -9,7 +9,7 @@ import {
 import { estLimite, ipCliente } from "@/lib/rate-limit";
 
 /* ============================================================
- * NESTA — sas d'accès : vérification du code d'accès.
+ * VEYLA — sas d'accès : vérification du code d'accès.
  *
  * POST /api/gate/code  { code: string }
  * → 200 { ok: true } + cookie de session signé (30 jours)

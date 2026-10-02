@@ -13,7 +13,7 @@ import { SERVICE_REQUEST_STATUSES } from "@/lib/services";
 import type { PropertyRow, PropertyMediaRow } from "@/lib/validation";
 
 /* ============================================================
- * NESTA — Server Actions du centre de contrôle (/admin).
+ * VEYLA — Server Actions du centre de contrôle (/admin).
  *
  * Toutes les fonctions exigent le rôle ADMIN (assertAdmin) :
  * un appel sans session admin retourne { ok:false } ou null.

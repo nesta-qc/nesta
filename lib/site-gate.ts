@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — sas d'accès au site (« site en ligne, personne ne
+ * VEYLA — sas d'accès au site (« site en ligne, personne ne
  * rentre sans code »).
  *
  * Fonctionnement (simple, pour 2 personnes) :

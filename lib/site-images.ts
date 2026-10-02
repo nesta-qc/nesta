@@ -1,5 +1,5 @@
 /**
- * Collection photographique curatée de NESTA.
+ * Collection photographique curatée de VEYLA.
  *
  * Principe : aucune requête externe au runtime. Les images sont des fichiers
  * locaux (public/images), sélectionnés une fois, optimisés une fois.

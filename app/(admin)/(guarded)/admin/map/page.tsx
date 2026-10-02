@@ -8,11 +8,11 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Carte",
-  description: "Carte du monde des biens NESTA — positions réelles.",
+  description: "Carte du monde des biens VEYLA — positions réelles.",
 };
 
 /* ============================================================
- * NESTA Admin — Carte du monde.
+ * VEYLA Admin — Carte du monde.
  *
  * 100 % données réelles : seuls les biens avec coordonnées en
  * base sont placés précisément ; les autres sont regroupés par
@@ -52,7 +52,7 @@ export default async function AdminMapPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-            NESTA Admin
+            VEYLA Admin
           </p>
           <h1 className="mt-1 font-display text-3xl text-charcoal">Carte</h1>
           <p className="mt-2 max-w-xl text-sm text-charcoal/60">

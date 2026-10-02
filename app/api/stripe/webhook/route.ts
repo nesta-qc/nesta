@@ -5,7 +5,7 @@ import { sendWelcomeEmail, type WelcomeKind } from "@/lib/email";
 import { getLang } from "@/lib/i18n/lang";
 
 /* ============================================================
- * NESTA — webhook Stripe : POST /api/stripe/webhook
+ * VEYLA — webhook Stripe : POST /api/stripe/webhook
  *
  * Vérifie la signature avec STRIPE_WEBHOOK_SECRET (corps brut).
  * Si le secret manque : 503 propre, jamais d'exception.
@@ -13,7 +13,7 @@ import { getLang } from "@/lib/i18n/lang";
  * Événements traités :
  * - checkout.session.completed → commande forfait vendeur (table
  *   `orders`, idempotent sur session.id) + courriel de bienvenue.
- * - customer.subscription.created → abonnement NESTA Projets
+ * - customer.subscription.created → abonnement VEYLA Projets
  *   (table `project_subscriptions`, essai 90 j) + courriel de bienvenue.
  * - customer.subscription.updated → statut synchronisé.
  * - customer.subscription.deleted → statut « canceled ».

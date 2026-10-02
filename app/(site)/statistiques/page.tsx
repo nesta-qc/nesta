@@ -14,11 +14,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Statistiques du marché",
     description:
-      "Agrégats honnêtes calculés sur les profils du Passeport Nesta : répartition par ville et arrondissement, valeur au rôle médiane, catégories — issus des données ouvertes (Ville de Montréal et MAMH, Données Québec).",
+      "Agrégats honnêtes calculés sur les profils du Passeport Veyla : répartition par ville et arrondissement, valeur au rôle médiane, catégories — issus des données ouvertes (Ville de Montréal et MAMH, Données Québec).",
     path: "/statistiques",
     titleEn: "Market statistics",
     descriptionEn:
-      "Honest aggregates computed from Nesta Passport profiles: breakdown by city and borough, median assessment value, categories — from open data (City of Montreal and MAMH, Données Québec).",
+      "Honest aggregates computed from Veyla Passport profiles: breakdown by city and borough, median assessment value, categories — from open data (City of Montreal and MAMH, Données Québec).",
   });
 }
 

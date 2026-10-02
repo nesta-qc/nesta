@@ -6,7 +6,7 @@ import { VirtualTour } from "@/components/virtual-tours/VirtualTour";
 import type { VirtualTourDbProvider } from "@/lib/virtual-tours";
 
 /* ============================================================
- * NESTA — onglets médias de la page détail :
+ * VEYLA — onglets médias de la page détail :
  * Photos | Visite 3D | Plan.
  *
  * L'onglet « Visite 3D » n'apparaît QUE si l'annonce possède une

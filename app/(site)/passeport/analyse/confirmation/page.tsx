@@ -18,7 +18,7 @@ export default function AnalyseConfirmationPage() {
   return (
     <div className="mx-auto w-full max-w-2xl px-5 py-10 sm:px-8 sm:py-14">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-forest">
-        Passeport Nesta
+        Passeport Veyla
       </p>
       <h1 className="mt-2 font-display text-3xl text-charcoal sm:text-4xl">
         Demande reçue.
@@ -31,7 +31,7 @@ export default function AnalyseConfirmationPage() {
         </p>
         <p className="mt-3 text-sm leading-relaxed text-charcoal/70">
           Aucun compte n&apos;a été créé. Pour suivre vos demandes en ligne,
-          vous pouvez créer un compte Nesta quand vous voulez.
+          vous pouvez créer un compte Veyla quand vous voulez.
         </p>
       </Card>
 
@@ -40,7 +40,7 @@ export default function AnalyseConfirmationPage() {
           <Button variant="secondary">Analyser une autre adresse</Button>
         </Link>
         <Link href="/inscription">
-          <Button variant="ghost">Créer un compte Nesta</Button>
+          <Button variant="ghost">Créer un compte Veyla</Button>
         </Link>
       </div>
     </div>

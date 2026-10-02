@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — Visites virtuelles : résolution et validation d'URL.
+ * VEYLA — Visites virtuelles : résolution et validation d'URL.
  *
  * Module pur (aucun import serveur) : utilisable dans les Server
  * Actions (validation autoritaire) ET côté client (prévisualisation

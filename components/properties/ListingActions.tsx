@@ -6,7 +6,7 @@ import { deleteProperty, setPropertyStatus } from "@/actions/properties";
 import { Button } from "@/components/ui";
 
 /* ============================================================
- * NESTA — actions sur une annonce (vendeur) : publier, retirer,
+ * VEYLA — actions sur une annonce (vendeur) : publier, retirer,
  * supprimer (avec confirmation). Utilisé sur /sell/annonces et
  * sur la page de modification.
  * ============================================================ */

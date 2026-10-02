@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { submitProLead } from "@/actions/pro";
 
-/* Formulaire NESTA Pro : un promoteur laisse ses coordonnées.
+/* Formulaire VEYLA Pro : un promoteur laisse ses coordonnées.
  * Stylé pour le bandeau vert forêt (fond sombre). */
 
 const inputClass =

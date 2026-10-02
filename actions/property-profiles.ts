@@ -4,7 +4,7 @@ import { hasSupabaseConfig } from "@/lib/env";
 import { profileIdSchema } from "@/lib/validation";
 
 /* ============================================================
- * NESTA — Profils de propriétés publiques (table property_profiles,
+ * VEYLA — Profils de propriétés publiques (table property_profiles,
  * migration 000013). Données ouvertes de la Ville de Montréal —
  * JAMAIS des annonces à vendre.
  *
@@ -271,7 +271,7 @@ export async function searchPropertyProfiles(
 }
 
 /* ============================================================
- * NESTA — Statistiques du marché (hub /statistiques).
+ * VEYLA — Statistiques du marché (hub /statistiques).
  * Agrégats calculés EXCLUSIVEMENT depuis les profils Passeport
  * (property_profiles, données ouvertes de la Ville de Montréal).
  * Aucun chiffre inventé : si la base est inaccessible, null.

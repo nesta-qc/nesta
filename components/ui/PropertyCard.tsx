@@ -31,7 +31,7 @@ interface PropertyCardProps {
 }
 
 /**
- * Carte de propriété NESTA : photographique, ratio 4/3 cohérent,
+ * Carte de propriété VEYLA : photographique, ratio 4/3 cohérent,
  * next/image optimisée (aucun layout shift), survol discret
  * (zoom 2 % max, infos secondaires en fondu), favori en overlay.
  */
@@ -72,7 +72,7 @@ export function PropertyCard({ property, highlighted }: PropertyCardProps) {
           ) : (
             <div className="flex h-full w-full items-center justify-center">
               <span className="font-display text-lg text-charcoal/30">
-                Nesta
+                Veyla
               </span>
             </div>
           )}

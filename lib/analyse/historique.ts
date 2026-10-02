@@ -1,5 +1,5 @@
 /**
- * NESTA — Courbe historique indicative de la valeur d'un bien.
+ * VEYLA — Courbe historique indicative de la valeur d'un bien.
  *
  * MÉTHODE (affichée au client) : on part de la valeur marchande estimée
  * aujourd'hui et on la « rembobine » avec l'indice annuel des prix

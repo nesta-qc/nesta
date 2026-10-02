@@ -19,11 +19,11 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Vue d’ensemble",
-  description: "Tableau de bord du centre de contrôle NESTA.",
+  description: "Tableau de bord du centre de contrôle VEYLA.",
 };
 
 /* ============================================================
- * NESTA Admin — Vue d'ensemble.
+ * VEYLA Admin — Vue d'ensemble.
  * 100 % données réelles : compteurs SQL, activité dérivée des
  * tables, empty states quand il n'y a rien à montrer.
  * ============================================================ */
@@ -64,7 +64,7 @@ export default async function AdminOverviewPage({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-            NESTA Admin
+            VEYLA Admin
           </p>
           <h1 className="mt-1 font-display text-3xl text-charcoal">
             Vue d’ensemble

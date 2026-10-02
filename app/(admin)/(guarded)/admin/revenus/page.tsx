@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Revenus",
-  description: "Revenus NESTA par catégorie : forfaits et services.",
+  description: "Revenus VEYLA par catégorie : forfaits et services.",
 };
 
 function formatDollars(cents: number): string {
@@ -32,7 +32,7 @@ export default async function AdminRevenuePage() {
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-        NESTA Admin
+        VEYLA Admin
       </p>
       <h1 className="mt-1 font-display text-3xl text-charcoal">Revenus</h1>
       <p className="mt-1 text-sm text-charcoal/60">

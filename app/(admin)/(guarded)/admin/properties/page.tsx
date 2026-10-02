@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Propriétés",
-  description: "Gestion des annonces NESTA.",
+  description: "Gestion des annonces VEYLA.",
 };
 
 const STATUS_TABS = [
@@ -52,7 +52,7 @@ export default async function AdminPropertiesPage({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-            NESTA Admin
+            VEYLA Admin
           </p>
           <h1 className="mt-1 font-display text-3xl text-charcoal">Propriétés</h1>
           <p className="mt-1 text-sm text-charcoal/60">

@@ -27,21 +27,21 @@ export async function generateMetadata({
   const result = await getPublicProperty(id);
   if (!result) {
     return await pageMetadata({
-      title: "Passeport Nesta",
-      description: "Fiche Passeport Nesta : caractéristiques et données sourcées d'une propriété.",
+      title: "Passeport Veyla",
+      description: "Fiche Passeport Veyla : caractéristiques et données sourcées d'une propriété.",
       path: "/passeport",
     });
   }
   const { property } = result;
   return await pageMetadata({
-    title: `Passeport Nesta — ${property.address}, ${property.city}`,
+    title: `Passeport Veyla — ${property.address}, ${property.city}`,
     description: `Données disponibles et points à confirmer pour ${property.address}, ${property.city}.`,
     path: `/passeport/${id}`,
   });
 }
 
 /**
- * Passeport Nesta : synthèse honnête d'une annonce.
+ * Passeport Veyla : synthèse honnête d'une annonce.
  * Chaque chiffre vient de l'annonce du vendeur ; toute donnée
  * manquante affiche « À confirmer » — jamais de chiffre inventé,
  * jamais une possibilité présentée comme une autorisation.
@@ -134,7 +134,7 @@ export default async function PropertyPassportPage({ params }: PageProps) {
       {/* ---------- 1. En-tête ---------- */}
       <header className="mt-6">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="forest">Passeport Nesta</Badge>
+          <Badge variant="forest">Passeport Veyla</Badge>
           <Badge>{listingTypeLabel(p.listing_type)}</Badge>
           {p.property_type ? <Badge>{propertyTypeLabel(p.property_type)}</Badge> : null}
         </div>
@@ -191,7 +191,7 @@ export default async function PropertyPassportPage({ params }: PageProps) {
             <li className="flex flex-col gap-1 border-b border-border pb-4 sm:flex-row sm:items-baseline sm:justify-between">
               <div>
                 <p className="text-[15px] font-medium text-charcoal">
-                  Annonce du vendeur via Nesta
+                  Annonce du vendeur via Veyla
                 </p>
                 <p className="text-sm text-charcoal/55">
                   Adresse, prix, caractéristiques, description, photos.
@@ -268,7 +268,7 @@ export default async function PropertyPassportPage({ params }: PageProps) {
             Hypothèses : les constats ci-dessous reprennent uniquement les
             données de l&apos;annonce, sans visite ni vérification au
             registre. Le zonage et l&apos;évaluation foncière ne sont pas
-            encore branchés à Nesta.
+            encore branchés à Veyla.
           </p>
           {findings.length > 0 ? (
             <ul className="mt-5 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-charcoal/75">
@@ -306,7 +306,7 @@ export default async function PropertyPassportPage({ params }: PageProps) {
             Demander une estimation
           </Link>
           <p className="mt-3 text-xs text-charcoal/45">
-            Sans compte requis — un professionnel Nesta vous répond.
+            Sans compte requis — un professionnel Veyla vous répond.
           </p>
         </Card>
 

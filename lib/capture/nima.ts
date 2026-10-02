@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA Capture — composante esthétique du score photo.
+ * VEYLA Capture — composante esthétique du score photo.
  *
  * Le modèle utilisé est dérivé du projet « NIMA: Neural Image
  * Assessment » par titu1994 (https://github.com/titu1994/
@@ -12,7 +12,7 @@
  * première analyse, puis mis en cache en mémoire.
  *
  * Le score retourné (moyenne 1–10) n'est qu'UNE composante du
- * score NESTA ; il n'est jamais présenté tel quel à l'utilisateur.
+ * score VEYLA ; il n'est jamais présenté tel quel à l'utilisateur.
  * ============================================================ */
 
 const MODEL_URL = "/models/nima-mobilenet/model.json";
@@ -45,7 +45,7 @@ async function loadModel(): Promise<GraphModelLike> {
 /**
  * Estime la qualité esthétique d'une image (moyenne 1–10).
  * Retourne null si le modèle est indisponible (panne gracieuse :
- * le score NESTA repose alors uniquement sur l'analyse technique).
+ * le score VEYLA repose alors uniquement sur l'analyse technique).
  */
 export async function estimateAestheticMean(
   source: HTMLImageElement | HTMLCanvasElement,

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Nouveau mot de passe",
-    description: "Choisis un nouveau mot de passe pour ton compte Nesta.",
+    description: "Choisis un nouveau mot de passe pour ton compte Veyla.",
     path: "/reinitialiser-mot-de-passe",
     noIndex: true,
   });

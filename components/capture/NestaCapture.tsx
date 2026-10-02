@@ -22,7 +22,7 @@ import { ReviewStep } from "./ReviewStep";
 import { GalleryStep } from "./GalleryStep";
 
 /* ============================================================
- * NESTA Capture — parcours guidé de prise de photos immobilières.
+ * VEYLA Capture — parcours guidé de prise de photos immobilières.
  *
  * Étapes : pièces → caméra → révision (score) → galerie → ajout
  * à l'annonce via l'action uploadPropertyMedia existante
@@ -135,7 +135,7 @@ export function NestaCapture({ propertyId, onClose, onUploaded }: Props) {
     if (
       kept.length > 0 &&
       !window.confirm(
-        "Quitter NESTA Capture ? Les photos conservées mais non ajoutées à l'annonce seront perdues.",
+        "Quitter VEYLA Capture ? Les photos conservées mais non ajoutées à l'annonce seront perdues.",
       )
     ) {
       return;
@@ -367,7 +367,7 @@ export function NestaCapture({ propertyId, onClose, onUploaded }: Props) {
         >
           <span aria-hidden="true">×</span>
         </button>
-        <p className="font-display text-lg text-charcoal">NESTA Capture</p>
+        <p className="font-display text-lg text-charcoal">VEYLA Capture</p>
         <button
           type="button"
           onClick={() => setStep("gallery")}
@@ -383,7 +383,7 @@ export function NestaCapture({ propertyId, onClose, onUploaded }: Props) {
           Quelle pièce photographiez-vous ?
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-charcoal/60">
-          NESTA vous guide pour des photos nettes, droites et bien éclairées.
+          VEYLA vous guide pour des photos nettes, droites et bien éclairées.
           Choisissez une pièce, puis prenez la photo.
         </p>
 

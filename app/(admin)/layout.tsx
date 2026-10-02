@@ -4,10 +4,10 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: {
-    default: "NESTA Admin",
-    template: "%s — NESTA Admin",
+    default: "VEYLA Admin",
+    template: "%s — VEYLA Admin",
   },
-  description: "Centre de contrôle interne de la plateforme NESTA.",
+  description: "Centre de contrôle interne de la plateforme VEYLA.",
   robots: { index: false, follow: false },
 };
 

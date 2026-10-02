@@ -13,7 +13,7 @@ import { Badge, Card, Container } from "@/components/ui";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Mon profil",
-    description: "Consulte et mets à jour ton profil Nesta.",
+    description: "Consulte et mets à jour ton profil Veyla.",
     path: "/profil",
     noIndex: true,
   });
@@ -59,7 +59,7 @@ export default async function ProfilPage() {
         <div>
           <h1 className="font-display text-3xl text-charcoal">Mon profil</h1>
           <p className="mt-2 text-sm text-charcoal/60">
-            Tes informations personnelles sur Nesta.
+            Tes informations personnelles sur Veyla.
           </p>
         </div>
 

@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Modifier l'annonce",
-  description: "Modifiez votre annonce sur Nesta.",
+  description: "Modifiez votre annonce sur Veyla.",
   robots: { index: false, follow: true },
 };
 

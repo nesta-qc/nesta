@@ -2,7 +2,7 @@
  * Sitemap des pages statiques publiques (1er volet de l'index /sitemap.xml).
  */
 
-const BASE_URL = "https://nesta-drab.vercel.app";
+const BASE_URL = "https://nesta-gabriel56785s-projects.vercel.app";
 
 const STATIC_ROUTES: Array<{
   path: string;

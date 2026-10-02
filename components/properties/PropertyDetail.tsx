@@ -144,7 +144,7 @@ export function PropertyDetail({
             href={`/passeport/${p.id}`}
             className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white px-6 py-2.5 text-sm font-medium text-charcoal transition-colors duration-200 hover:border-gold hover:bg-cream"
           >
-            Voir le Passeport Nesta
+            Voir le Passeport Veyla
           </Link>
           {isOwner ? (
             <Link
@@ -189,7 +189,7 @@ export function PropertyDetail({
               </dl>
             </div>
             <p className="mt-8 text-xs text-charcoal/40">
-              Annonce publiée le {formatDate(p.created_at)} — Nesta.
+              Annonce publiée le {formatDate(p.created_at)} — Veyla.
             </p>
           </TabsContent>
 
@@ -268,7 +268,7 @@ export function PropertyDetail({
       <Modal open={visitOpen} onClose={() => setVisitOpen(false)} title="Planifier une visite">
         <Card className="border-0 p-0 shadow-none">
           <p className="text-[15px] leading-relaxed text-charcoal/70">
-            La réservation de visite en ligne arrive bientôt sur Nesta.
+            La réservation de visite en ligne arrive bientôt sur Veyla.
           </p>
           <p className="mt-3 text-[15px] leading-relaxed text-charcoal/70">
             En attendant, retrouvez cette annonce dans vos favoris pour la

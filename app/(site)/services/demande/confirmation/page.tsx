@@ -34,7 +34,7 @@ export default function AnonymousServiceConfirmationPage() {
         </p>
         <p className="mt-3 text-sm leading-relaxed text-charcoal/70">
           Aucun compte n&apos;a été créé. Pour suivre vos demandes en ligne
-          et joindre des plans, créez un compte Nesta.
+          et joindre des plans, créez un compte Veyla.
         </p>
       </Card>
 
@@ -43,7 +43,7 @@ export default function AnonymousServiceConfirmationPage() {
           <Button variant="secondary">Voir nos services</Button>
         </Link>
         <Link href="/inscription">
-          <Button variant="ghost">Créer un compte Nesta</Button>
+          <Button variant="ghost">Créer un compte Veyla</Button>
         </Link>
       </div>
     </div>

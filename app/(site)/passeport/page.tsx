@@ -15,10 +15,10 @@ import {
 
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
-    title: "Passeport Nesta",
+    title: "Passeport Veyla",
     description: "Une fiche honnête pour chaque adresse : caractéristiques, données sourcées, hypothèses affichées. Analyse d'une propriété sans créer de compte.",
     path: "/passeport",
-    titleEn: "Nesta Passport",
+    titleEn: "Veyla Passport",
     descriptionEn: "An honest fact sheet for every address: features, sourced data, stated assumptions. Analyze a property with no account needed.",
   });
 }
@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
    ouvertes (migration 000013 + seeds). */
 export const dynamic = "force-dynamic";
 
-/** Passeport Nesta : fiche adresse → analyse, sans compte. */
+/** Passeport Veyla : fiche adresse → analyse, sans compte. */
 export default async function PasseportPage({
   searchParams,
 }: {
@@ -56,13 +56,13 @@ export default async function PasseportPage({
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-10 sm:px-8 sm:py-14">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-forest">
-        Passeport Nesta
+        Passeport Veyla
       </p>
       <h1 className="mt-2 font-display text-3xl text-charcoal sm:text-4xl">
         Une fiche claire pour chaque adresse.
       </h1>
       <p className="mt-4 max-w-2xl text-base leading-relaxed text-charcoal/70">
-        Le Passeport Nesta regroupe ce que nous savons d&apos;une propriété,
+        Le Passeport Veyla regroupe ce que nous savons d&apos;une propriété,
         avant que vous ne décidiez d&apos;aller plus loin.
       </p>
 

@@ -10,7 +10,7 @@ import {
 import { NESTA_SERVICES } from "@/lib/services";
 
 /* ============================================================
- * NESTA — formulaire de demande de devis :
+ * VEYLA — formulaire de demande de devis :
  * service → infos projet → fichiers (PDF/plans) → envoi.
  *
  * Mode anonyme (sans compte) : champs nom / courriel / téléphone,
@@ -202,7 +202,7 @@ export function ServiceRequestForm({
         <p className="text-xs text-charcoal/50">
           Sans compte, la pièce jointe de fichiers n&apos;est pas disponible
           et le devis vous parvient par courriel. Pour joindre des plans et
-          suivre votre demande en ligne, créez un compte Nesta.
+          suivre votre demande en ligne, créez un compte Veyla.
         </p>
       ) : (
         <Field

@@ -3,7 +3,7 @@ import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 
 /**
- * 404 aux couleurs de Nesta : l'utilisateur reste dans l'univers du
+ * 404 aux couleurs de Veyla : l'utilisateur reste dans l'univers du
  * site (pas de page blanche générique) et repart vers le Passeport.
  */
 export default async function NotFound() {

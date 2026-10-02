@@ -1,5 +1,5 @@
 /* ============================================================
- * NESTA — tarification vendeur.
+ * VEYLA — tarification vendeur.
  * Les prix restent configurables : modifier ici, jamais en dur
  * dans les pages. Aucune logique commerciale irréversible.
  * ============================================================ */
@@ -22,7 +22,7 @@ export const SELLER_PLANS: SellerPlan[] = [
     tagline: "Publiez votre annonce vous-même.",
     features: [
       "Annonce complète avec photos",
-      "Diffusion dans la recherche Nesta",
+      "Diffusion dans la recherche Veyla",
       "Statistiques de vues",
       "Gestion des favoris reçus",
     ],

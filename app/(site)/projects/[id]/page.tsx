@@ -34,7 +34,7 @@ export async function generateMetadata({
   if (!dev)
     return await pageMetadata({
       title: "Projet introuvable",
-      description: "Ce projet immobilier n'existe pas ou n'est plus publié sur Nesta.",
+      description: "Ce projet immobilier n'existe pas ou n'est plus publié sur Veyla.",
       path: "/projects",
     });
   const where = dev.city ? ` — ${dev.city}` : "";

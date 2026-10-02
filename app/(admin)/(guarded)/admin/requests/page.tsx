@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Demandes de service",
-  description: "Suivi des demandes de service NESTA.",
+  description: "Suivi des demandes de service VEYLA.",
 };
 
 export default async function AdminRequestsPage({
@@ -32,7 +32,7 @@ export default async function AdminRequestsPage({
   return (
     <div>
       <p className="text-xs font-semibold uppercase tracking-widest text-champagne">
-        NESTA Admin
+        VEYLA Admin
       </p>
       <h1 className="mt-1 font-display text-3xl text-charcoal">Demandes de service</h1>
       <p className="mt-1 text-sm text-charcoal/60">

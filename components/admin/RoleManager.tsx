@@ -6,7 +6,7 @@ import { setUserRole } from "@/actions/admin";
 import { roleLabel } from "./format";
 
 /* ============================================================
- * NESTA — gestion des rôles d'un utilisateur (admin).
+ * VEYLA — gestion des rôles d'un utilisateur (admin).
  * Attribution / révocation avec confirmation pour les rôles
  * sensibles. Le retrait de son propre rôle ADMIN est refusé
  * côté serveur.

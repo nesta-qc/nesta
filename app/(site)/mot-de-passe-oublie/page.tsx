@@ -9,7 +9,7 @@ import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Mot de passe oublié",
-    description: "Reçois un lien pour réinitialiser ton mot de passe Nesta.",
+    description: "Reçois un lien pour réinitialiser ton mot de passe Veyla.",
     path: "/mot-de-passe-oublie",
     noIndex: true,
   });

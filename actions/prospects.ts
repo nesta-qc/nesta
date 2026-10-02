@@ -7,7 +7,7 @@ import { PROSPECT_STATUSES, type ProspectStatus } from "@/lib/prospects";
 import { isEmailConfidence, type EmailConfidence } from "@/lib/crm";
 
 /*
- * NESTA — Server Actions de la prospection (/admin/prospection).
+ * VEYLA — Server Actions de la prospection (/admin/prospection).
  * Toutes les fonctions exigent le rôle ADMIN (assertAdmin).
  * La RLS (policies prospects_admin_*, migration 000017) reste la
  * barrière principale côté base de données.

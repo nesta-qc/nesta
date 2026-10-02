@@ -8,13 +8,13 @@ import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Connexion — NESTA Admin",
-  description: "Accès réservé au centre de contrôle NESTA.",
+  title: "Connexion — VEYLA Admin",
+  description: "Accès réservé au centre de contrôle VEYLA.",
   robots: { index: false, follow: false },
 };
 
 /* ============================================================
- * NESTA Admin — porte d'entrée du site d'administration dédié.
+ * VEYLA Admin — porte d'entrée du site d'administration dédié.
  * Hors du groupe (guarded) : aucun rôle requis pour voir cette
  * page. Un admin déjà connecté est renvoyé vers /admin ; un
  * compte connecté sans rôle ADMIN voit un refus explicite.
@@ -30,7 +30,7 @@ function BrandMark() {
         N
       </span>
       <span className="leading-tight">
-        <span className="block font-display text-lg text-charcoal">NESTA</span>
+        <span className="block font-display text-lg text-charcoal">VEYLA</span>
         <span className="block text-[11px] font-semibold uppercase tracking-widest text-champagne">
           Admin
         </span>
@@ -79,7 +79,7 @@ export default async function AdminLoginPage() {
               Centre de contrôle
             </h1>
             <p className="mt-1 text-sm text-charcoal/60">
-              Accès réservé aux administrateurs NESTA.
+              Accès réservé aux administrateurs VEYLA.
             </p>
             <div className="mt-6">
               {user ? (

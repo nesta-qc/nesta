@@ -90,7 +90,7 @@ export function SignupForm() {
   return (
     <AuthShell
       title="Créer un compte"
-      subtitle="Rejoins Nesta en moins d'une minute."
+      subtitle="Rejoins Veyla en moins d'une minute."
     >
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <Field

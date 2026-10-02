@@ -9,11 +9,11 @@ import type { InvestmentProperty, MarketComparable } from "@/actions/properties"
 import { formatPrice } from "@/lib/format";
 
 /* ============================================================
- * NESTA — espace investisseurs.
+ * VEYLA — espace investisseurs.
  * Deux sources de données réelles, toujours distinguées :
- *  - annonces publiées sur Nesta ;
+ *  - annonces publiées sur Veyla ;
  *  - comparables du marché (faits publics vérifiés, source et
- *    date indiquées — jamais présentés comme des annonces Nesta).
+ *    date indiquées — jamais présentés comme des annonces Veyla).
  * Aucune donnée municipale inventée (zonage, évaluation) :
  * la connexion est indiquée « en préparation ».
  * ============================================================ */
@@ -254,7 +254,7 @@ export function InvestorView({
         </form>
         <p className="mx-auto w-full max-w-7xl px-5 pb-3 text-xs text-charcoal/45 sm:px-8">
           Données municipales (zonage, évaluation, usage) : connexion en préparation.
-          Annonces publiées sur Nesta et comparables du marché vérifiés (source indiquée).
+          Annonces publiées sur Veyla et comparables du marché vérifiés (source indiquée).
         </p>
       </div>
 
@@ -474,7 +474,7 @@ function SelectedPanel({
         ) : null}
         <p className="mt-3 text-xs text-charcoal/45">
           Source : {c.source_name} · vérifié le {formatVerifiedDate(c.verified_at)} ·
-          ce n&apos;est pas une annonce Nesta.
+          ce n&apos;est pas une annonce Veyla.
         </p>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           {c.source_url ? (
@@ -537,7 +537,7 @@ function SelectedPanel({
         </div>
       </dl>
       <p className="mt-3 text-xs text-charcoal/45">
-        Source : annonces publiées sur Nesta
+        Source : annonces publiées sur Veyla
         {l.updated_at
           ? ` · Mis à jour le ${new Date(l.updated_at).toLocaleDateString("fr-CA")}`
           : ""}

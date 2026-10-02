@@ -5,7 +5,7 @@ import { trackVirtualTourEvent } from "@/lib/virtual-tours";
 import type { VirtualTourDbProvider } from "@/lib/virtual-tours";
 
 /* ============================================================
- * NESTA — <VirtualTour /> : lecteur de visite virtuelle.
+ * VEYLA — <VirtualTour /> : lecteur de visite virtuelle.
  *
  * Point d'entrée unique : reçoit le provider + l'identifiant/URL
  * validés CÔTÉ SERVEUR et choisit le lecteur adapté.

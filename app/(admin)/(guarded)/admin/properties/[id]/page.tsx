@@ -24,7 +24,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Fiche propriété",
-  description: "Détail d'une annonce NESTA.",
+  description: "Détail d'une annonce VEYLA.",
 };
 
 export default async function AdminPropertyPage({

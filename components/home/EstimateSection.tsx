@@ -5,7 +5,7 @@ import { dictionaries } from "@/lib/i18n/dictionaries";
 import { EditorialImage } from "./EditorialImage";
 
 /**
- * NESTA Estimate — visuellement distinct du marketplace (fond charbon,
+ * VEYLA Estimate — visuellement distinct du marketplace (fond charbon,
  * imagerie construction), même design system.
  */
 export async function EstimateSection() {

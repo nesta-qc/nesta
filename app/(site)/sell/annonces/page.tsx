@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "Mes annonces",
-    description: "Gérez vos annonces publiées sur Nesta.",
+    description: "Gérez vos annonces publiées sur Veyla.",
     path: "/sell/annonces",
     noIndex: true,
   });
@@ -106,7 +106,7 @@ export default async function MyListingsPage() {
                       />
                     ) : (
                       <div className="flex aspect-[16/10] items-center justify-center sm:aspect-auto sm:min-h-[220px]">
-                        <span className="font-display text-lg text-charcoal/30">Nesta</span>
+                        <span className="font-display text-lg text-charcoal/30">Veyla</span>
                       </div>
                     )}
                   </Link>

@@ -6,10 +6,10 @@ import { Button } from "@/components/ui";
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
     title: "À propos",
-    description: "Nesta : la plateforme immobilière québécoise, simple et transparente.",
+    description: "Veyla : la plateforme immobilière québécoise, simple et transparente.",
     path: "/a-propos",
     titleEn: "About",
-    descriptionEn: "Nesta: the Quebec real estate platform, simple and transparent.",
+    descriptionEn: "Veyla: the Quebec real estate platform, simple and transparent.",
   });
 }
 
@@ -29,7 +29,7 @@ export default function AboutPage() {
 
       <div className="mt-8 flex flex-col gap-5 text-[16px] leading-relaxed text-charcoal/70">
         <p>
-          Nesta est une plateforme immobilière québécoise. Elle permet de
+          Veyla est une plateforme immobilière québécoise. Elle permet de
           chercher, visiter, acheter ou vendre une propriété — avec ou sans
           courtier.
         </p>

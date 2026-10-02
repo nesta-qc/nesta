@@ -7,7 +7,7 @@ import { Button, Card, Container } from "@/components/ui";
 export async function generateMetadata() {
   return await pageMetadata({
     title: "Paiement annulé",
-    description: "Votre paiement Nesta a été annulé. Aucun montant débité.",
+    description: "Votre paiement Veyla a été annulé. Aucun montant débité.",
     path: "/tarifs/annule",
     noIndex: true,
   });
