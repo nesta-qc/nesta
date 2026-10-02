@@ -114,6 +114,7 @@ export const en = {
           { href: "/a-propos", label: "About" },
           { href: "/tarifs", label: "Pricing" },
           { href: "/services/demande", label: "Contact us" },
+          { href: "mailto:groupenesta@proton.me", label: "groupenesta@proton.me" },
           { href: "/favoris", label: "My favorites" },
         ],
       },
