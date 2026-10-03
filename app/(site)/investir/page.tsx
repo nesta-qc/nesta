@@ -38,6 +38,19 @@ export default async function InvestirPage() {
             partir de vos chiffres.
           </p>
         </Link>
+        <Link
+          href="/passeport/analyse"
+          className="mt-3 block rounded-2xl border border-forest/25 bg-white px-6 py-5 transition-colors hover:border-forest"
+        >
+          <p className="font-display text-lg text-charcoal">
+            Analyse investisseur automatique →
+          </p>
+          <p className="mt-1 text-sm text-charcoal/60">
+            Entrez une adresse : cash-flow annuel estimé, scénarios louer /
+            revendre / BRRRR, score investisseur et comparateur de villes —
+            à partir des données du site.
+          </p>
+        </Link>
       </div>
       <InvestorView initial={properties} comparables={comparables} />
     </>

@@ -8,6 +8,9 @@ import { isVilleSlug } from "@/lib/estimation/villes";
 import { AnalysisRequestForm } from "@/components/passeport/AnalysisRequestForm";
 import { AnalyseStartForm } from "@/components/passeport/AnalyseStartForm";
 import { AnalyseResult } from "@/components/passeport/AnalyseResult";
+import { AnalyseInvestisseur } from "@/components/passeport/AnalyseInvestisseur";
+import { ComparateurVilles } from "@/components/investisseur/ComparateurVilles";
+import { TAUX_HYPOTHECAIRE_DEFAUT_PCT } from "@/lib/investisseur/donnees";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = dictionaries[await getLang()].analyse;
@@ -101,6 +104,8 @@ export default async function AnalysePage({
         {resultat.adresseNormalisee}
       </h1>
       <AnalyseResult result={resultat} lang={lang} />
+      <AnalyseInvestisseur result={resultat} lang={lang} />
+      <ComparateurVilles lang={lang} taux={TAUX_HYPOTHECAIRE_DEFAUT_PCT} />
     </div>
   );
 }
