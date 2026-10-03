@@ -345,11 +345,7 @@ export const en = {
     notePlexLogement:
       "Estimate for a single unit: building value divided by the number of units ({n}).",
     avertissement:
-      "Indicative estimate computed from the property assessment roll and median market sale prices. It is not a certified appraisal and does not replace the advice of a certified appraiser.",
-    sources:
-      "Sources: MAMH — Quebec property assessment roll (Données Québec, CC-BY 4.0), APCIQ median sale prices.",
-    dossierMarche:
-      "Price set at market conditions of {mois} · {confiance} confidence · {n} comparables.",
+      "Indicative estimate: it is not a certified appraisal and does not replace the advice of a certified appraiser.",
     orientationEst: "East",
     orientationOuest: "West",
     orientationNord: "North",
@@ -456,12 +452,6 @@ export const en = {
     courbeInfobulleScenario: "Hypothetical scenario",
     courbeVariationAnnee: "year over year",
     courbeConsigne: "Hover or tap a point to see each year's value.",
-    methodeTitre: "Our method",
-    methodeTexte:
-      "Assessment roll data (MAMH / City of Montreal, CC-BY 4.0 licence), adjusted to median sold prices from the APCIQ barometer (reference {reference}). Prices used are sold prices, never asking prices.",
-    dossierTitre: "Valuation report — VEYLA Market System",
-    dossierMarche:
-      "Price set at market conditions of {mois} · {confiance} confidence · {n} comparables.",
     avertissement:
       "Indicative estimate: not a certified appraisal and not a substitute for professional advice.",
     introuvableTitre: "Address not found",

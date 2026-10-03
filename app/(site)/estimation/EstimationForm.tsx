@@ -36,27 +36,6 @@ function fill(
   );
 }
 
-/** "2026-10" → "oct. 2026" / "Oct 2026". */
-function libelleMoisCourt(mois: string, lang: Lang): string {
-  const NOMS =
-    lang === "fr"
-      ? ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
-      : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const [a, m] = mois.split("-").map(Number);
-  if (!a || !m || m < 1 || m > 12) return mois;
-  return `${NOMS[m - 1]} ${a}`;
-}
-
-/** Libellé du score de confiance du Système Marché. */
-function confianceLabel(
-  confiance: "haute" | "moyenne" | "faible",
-  lang: Lang,
-): string {
-  if (lang === "en")
-    return confiance === "haute" ? "high" : confiance === "moyenne" ? "medium" : "low";
-  return confiance;
-}
-
 /**
  * Jauge visuelle de la fourchette : barre dégradée balayée à l'apparition,
  * curseur « pop » positionné sur l'estimation centrale.
@@ -594,16 +573,9 @@ export function EstimationForm({
               </p>
             )}
 
-            <p className="mt-6 text-xs leading-relaxed text-charcoal/50">
-              {e.dossierMarche
-                .replace("{mois}", libelleMoisCourt(result.moisPrix, lang))
-                .replace("{confiance}", confianceLabel(result.confiance, lang))
-                .replace("{n}", String(result.nbComparables))}
-            </p>
             <p className="mt-2 text-xs leading-relaxed text-charcoal/50">
               {avertissementAffiche}
             </p>
-            <p className="mt-2 text-xs text-charcoal/40">{e.sources}</p>
           </div>
         </Card>
       )}
