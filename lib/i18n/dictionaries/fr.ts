@@ -409,7 +409,10 @@ export const fr = {
     valeurTitre: "Valeur estimée aujourd'hui",
     verdictsTitre: "Acheter, vendre, investir ?",
     verdictsTexte:
-      "Lecture du marché pour ce bien, à partir des prix de vente réels (APCIQ). Indicatif seulement — pas un conseil financier.",
+      "Lecture du marché pour ce bien, à partir des prix de vente réels (APCIQ) et de la conjoncture : taux, élections, dynamique du segment. Indicatif seulement — pas un conseil financier.",
+    verdictScore: "score",
+    verdictPourquoi: "Pourquoi ce verdict ?",
+    verdictRisques: "Risques à surveiller",
     verdictAcheter: "Acheter",
     verdictVendre: "Vendre",
     verdictInvestir: "Investir",

@@ -1,9 +1,8 @@
 import type { EstimateSuccess } from "@/lib/estimation/engine";
 import {
-  verdictAcheter,
-  verdictInvestir,
-  verdictVendre,
+  analyserVerdicts,
   type NiveauVerdict,
+  type VerdictEnrichi,
 } from "@/lib/analyse/verdicts";
 import { construireCourbe, ANNEE_COURANTE } from "@/lib/analyse/historique";
 import { dictionaries } from "@/lib/i18n/dictionaries";
@@ -63,37 +62,20 @@ export function AnalyseResult({ result: r, lang }: Props) {
 
   const age = ANNEE_COURANTE - r.anneeConstruction;
 
-  // Verdicts : niveau (logique) + texte (dictionnaire).
+  // Verdicts enrichis : score multi-facteurs + détails séparés par verdict.
   const suffixe: Record<NiveauVerdict, string> = {
     favorable: "Favorable",
     neutre: "Neutre",
     defavorable: "Defavorable",
   };
-  const vVendre = verdictVendre(r.facteur);
-  const vAcheter = verdictAcheter(r.facteur);
-  const vInvestir = verdictInvestir(r.categorie, r.facteur);
-  const verdicts = [
-    {
-      titre: t.verdictVendre,
-      niveau: vVendre.niveau,
-      chiffre: vVendre.chiffreCle,
-      texte: (t as Record<string, string>)[`vendre${suffixe[vVendre.niveau]}`],
-    },
-    {
-      titre: t.verdictAcheter,
-      niveau: vAcheter.niveau,
-      chiffre: vAcheter.chiffreCle,
-      texte: (t as Record<string, string>)[`acheter${suffixe[vAcheter.niveau]}`],
-    },
-    {
-      titre: t.verdictInvestir,
-      niveau: vInvestir.niveau,
-      chiffre: vInvestir.chiffreCle,
-      texte:
-        vInvestir.niveau === "neutre" && (r.categorie === "plex" || r.categorie === "multi")
-          ? t.investirNeutreRevenus
-          : (t as Record<string, string>)[`investir${suffixe[vInvestir.niveau]}`],
-    },
+  const [vVendre, vAcheter, vInvestir] = analyserVerdicts(
+    { facteur: r.facteur, categorie: r.categorie },
+    lang,
+  );
+  const verdicts: { titre: string; v: VerdictEnrichi }[] = [
+    { titre: t.verdictVendre, v: vVendre },
+    { titre: t.verdictAcheter, v: vAcheter },
+    { titre: t.verdictInvestir, v: vInvestir },
   ];
 
   // Horizon : +3 et +5 ans au même taux tendanciel que le moteur.
@@ -141,21 +123,52 @@ export function AnalyseResult({ result: r, lang }: Props) {
         </p>
       </section>
 
-      {/* Verdicts */}
+      {/* Verdicts enrichis */}
       <section>
         <h2 className="font-display text-xl text-charcoal">{t.verdictsTitre}</h2>
         <p className="mt-1 text-sm text-charcoal/60">{t.verdictsTexte}</p>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {verdicts.map((v) => (
-            <div key={v.titre} className="rounded-2xl border border-charcoal/10 bg-white p-5 shadow-sm">
+          {verdicts.map(({ titre, v }) => (
+            <div key={titre} className="flex flex-col rounded-2xl border border-charcoal/10 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-2">
-                <h3 className="font-display text-lg text-charcoal">{v.titre}</h3>
+                <h3 className="font-display text-lg text-charcoal">{titre}</h3>
                 <span className={`rounded-full px-3 py-1 text-xs font-semibold ${PASTILLE[v.niveau]}`}>
                   {t[`niveau${suffixe[v.niveau]}` as keyof typeof t] as string}
                 </span>
               </div>
-              <p className="mt-2 text-sm font-semibold tabular-nums text-forest">{v.chiffre}</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-charcoal/65">{v.texte}</p>
+              <p className="mt-2 text-sm font-semibold tabular-nums text-forest">
+                {v.chiffreCle} <span className="font-normal text-charcoal/45">· {t.verdictScore} {v.score}/100</span>
+              </p>
+              <p className="mt-2 text-sm font-medium leading-relaxed text-charcoal/80">{v.conseil}</p>
+              <details className="mt-3 border-t border-charcoal/10 pt-3">
+                <summary className="cursor-pointer text-sm font-medium text-forest">
+                  {t.verdictPourquoi}
+                </summary>
+                <ul className="mt-2 space-y-2.5">
+                  {v.facteurs.map((f, i) => (
+                    <li key={i} className="text-[13px] leading-relaxed">
+                      <span
+                        className={`mr-1.5 inline-block h-2 w-2 rounded-full align-middle ${
+                          f.sens === "positif"
+                            ? "bg-emerald-500"
+                            : f.sens === "negatif"
+                              ? "bg-rose-500"
+                              : "bg-charcoal/30"
+                        }`}
+                        aria-hidden="true"
+                      />
+                      <strong className="font-semibold text-charcoal">{f.titre}</strong>
+                      <span className="text-charcoal/65"> — {f.detail}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-3 text-[13px] font-medium text-charcoal">{t.verdictRisques}</p>
+                <ul className="mt-1 list-disc space-y-1 pl-5 text-[13px] leading-relaxed text-charcoal/65">
+                  {v.risques.map((r2, i) => (
+                    <li key={i}>{r2}</li>
+                  ))}
+                </ul>
+              </details>
             </div>
           ))}
         </div>

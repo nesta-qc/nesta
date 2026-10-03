@@ -408,7 +408,10 @@ export const en = {
     valeurTitre: "Estimated value today",
     verdictsTitre: "Buy, sell, invest?",
     verdictsTexte:
-      "Market read for this property, from actual sold prices (APCIQ). Indicative only — not financial advice.",
+      "Market read for this property, from actual sold prices (APCIQ) and current conditions: rates, elections, segment dynamics. Indicative only — not financial advice.",
+    verdictScore: "score",
+    verdictPourquoi: "Why this verdict?",
+    verdictRisques: "Risks to watch",
     verdictAcheter: "Buy",
     verdictVendre: "Sell",
     verdictInvestir: "Invest",
