@@ -2,6 +2,15 @@ import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { hasSupabaseConfig } from "@/lib/env";
 import { profileIdSchema } from "@/lib/validation";
+import { getStatsSnapshot, type MarketStats } from "@/lib/statistiques";
+
+/* Types réexportés (source : lib/statistiques) pour les composants existants. */
+export type {
+  AssessmentYearStat,
+  BoroughStat,
+  CategoryStat,
+  CityStat,
+} from "@/lib/statistiques";
 
 /* ============================================================
  * VEYLA — Profils de propriétés publiques (table property_profiles,
@@ -271,132 +280,11 @@ export async function searchPropertyProfiles(
 }
 
 /* ============================================================
- * VEYLA — Statistiques du marché (hub /statistiques).
- * Agrégats calculés EXCLUSIVEMENT depuis les profils Passeport
- * (property_profiles, données ouvertes de la Ville de Montréal).
- * Aucun chiffre inventé : si la base est inaccessible, null.
+ * Statistiques : la logique vit dans lib/statistiques/ (source
+ * centrale). Ce wrapper préserve l'ancien point d'entrée.
+ * Les pages utilisent désormais getStatsSnapshot() directement.
  * ============================================================ */
-
-export interface BoroughStat {
-  borough: string;
-  count: number;
-  medianAssessment: number | null;
-}
-
-export interface CityStat {
-  city: string;
-  count: number;
-  medianAssessment: number | null;
-  boroughs: BoroughStat[];
-}
-
-export interface CategoryStat {
-  category: string;
-  count: number;
-}
-
-export interface AssessmentYearStat {
-  year: number;
-  count: number;
-}
-
-export interface MarketStats {
-  total: number;
-  medianAssessment: number | null;
-  minAssessment: number | null;
-  maxAssessment: number | null;
-  boroughs: BoroughStat[];
-  cities: CityStat[];
-  categories: CategoryStat[];
-  medianConstructionYear: number | null;
-  oldestConstructionYear: number | null;
-  newestConstructionYear: number | null;
-  assessmentYears: AssessmentYearStat[];
-}
-
-function median(values: number[]): number | null {
-  if (values.length === 0) return null;
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0
-    ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
-    : sorted[mid];
-}
-
-/**
- * Agrégats honnêtes sur les profils Passeport : répartition par
- * arrondissement et par catégorie, valeur au rôle (médiane/min/max),
- * années de construction et années de rôle couvertes.
- *
- * Calculés côté Postgres via la fonction SQL market_stats() (migration
- * 000014) : UNE seule requête d'agrégation au lieu de balayer les
- * 532k+ lignes page par page (timeout garanti depuis l'import Montérégie).
- */
-function toBoroughStat(raw: unknown): BoroughStat | null {
-  if (typeof raw !== "object" || raw === null) return null;
-  const r = raw as Record<string, unknown>;
-  const borough = toText(r.borough);
-  const count = toNumber(r.count);
-  if (borough === null || count === null) return null;
-  return { borough, count, medianAssessment: toNumber(r.medianAssessment) };
-}
-
-function toCityStat(raw: unknown): CityStat | null {
-  if (typeof raw !== "object" || raw === null) return null;
-  const r = raw as Record<string, unknown>;
-  const city = toText(r.city);
-  const count = toNumber(r.count);
-  if (city === null || count === null) return null;
-  const boroughs = Array.isArray(r.boroughs)
-    ? r.boroughs.map(toBoroughStat).filter((b): b is BoroughStat => b !== null)
-    : [];
-  return {
-    city,
-    count,
-    medianAssessment: toNumber(r.medianAssessment),
-    boroughs,
-  };
-}
-
 export async function getMarketStats(): Promise<MarketStats | null> {
-  if (!hasSupabaseConfig()) return null;
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("market_stats");
-  if (error || data === null || typeof data !== "object") return null;
-  const s = data as Record<string, unknown>;
-  const total = toNumber(s.total);
-  if (total === null) return null;
-  return {
-    total,
-    medianAssessment: toNumber(s.medianAssessment),
-    minAssessment: toNumber(s.minAssessment),
-    maxAssessment: toNumber(s.maxAssessment),
-    boroughs: Array.isArray(s.boroughs)
-      ? s.boroughs.map(toBoroughStat).filter((b): b is BoroughStat => b !== null)
-      : [],
-    cities: Array.isArray(s.cities)
-      ? s.cities.map(toCityStat).filter((c): c is CityStat => c !== null)
-      : [],
-    categories: Array.isArray(s.categories)
-      ? s.categories.flatMap((raw) => {
-          if (typeof raw !== "object" || raw === null) return [];
-          const r = raw as Record<string, unknown>;
-          const category = toText(r.category);
-          const count = toNumber(r.count);
-          return category !== null && count !== null ? [{ category, count }] : [];
-        })
-      : [],
-    medianConstructionYear: toNumber(s.medianConstructionYear),
-    oldestConstructionYear: toNumber(s.oldestConstructionYear),
-    newestConstructionYear: toNumber(s.newestConstructionYear),
-    assessmentYears: Array.isArray(s.assessmentYears)
-      ? s.assessmentYears.flatMap((raw) => {
-          if (typeof raw !== "object" || raw === null) return [];
-          const r = raw as Record<string, unknown>;
-          const year = toNumber(r.year);
-          const count = toNumber(r.count);
-          return year !== null && count !== null ? [{ year, count }] : [];
-        })
-      : [],
-  };
+  const snap = await getStatsSnapshot();
+  return snap ? snap.stats : null;
 }

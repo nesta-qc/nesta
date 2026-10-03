@@ -3,7 +3,7 @@ import { pageMetadata } from "@/lib/seo";
 import { EmptyState } from "@/components/ui";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
-import { getMarketStats } from "@/actions/property-profiles";
+import { getStatsSnapshot } from "@/lib/statistiques";
 import { StatsNav } from "../StatsNav";
 import { VillesClient } from "./VillesClient";
 
@@ -26,7 +26,7 @@ export const dynamic = "force-dynamic";
 export default async function VillesPage() {
   const lang = await getLang();
   const t = dictionaries[lang].statistiques;
-  const stats = await getMarketStats();
+  const stats = (await getStatsSnapshot())?.stats ?? null;
 
   if (!stats) {
     return (

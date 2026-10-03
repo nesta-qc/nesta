@@ -9,9 +9,9 @@ import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import {
   countPropertyProfiles,
-  getMarketStats,
   searchExplorerProfiles,
 } from "@/actions/property-profiles";
+import { getStatsSnapshot } from "@/lib/statistiques";
 
 export async function generateMetadata(): Promise<Metadata> {
   return await pageMetadata({
@@ -42,13 +42,14 @@ export default async function PasseportPage({
   const searched = q.trim() !== "" || arrondissement !== "" || max.trim() !== "";
 
   /* Compteur + liste des arrondissements (cache ~7 ms) + recherche si filtres. */
-  const [count, stats, search] = await Promise.all([
+  const [count, snapshot, search] = await Promise.all([
     countPropertyProfiles(),
-    getMarketStats(),
+    getStatsSnapshot(),
     searched
       ? searchExplorerProfiles({ query: q, borough: arrondissement, maxValue: max })
       : Promise.resolve({ profiles: [], limited: false }),
   ]);
+  const stats = snapshot?.stats ?? null;
   const t = dictionaries[lang].passeport;
   const e = t.explorer;
   const boroughs = (stats?.boroughs ?? []).map((b) => b.borough);

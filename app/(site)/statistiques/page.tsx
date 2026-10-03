@@ -4,7 +4,7 @@ import { pageMetadata } from "@/lib/seo";
 import { Card, EmptyState } from "@/components/ui";
 import { getLang } from "@/lib/i18n/lang";
 import { dictionaries } from "@/lib/i18n/dictionaries";
-import { getMarketStats } from "@/actions/property-profiles";
+import { getStatsSnapshot } from "@/lib/statistiques";
 import { localizeCategory } from "@/lib/i18n/property-categories";
 import { formatPrice } from "@/lib/format";
 import { StatsNav } from "./StatsNav";
@@ -36,7 +36,8 @@ export const dynamic = "force-dynamic";
 export default async function StatistiquesPage() {
   const lang = await getLang();
   const t = dictionaries[lang].statistiques;
-  const stats = await getMarketStats();
+  const snapshot = await getStatsSnapshot();
+  const stats = snapshot?.stats ?? null;
 
   if (!stats) {
     return (
@@ -63,7 +64,7 @@ export default async function StatistiquesPage() {
     .replace("{nv}", String(nbCities))
     .replace("{nb}", String(nbBoroughs))
     .replace("{par}", String(avgPerBorough));
-  const computedOn = new Date().toLocaleDateString(
+  const computedOn = new Date(snapshot?.computedAt ?? Date.now()).toLocaleDateString(
     lang === "fr" ? "fr-CA" : "en-CA",
     { day: "numeric", month: "long", year: "numeric" },
   );
